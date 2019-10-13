@@ -20,6 +20,7 @@ const VideoStyled = styled.div`
         width: 100%;
 
         .video-holder{
+            text-align: left;
             position: relative;
 
             &.expanded{
@@ -80,6 +81,34 @@ const VideoStyled = styled.div`
                 right: 0;
                 top: 0;
                 z-index: 2;
+
+                .expand-button{
+                    background: rgba(0,0,0,0.2);
+                    border: 0.0675rem solid white;
+                    border-radius: 0.25rem;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    margin: 0.75rem;
+                    opacity: 0;
+                    outline: none;
+                    position: relative;
+                    padding: 0.25rem 0.5rem;
+                    transition: all 0.2s;
+
+                    &:hover{ 
+                        background: rgba(0,0,0,0.8);
+                    }
+
+                    &.show{
+                        opacity: 1;
+                    }
+
+                    &.hide{
+                        display: none;
+                    }
+                }
             }
  
             .player-container{
@@ -125,13 +154,19 @@ export default class Player extends Component {
             isPlaying: false,
             isExpanded: false,
             muted: true,
-            volume: 0
+            volume: 0,
+            isReady: false,
         };
 
+        this.vidReady = this.vidReady.bind(this);
         this.vidPlay = this.vidPlay.bind(this);
         this.vidStop = this.vidStop.bind(this);
         this.expandVideo = this.expandVideo.bind(this);
         this.closeVideo = this.closeVideo.bind(this);
+    }
+
+    vidReady() {
+        this.setState({ isReady: true });
     }
 
     vidPlay() {
@@ -142,6 +177,7 @@ export default class Player extends Component {
         this.setState({ isPlaying: false });
         this.setState({ volume: 0 });
         this.setState({ muted: true })
+        this.setState({ isReady: false });
     }
 
 
@@ -156,17 +192,24 @@ export default class Player extends Component {
         this.setState({ isExpanded: false });
         this.setState({ volume: 0 });
         this.setState({ muted: true })
-        this.setState({ isPlaying: false });
+        this.setState({ isReady: false });
     }
 
 
     render() {
         var player = {};
+        var button = {};
+        if (this.state.isReady) {
+            button.show = 'expand-button show';
+        } else {
+            button.show = 'expand-button';
+        }
         if (this.state.isExpanded) {
             player.expand = 'video-holder expanded';
             player.mouseEnter = undefined;
             player.mouseLeave = undefined;
             player.blocker = this.closeVideo;
+            button.show = 'expand-button hide';
         } else {
             player.expand = 'video-holder';
             player.mouseEnter = this.vidPlay;
@@ -186,7 +229,9 @@ export default class Player extends Component {
                         <div className="thumbnail-container">
                             <img className="thumbnail" src={'https://img.youtube.com/vi/' + this.props.file + '/0.jpg'} />
                         </div>
-                        <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker} />
+                        <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker}>
+                            <button className={button.show}>Click to expand w/sound</button>
+                        </div>
                         <div className="player-container">
                             <div className="player-holder">
                                 <div className="player-inner">
@@ -196,7 +241,11 @@ export default class Player extends Component {
                                             volume={this.state.volume}
                                             playing={this.state.isPlaying}
                                             controls={true}
-                                            muted={this.state.muted} />
+                                            muted={this.state.muted}
+
+                                            onReady={this.vidReady}
+                                            onStart={console.log('start')}
+                                        />
                                     }
                                 </div>
                             </div>
