@@ -242,9 +242,7 @@ export default class Player extends Component {
                                             playing={this.state.isPlaying}
                                             controls={true}
                                             muted={this.state.muted}
-
                                             onReady={this.vidReady}
-                                            onStart={console.log('start')}
                                         />
                                     }
                                 </div>
