@@ -60,7 +60,7 @@ const VideoStyled = styled.div`
                 position: relative;
                 padding-bottom: 56.25%;
                 width: 100%;
-    
+ 
                 .thumbnail{
                     bottom: 0;
                     left: 0;
@@ -81,7 +81,7 @@ const VideoStyled = styled.div`
                 top: 0;
                 z-index: 2;
             }
-    
+ 
             .player-container{
                 cursor: pointer;
                 position: absolute;
@@ -90,13 +90,13 @@ const VideoStyled = styled.div`
                 right: 0;
                 top: 0;
                 z-index: 1;
-                
+ 
                 .player-holder{
                     padding-bottom: 56.25%;
                     position: relative;
                     overflow: hidden;
                     top: 0;
-                    
+ 
                     .player-inner{
                         position: absolute;
                         bottom: 0;
@@ -104,7 +104,7 @@ const VideoStyled = styled.div`
                         right: 0;
                         top: 0;
                     }
-        
+ 
                     div{
                         transform: translateY(-30.01%);
                         height: 250% !important;
@@ -124,6 +124,7 @@ export default class Player extends Component {
         this.state = {
             isPlaying: false,
             isExpanded: false,
+            muted: true,
             volume: 0
         };
 
@@ -140,18 +141,21 @@ export default class Player extends Component {
     vidStop() {
         this.setState({ isPlaying: false });
         this.setState({ volume: 0 });
+        this.setState({ muted: true })
     }
 
 
     expandVideo() {
         this.setState({ isExpanded: true });
         this.setState({ volume: 100 });
+        this.setState({ muted: false })
         this.setState({ isPlaying: true });
     }
 
     closeVideo() {
         this.setState({ isExpanded: false });
         this.setState({ volume: 0 });
+        this.setState({ muted: true })
         this.setState({ isPlaying: false });
     }
 
@@ -168,8 +172,12 @@ export default class Player extends Component {
             player.mouseEnter = this.vidPlay;
             player.mouseLeave = this.vidStop;
             player.blocker = this.expandVideo;
-
         }
+        if (!this.props.gridView) {
+            player.mouseEnter = undefined;
+            player.mouseLeave = undefined;
+        }
+
         return (
             <VideoStyled>
                 {!this.props.gridView && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
@@ -183,7 +191,12 @@ export default class Player extends Component {
                             <div className="player-holder">
                                 <div className="player-inner">
                                     {this.state.isPlaying &&
-                                        <ReactPlayer url={'https://www.youtube.com/watch?v=' + this.props.file} volume={this.state.volume} playing={this.state.isPlaying} controls={true} />
+                                        <ReactPlayer
+                                            url={'https://www.youtube.com/watch?v=' + this.props.file}
+                                            volume={this.state.volume}
+                                            playing={this.state.isPlaying}
+                                            controls={true}
+                                            muted={this.state.muted} />
                                     }
                                 </div>
                             </div>
