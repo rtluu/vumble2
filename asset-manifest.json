@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/vumble2/static/css/main.0687dc1f.chunk.css",
+    "main.js": "/vumble2/static/js/main.74c0549c.chunk.js",
+    "main.js.map": "/vumble2/static/js/main.74c0549c.chunk.js.map",
+    "runtime-main.js": "/vumble2/static/js/runtime-main.a6e2b043.js",
+    "runtime-main.js.map": "/vumble2/static/js/runtime-main.a6e2b043.js.map",
+    "static/js/2.74ebc3b8.chunk.js": "/vumble2/static/js/2.74ebc3b8.chunk.js",
+    "static/js/2.74ebc3b8.chunk.js.map": "/vumble2/static/js/2.74ebc3b8.chunk.js.map",
+    "index.html": "/vumble2/index.html",
+    "precache-manifest.d7c3d184e4a4be4059ce55a9c1b6fe06.js": "/vumble2/precache-manifest.d7c3d184e4a4be4059ce55a9c1b6fe06.js",
+    "service-worker.js": "/vumble2/service-worker.js",
+    "static/css/main.0687dc1f.chunk.css.map": "/vumble2/static/css/main.0687dc1f.chunk.css.map"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a6e2b043.js",
+    "static/js/2.74ebc3b8.chunk.js",
+    "static/css/main.0687dc1f.chunk.css",
+    "static/js/main.74c0549c.chunk.js"
+  ]
+}
