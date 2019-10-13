@@ -82,6 +82,14 @@ const VideoStyled = styled.div`
                 top: 0;
                 z-index: 2;
 
+                &:hover{
+                    .expand-button{
+                        &.show{
+                            opacity: 1;
+                        }
+                    }
+                }
+
                 .expand-button{
                     background: rgba(0,0,0,0.2);
                     border: 0.0675rem solid white;
@@ -101,9 +109,6 @@ const VideoStyled = styled.div`
                         background: rgba(0,0,0,0.8);
                     }
 
-                    &.show{
-                        opacity: 1;
-                    }
 
                     &.hide{
                         display: none;
@@ -149,6 +154,24 @@ export default class Player extends Component {
     constructor(props) {
         super(props);
 
+        var url = this.props.file.data.url;
+        var id = '';
+
+
+        if (url.includes('.be/')) {
+            id = url.split('.be/')[1];
+        } else {
+            id = url.split('v=')[1];
+        }
+        if (id.includes('&')) {
+            id = id.split('&')[0];
+        } else if (id.includes('?t')) {
+            id = id.split('?t')[0];
+        }
+
+
+
+        console.log(id);
 
         this.state = {
             isPlaying: false,
@@ -156,6 +179,7 @@ export default class Player extends Component {
             muted: true,
             volume: 0,
             isReady: false,
+            vidID: id
         };
 
         this.vidReady = this.vidReady.bind(this);
@@ -183,8 +207,8 @@ export default class Player extends Component {
 
     expandVideo() {
         this.setState({ isExpanded: true });
-        this.setState({ volume: 100 });
         this.setState({ muted: false })
+        this.setState({ volume: 70 });
         this.setState({ isPlaying: true });
     }
 
@@ -227,7 +251,7 @@ export default class Player extends Component {
                 <div className="video-block">
                     <div className={player.expand}>
                         <div className="thumbnail-container">
-                            <img className="thumbnail" src={'https://img.youtube.com/vi/' + this.props.file + '/0.jpg'} />
+                            <img className="thumbnail" src={'https://img.youtube.com/vi/' + this.state.vidID + '/0.jpg'} />
                         </div>
                         <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker}>
                             <button className={button.show}>Click to expand w/sound</button>
@@ -237,7 +261,7 @@ export default class Player extends Component {
                                 <div className="player-inner">
                                     {this.state.isPlaying &&
                                         <ReactPlayer
-                                            url={'https://www.youtube.com/watch?v=' + this.props.file}
+                                            url={'https://www.youtube.com/watch?v=' + this.state.vidID}
                                             volume={this.state.volume}
                                             playing={this.state.isPlaying}
                                             controls={true}
