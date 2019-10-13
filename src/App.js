@@ -9,7 +9,7 @@ class App extends React.Component {
   }
 
   state = {
-    files: ['MRyLC2M1K2w', 'L7DWWwdPDgk', 'j1qUfM8BmcI']
+    files: ['MRyLC2M1K2w', 'wXhTHyIgQ_U', 'ba7mB8oueCY', 'UYwF-jdcVjY', 'SC4xMk98Pdc', 'SLsTskih7_I']
   };
 
   render() {
