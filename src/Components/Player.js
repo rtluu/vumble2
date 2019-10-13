@@ -15,14 +15,45 @@ const VideoStyled = styled.div`
     }
 
     .video-block{
-        border-top: 1px solid red;
         max-width: 50rem;
         position: relative;
-        padding: 5rem 0;
         width: 100%;
 
         .video-holder{
             position: relative;
+
+            &.expanded{
+                position: fixed;
+                background: rgba(0,0,0,0.9);
+                z-index: 100;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: 0;
+                width: 100%;
+
+                .thumbnail-container{
+                    display: none;
+                }
+
+                .player-container{
+                    position: relative;
+                    max-width: 72rem;
+                    left: 50%;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                    width: calc(100% - 4rem);
+                    z-index: 3;
+
+                    .player-holder{
+                        div{
+                            transform: translateY(0);
+                            height: 100% !important;
+                            width: 100% !important;
+                        }
+                    }
+                }
+            }
 
             .thumbnail-container{
                 overflow: hidden;
@@ -40,6 +71,16 @@ const VideoStyled = styled.div`
                     width: 100%;
                 }
             }
+
+            .iframe-blocker{
+                cursor: pointer;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: 0;
+                z-index: 2;
+            }
     
             .player-container{
                 cursor: pointer;
@@ -49,7 +90,6 @@ const VideoStyled = styled.div`
                 right: 0;
                 top: 0;
                 z-index: 1;
-                transition: all 0.3s linear 0s;
                 
                 .player-holder{
                     padding-bottom: 56.25%;
@@ -76,58 +116,81 @@ const VideoStyled = styled.div`
     }
 `
 
-export default class Video extends Component {
+export default class Player extends Component {
     constructor(props) {
         super(props);
 
 
         this.state = {
             isPlaying: false,
+            isExpanded: false,
+            volume: 0
         };
 
         this.vidPlay = this.vidPlay.bind(this);
-        this.vidPause = this.vidPause.bind(this);
+        this.vidStop = this.vidStop.bind(this);
+        this.expandVideo = this.expandVideo.bind(this);
+        this.closeVideo = this.closeVideo.bind(this);
     }
 
     vidPlay() {
         this.setState({ isPlaying: true });
-        console.log('play', this.props.file);
     }
 
-    vidPause() {
+    vidStop() {
         this.setState({ isPlaying: false });
-        console.log('pause', this.props.file);
+        this.setState({ volume: 0 });
+    }
+
+
+    expandVideo() {
+        this.setState({ isExpanded: true });
+        this.setState({ volume: 100 });
+        this.setState({ isPlaying: true });
+    }
+
+    closeVideo() {
+        this.setState({ isExpanded: false });
+        this.setState({ volume: 0 });
+        this.setState({ isPlaying: false });
     }
 
 
     render() {
-        var holder = {};
-        if (this.state.menuShow) {
-            holder.class = 'holder show';
+        var player = {};
+        if (this.state.isExpanded) {
+            player.expand = 'video-holder expanded';
+            player.mouseEnter = undefined;
+            player.mouseLeave = undefined;
+            player.blocker = this.closeVideo;
         } else {
-            holder.class = 'holder';
-        }
+            player.expand = 'video-holder';
+            player.mouseEnter = this.vidPlay;
+            player.mouseLeave = this.vidStop;
+            player.blocker = this.expandVideo;
 
+        }
         return (
             <VideoStyled>
-                <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />
+                {!this.props.gridView && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
                 <div className="video-block">
-                    <div className="video-holder">
+                    <div className={player.expand}>
                         <div className="thumbnail-container">
                             <img className="thumbnail" src={'https://img.youtube.com/vi/' + this.props.file + '/0.jpg'} />
                         </div>
+                        <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker} />
                         <div className="player-container">
                             <div className="player-holder">
                                 <div className="player-inner">
                                     {this.state.isPlaying &&
-                                        <ReactPlayer url={'https://www.youtube.com/watch?v=' + this.props.file} volume={0} playing={this.state.isPlaying} />
+                                        <ReactPlayer url={'https://www.youtube.com/watch?v=' + this.props.file} volume={this.state.volume} playing={this.state.isPlaying} controls={true} />
                                     }
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <Waypoint onLeave={this.vidPause} topOffset={'30%'} />
+                {!this.props.viewList && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
             </VideoStyled >
         )
     }
