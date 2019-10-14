@@ -14,37 +14,40 @@ const VideoStyled = styled.div`
         top: 50%;
     }
 
-    .video-block{
+    .post-block{
         max-width: 50rem;
         position: relative;
         width: 100%;
 
-        .video-holder{
-            text-align: left;
-            position: relative;
+        &.expanded{
+            position: fixed;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            max-width: none;
+            width: 100%;
 
-            &.expanded{
-                position: fixed;
-                background: rgba(0,0,0,0.9);
-                z-index: 100;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                top: 0;
-                width: 100%;
+            .post-card{
+                max-width: 72rem;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: calc(100% - 4rem);
+                z-index: 3;
+
+                @media (max-width: 40rem) {
+                    width: 100%;
+                }
 
                 .thumbnail-container{
                     display: none;
                 }
-
+    
                 .player-container{
                     position: relative;
-                    max-width: 72rem;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                    width: calc(100% - 4rem);
-                    z-index: 3;
 
                     .player-holder{
                         div{
@@ -53,8 +56,71 @@ const VideoStyled = styled.div`
                             width: 100% !important;
                         }
                     }
+                    
+                    .time-box{
+                        display: none;
+                    }
+                }
+                .post-info{
+                    padding: 0.75rem;
+                    .post-title{
+                        font-size: 1.25rem;
+                    }  
+                }
+            } 
+        }
+
+        .iframe-blocker{
+            cursor: pointer;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            text-align: left;
+            z-index: 2;
+
+            &:hover{
+                .expand-button{
+                    &.show{
+                        opacity: 1;
+                    }
                 }
             }
+
+            .expand-button{
+                background: rgba(0,0,0,0.2);
+                border: 0.0675rem solid white;
+                border-radius: 0.25rem;
+                color: white;
+                cursor: pointer;
+                font-size: 0.75rem;
+                font-weight: 700;
+                margin: 0.75rem;
+                opacity: 0;
+                outline: none;
+                position: relative;
+                padding: 0.25rem 0.5rem;
+                transition: all 0.2s;
+
+                &:hover{ 
+                    background: rgba(0,0,0,0.8);
+                }
+
+
+                &.hide{
+                    display: none;
+                }
+            }
+        }
+
+        .post-card{
+            background: white;
+            border-radius: 0.25rem;
+            box-shadow: 0 0.0675rem 0.25rem 0 rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            text-align: left;
 
             .thumbnail-container{
                 overflow: hidden;
@@ -73,44 +139,6 @@ const VideoStyled = styled.div`
                 }
             }
 
-            .iframe-blocker{
-                cursor: pointer;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                top: 0;
-                z-index: 2;
-
-                .expand-button{
-                    background: rgba(0,0,0,0.2);
-                    border: 0.0675rem solid white;
-                    border-radius: 0.25rem;
-                    color: white;
-                    cursor: pointer;
-                    font-size: 0.75rem;
-                    font-weight: 700;
-                    margin: 0.75rem;
-                    opacity: 0;
-                    outline: none;
-                    position: relative;
-                    padding: 0.25rem 0.5rem;
-                    transition: all 0.2s;
-
-                    &:hover{ 
-                        background: rgba(0,0,0,0.8);
-                    }
-
-                    &.show{
-                        opacity: 1;
-                    }
-
-                    &.hide{
-                        display: none;
-                    }
-                }
-            }
- 
             .player-container{
                 cursor: pointer;
                 position: absolute;
@@ -125,20 +153,66 @@ const VideoStyled = styled.div`
                     position: relative;
                     overflow: hidden;
                     top: 0;
+
+                    &:after{
+                        border-radius: 2rem 0 0 0;
+                        box-shadow: -1rem -1rem 5rem 2rem rgba(0,0,0,0.5);
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        height: 0;
+                        width: 0;
+                        z-index: 2;
+                    }
+                    
  
                     .player-inner{
                         position: absolute;
                         bottom: 0;
                         left: 0;
                         right: 0;
-                        top: 0;
+                        top: 0;  
                     }
- 
                     div{
-                        transform: translateY(-30.01%);
+                        transform: translateY(-30.005%);
                         height: 250% !important;
                         width: 100% !important;
                     }
+ 
+                    
+                    .time-box{
+                        bottom: 0;
+                        position: absolute;
+                        padding: 0.25rem;
+                        margin: 0.125rem;
+                        right: 0;
+                        opacity: 0;
+                        z-index: 3;
+                        transition: all 0.2s;
+
+                        &.show{
+                            opacity: 1;
+                        }
+
+                        .time-left{
+                            color: white;
+
+                            .spacer{
+                                display: inline-block;
+                                position: relative;
+                                height: 0.2rem
+                                width: 0.0675rem;
+                            }
+                        }
+                    }
+                }  
+            }
+            .post-info{
+                padding: 0.5rem 0.75rem;
+                
+                .post-title{
+                    margin-bottom: 0.5rem;
                 }
             }
         }
@@ -149,6 +223,22 @@ export default class Player extends Component {
     constructor(props) {
         super(props);
 
+        var post = this.props.file.data;
+        var title = post.title;
+        var upvotes = post.ups;
+        var url = post.url;
+        var id = '';
+
+        if (url.includes('.be/')) {
+            id = url.split('.be/')[1];
+        } else {
+            id = url.split('v=')[1];
+        }
+        if (id.includes('&')) {
+            id = id.split('&')[0];
+        } else if (id.includes('?t')) {
+            id = id.split('?t')[0];
+        }
 
         this.state = {
             isPlaying: false,
@@ -156,6 +246,14 @@ export default class Player extends Component {
             muted: true,
             volume: 0,
             isReady: false,
+            vidID: id,
+            title: title,
+            upvotes: upvotes,
+            duration: 0,
+            played: 0,
+            loaded: 0,
+            minutesLeft: '0',
+            secondsLeft: '00',
         };
 
         this.vidReady = this.vidReady.bind(this);
@@ -163,6 +261,7 @@ export default class Player extends Component {
         this.vidStop = this.vidStop.bind(this);
         this.expandVideo = this.expandVideo.bind(this);
         this.closeVideo = this.closeVideo.bind(this);
+        this.handleDuration = this.handleDuration.bind(this);
     }
 
     vidReady() {
@@ -183,8 +282,8 @@ export default class Player extends Component {
 
     expandVideo() {
         this.setState({ isExpanded: true });
-        this.setState({ volume: 100 });
         this.setState({ muted: false })
+        this.setState({ volume: 70 });
         this.setState({ isPlaying: true });
     }
 
@@ -195,23 +294,40 @@ export default class Player extends Component {
         this.setState({ isReady: false });
     }
 
+    handleDuration = (duration) => {
+        this.setState({ duration })
+    }
+
+    handleProgress = state => {
+        var timePlayed = Math.round(state.playedSeconds);
+        var timeLeft = this.state.duration - timePlayed;
+        var minutesLeft = Math.floor(timeLeft / 60);
+        var secondsLeft = Math.floor(timeLeft % 60);
+        if (secondsLeft < 10) {
+            secondsLeft = '0' + secondsLeft;
+        }
+        this.setState({ minutesLeft: minutesLeft });
+        this.setState({ secondsLeft: secondsLeft });
+    }
+
 
     render() {
         var player = {};
-        var button = {};
-        if (this.state.isReady) {
-            button.show = 'expand-button show';
+        if (this.state.isReady | this.state.isPlaying) {
+            player.button = 'expand-button show';
+            player.time = 'time-box show';
         } else {
-            button.show = 'expand-button';
+            player.button = 'expand-button';
+            player.time = 'time-box';
         }
         if (this.state.isExpanded) {
-            player.expand = 'video-holder expanded';
+            player.expand = 'post-block expanded';
             player.mouseEnter = undefined;
             player.mouseLeave = undefined;
             player.blocker = this.closeVideo;
-            button.show = 'expand-button hide';
+            player.button = 'expand-button hide';
         } else {
-            player.expand = 'video-holder';
+            player.expand = 'post-block';
             player.mouseEnter = this.vidPlay;
             player.mouseLeave = this.vidStop;
             player.blocker = this.expandVideo;
@@ -224,29 +340,38 @@ export default class Player extends Component {
         return (
             <VideoStyled>
                 {!this.props.gridView && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
-                <div className="video-block">
-                    <div className={player.expand}>
+                <div className={player.expand}>
+                    <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker}>
+                        <button className={player.button}>Click to expand w/sound</button>
+                    </div>
+                    <div className="post-card">
                         <div className="thumbnail-container">
-                            <img className="thumbnail" src={'https://img.youtube.com/vi/' + this.props.file + '/0.jpg'} />
-                        </div>
-                        <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker}>
-                            <button className={button.show}>Click to expand w/sound</button>
+                            <img className="thumbnail" src={'https://img.youtube.com/vi/' + this.state.vidID + '/0.jpg'} />
                         </div>
                         <div className="player-container">
                             <div className="player-holder">
                                 <div className="player-inner">
                                     {this.state.isPlaying &&
                                         <ReactPlayer
-                                            url={'https://www.youtube.com/watch?v=' + this.props.file}
+                                            url={'https://www.youtube.com/watch?v=' + this.state.vidID}
                                             volume={this.state.volume}
                                             playing={this.state.isPlaying}
                                             controls={true}
                                             muted={this.state.muted}
                                             onReady={this.vidReady}
+                                            onDuration={this.handleDuration}
+                                            onProgress={this.handleProgress}
                                         />
                                     }
                                 </div>
+                                <span className={player.time}>
+                                    <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
+                                </span>
                             </div>
+                        </div>
+                        <div className="post-info">
+                            <h3 className="post-title">{this.state.title}</h3>
+                            <h6 className="post-votes">{this.state.upvotes} upvotes</h6>
                         </div>
                     </div>
                 </div>
