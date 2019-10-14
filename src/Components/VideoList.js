@@ -14,7 +14,17 @@ const VideoListStyled = styled.div`
 
         &.column{
             grid-template-columns: 30% 30% 30%;
-            grid-gap: 50px 0px;
+            grid-gap: 3rem 0;
+
+            @media (max-width: 60rem) {
+                grid-template-columns: 45% 45%;
+                grid-gap: 2.5rem 0;
+            }
+
+            @media (max-width: 40rem) {
+                grid-template-columns: 90%;
+                grid-gap: 2.5rem 0;
+            }
         }
     }
 `
