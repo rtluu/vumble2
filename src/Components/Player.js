@@ -80,7 +80,17 @@ const VideoStyled = styled.div`
             text-align: left;
             z-index: 2;
 
-            &:hover{
+            @media (hover: hover) {
+                &:hover{
+                    .expand-button{
+                        &.show{
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+
+            @media (hover: none) {
                 .expand-button{
                     &.show{
                         opacity: 1;
@@ -231,6 +241,8 @@ export default class Player extends Component {
 
         if (url.includes('.be/')) {
             id = url.split('.be/')[1];
+        } else if (url.includes('/embed/')) {
+            id = url.split('/embed/')[1];
         } else {
             id = url.split('v=')[1];
         }
