@@ -4,6 +4,105 @@ import VideoList from './Components/VideoList';
 import styled from "styled-components";
 
 const AppStyled = styled.div`
+  header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 2rem 2.5%;
+    position: relative;
+    z-index: 5;
+
+    @media (max-width: 60rem) {
+        margin: 2rem 3.33%;
+    }
+
+    @media (max-width: 40rem) {
+        margin: 1rem 5%;
+    }
+
+    .headline{
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%);
+    }
+
+
+    .sub-sort{
+      display: inline-block;
+      position: relative;
+      
+      .dropdown{
+        position: relative;
+
+        .dropdown-toggle{
+          align-items: center;
+          display: flex;
+          justify-content: center;
+          font-size: 1.125rem;
+          transition: all 0.1s;
+
+          @media (hover: hover) {
+            &:hover{
+              background: black;
+              color: white;
+
+              .down-arrow{
+                border-color: white;
+              }
+            }
+          }
+
+          &.active{
+            background: black;
+            color: white;
+
+            .down-arrow{
+              border-color: white;
+            }
+          }
+
+          .down-arrow{
+            box-sizing: border-box;
+            border-style: solid;
+            border-color: black;
+            border-width: 0 0.125rem 0.125rem 0;
+            display: inline-block;
+            height: 0.5rem;
+            margin-left: 0.25rem;
+            transform: rotate(45deg) translateY(-0.0675rem);
+            width: 0.5rem;
+            transition: all 0.1s;
+          }
+        }
+    
+        .dropdown-menu{
+          background: white;
+          border-radius: 0.25rem;
+          box-shadow: 0 0.125rem 0.25rem 0 rgba(0,0,0,0.5);
+          display: none;
+          flex-direction: column;
+          position: absolute;
+
+          &.open{
+            display: flex;
+          }
+
+          .dropdown-item{
+            color: black;
+            padding: 0.5rem;
+            font-size: 1.125rem;
+
+            @media (hover: hover) {
+              &:hover{
+                background: black;
+                color: white;
+              }
+            }
+          }
+        } 
+      }
+    }
+  }
 `
 
 class App extends React.Component {
@@ -14,9 +113,11 @@ class App extends React.Component {
     this.artisanSubreddit = 'artisanvideos';
     this.documentarySubreddit = 'documentaries';
     this.haikuSubreddit = 'youtubehaiku';
-    this.subredditsArray = ['mealtimevideos', 'music',];
+    this.subredditsArray = ['mealtimevideos', 'music', 'woahdude'];
     this.url = 'https://www.reddit.com/';
     this.sorts = ['hot', 'new', 'top', 'controversial', 'rising'];
+
+    this.dropdownToggle = this.dropdownToggle.bind(this);
   }
 
   state = {
@@ -26,6 +127,8 @@ class App extends React.Component {
     after: null,
     before: null,
     sort: 'hot',
+
+    dropdownOpen: false,
   };
 
   componentDidMount() {
@@ -36,7 +139,8 @@ class App extends React.Component {
     this.setState({
       files: [],
       currentSubreddit: sub,
-      page: 1
+      page: 1,
+      dropdownOpen: false
     });
     fetch(this.url + 'r/' + sub + "/" + this.state.sort + '.json')
 
@@ -47,8 +151,10 @@ class App extends React.Component {
         var index = 0;
         var files = [];
         for (index = 0; index < array.length; index++) {
-          if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/')) {
+          if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
             files.push(array[index])
+          } else {
+            console.log(array[index]);
           }
         }
 
@@ -66,7 +172,8 @@ class App extends React.Component {
     this.setState({
       files: [],
       sort: sort,
-      page: 1
+      page: 1,
+      dropdownOpen: false
     })
     fetch(this.url + this.state.currentSubreddit + "/" + sort + '.json')
       .then(res => res.json())
@@ -76,7 +183,7 @@ class App extends React.Component {
         var index = 0;
         var files = [];
         for (index = 0; index < array.length; index++) {
-          if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/')) {
+          if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
             files.push(array[index])
           }
         }
@@ -99,6 +206,10 @@ class App extends React.Component {
     }
   }
 
+  dropdownToggle() {
+    this.setState({ dropdownOpen: !this.state.dropdownOpen });
+  }
+
   render() {
     let currentSubreddit;
     if (this.state.currentSubreddit === this.videosSubreddit) {
@@ -110,19 +221,26 @@ class App extends React.Component {
     } else if (this.state.currentSubreddit === this.haikuSubreddit) {
       currentSubreddit = "YouTube Haiku";
     } else {
-      currentSubreddit = "r/" + this.state.currentSubreddit;
+      currentSubreddit = "" + this.state.currentSubreddit;
+    }
+
+    var dropdown = {};
+    if (this.state.dropdownOpen) {
+      dropdown.toggle = "dropdown-toggle active"
+      dropdown.menu = "dropdown-menu open"
+    } else {
+      dropdown.toggle = "dropdown-toggle"
+      dropdown.menu = "dropdown-menu"
     }
 
     return (
       <AppStyled>
         <header className="App-header">
-          <h1 className="headline">Vumble 2</h1>
-          <div className="list-sort">
-            <div className="dropdown m-2" style={{ display: "inline" }}>
-              <button className="btn btn-outline-success dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {currentSubreddit} &nbsp;
-              </button>
-              <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <h1 className="headline">Vumble</h1>
+          <div className="sub-sort">
+            <div className="dropdown">
+              <button className={dropdown.toggle} onClick={this.dropdownToggle} type="button">r/{currentSubreddit}<span className="down-arrow" /></button>
+              <div className={dropdown.menu}>
                 <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.videosSubreddit)}>r/videos</a>
                 <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.documentarySubreddit)}>r/documentaries</a>
                 <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.artisanSubreddit)}>r/artisanvideos</a>

@@ -166,7 +166,7 @@ const VideoStyled = styled.div`
 
                     &:after{
                         border-radius: 2rem 0 0 0;
-                        box-shadow: -1rem -1rem 5rem 2rem rgba(0,0,0,0.5);
+                        box-shadow: -1rem -1rem 4rem 1.5rem rgba(0,0,0,0.4);
                         content: '';
                         position: absolute;
                         bottom: 0;
@@ -290,7 +290,6 @@ export default class Player extends Component {
         this.setState({ muted: true })
         this.setState({ isReady: false });
     }
-
 
     expandVideo() {
         this.setState({ isExpanded: true });
