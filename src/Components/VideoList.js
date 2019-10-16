@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const VideoListStyled = styled.div`
     display: flex;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
     
@@ -18,12 +19,12 @@ const VideoListStyled = styled.div`
 
             @media (max-width: 60rem) {
                 grid-template-columns: 45% 45%;
-                grid-gap: 2.5rem 0;
+                grid-gap: 2rem 0;
             }
 
             @media (max-width: 40rem) {
                 grid-template-columns: 90%;
-                grid-gap: 2.5rem 0;
+                grid-gap: 1rem 0;
             }
         }
     }

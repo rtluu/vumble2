@@ -80,7 +80,17 @@ const VideoStyled = styled.div`
             text-align: left;
             z-index: 2;
 
-            &:hover{
+            @media (hover: hover) {
+                &:hover{
+                    .expand-button{
+                        &.show{
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+
+            @media (hover: none) {
                 .expand-button{
                     &.show{
                         opacity: 1;
@@ -156,7 +166,7 @@ const VideoStyled = styled.div`
 
                     &:after{
                         border-radius: 2rem 0 0 0;
-                        box-shadow: -1rem -1rem 5rem 2rem rgba(0,0,0,0.5);
+                        box-shadow: -1rem -1rem 4rem 1.5rem rgba(0,0,0,0.4);
                         content: '';
                         position: absolute;
                         bottom: 0;
@@ -231,6 +241,8 @@ export default class Player extends Component {
 
         if (url.includes('.be/')) {
             id = url.split('.be/')[1];
+        } else if (url.includes('/embed/')) {
+            id = url.split('/embed/')[1];
         } else {
             id = url.split('v=')[1];
         }
@@ -278,7 +290,6 @@ export default class Player extends Component {
         this.setState({ muted: true })
         this.setState({ isReady: false });
     }
-
 
     expandVideo() {
         this.setState({ isExpanded: true });
