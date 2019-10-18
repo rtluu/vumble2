@@ -359,7 +359,7 @@ export default class Player extends Component {
 
         return (
             <VideoStyled>
-                {!this.props.gridView && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
+                {!this.props.gridView && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
                 <div className={player.expand}>
                     <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker}>
                         <button className={player.button}>Click to expand w/sound</button>
@@ -395,7 +395,7 @@ export default class Player extends Component {
                         </div>
                     </div>
                 </div>
-                {!this.props.viewList && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
+                {!this.props.gridView && !this.state.isExpanded && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
             </VideoStyled >
         )
     }
