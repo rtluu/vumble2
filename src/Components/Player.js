@@ -5,7 +5,7 @@ import { Waypoint } from 'react-waypoint';
 
 const VideoStyled = styled.div`
     display: flex;
-    align-items: center;
+    align-items: stretch;
     flex-direction: column;
     margin: 1.5rem 0;
 
@@ -239,6 +239,8 @@ export default class Player extends Component {
         var url = post.url;
         var id = '';
 
+
+
         if (url.includes('.be/')) {
             id = url.split('.be/')[1];
         } else if (url.includes('/embed/')) {
@@ -246,6 +248,8 @@ export default class Player extends Component {
         } else {
             id = url.split('v=')[1];
         }
+        // console.log('post', post);
+        // console.log('id', id);
         if (id.includes('&')) {
             id = id.split('&')[0];
         } else if (id.includes('?t')) {
@@ -253,17 +257,22 @@ export default class Player extends Component {
         }
 
         this.state = {
-            isPlaying: false,
-            isExpanded: false,
-            muted: true,
-            volume: 0,
-            isReady: false,
+            //Post
             vidID: id,
             title: title,
             upvotes: upvotes,
+            isExpanded: false,
+
+            //Player
+            isPlaying: false,
+            muted: true,
+            volume: 0,
+            isReady: false,
             duration: 0,
             played: 0,
             loaded: 0,
+
+            //Duration
             minutesLeft: '0',
             secondsLeft: '00',
         };

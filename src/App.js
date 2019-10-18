@@ -115,9 +115,10 @@ class App extends React.Component {
     this.haikuSubreddit = 'youtubehaiku';
     this.subredditsArray = ['mealtimevideos', 'music', 'woahdude'];
     this.url = 'https://www.reddit.com/';
-    this.sorts = ['hot', 'new', 'top', 'controversial', 'rising'];
+    this.sorts = ['hot', 'new', 'top'];
 
-    this.dropdownToggle = this.dropdownToggle.bind(this);
+    this.dropdownSub = this.dropdownSub.bind(this);
+    this.dropdownSort = this.dropdownSort.bind(this);
   }
 
   state = {
@@ -175,7 +176,7 @@ class App extends React.Component {
       page: 1,
       dropdownOpen: false
     })
-    fetch(this.url + this.state.currentSubreddit + "/" + sort + '.json')
+    fetch(this.url + 'r/' + this.state.currentSubreddit + "/" + sort + '.json')
       .then(res => res.json())
       .then((data) => {
 
@@ -185,11 +186,14 @@ class App extends React.Component {
         for (index = 0; index < array.length; index++) {
           if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
             files.push(array[index])
+            console.log('pushed', array[index].data.domain);
+          } else {
+
           }
         }
 
         this.setState({
-          files: data.data.children,
+          files: files,
           after: data.data.after,
           before: data.data.before
         });
@@ -206,8 +210,12 @@ class App extends React.Component {
     }
   }
 
-  dropdownToggle() {
-    this.setState({ dropdownOpen: !this.state.dropdownOpen });
+  dropdownSub() {
+    this.setState({ dropdownSub: !this.state.dropdownSub });
+  }
+
+  dropdownSort() {
+    this.setState({ dropdownSort: !this.state.dropdownSort });
   }
 
   render() {
@@ -225,28 +233,46 @@ class App extends React.Component {
     }
 
     var dropdown = {};
-    if (this.state.dropdownOpen) {
-      dropdown.toggle = "dropdown-toggle active"
-      dropdown.menu = "dropdown-menu open"
+    if (this.state.dropdownSub) {
+      dropdown.toggleSub = "dropdown-toggle active"
+      dropdown.menuSub = "dropdown-menu open"
     } else {
-      dropdown.toggle = "dropdown-toggle"
-      dropdown.menu = "dropdown-menu"
+      dropdown.toggleSub = "dropdown-toggle"
+      dropdown.menuSub = "dropdown-menu"
     }
-
+    if (this.state.dropdownSort) {
+      dropdown.toggleSort = "dropdown-toggle active"
+      dropdown.menuSort = "dropdown-menu open"
+    } else {
+      dropdown.toggleSort = "dropdown-toggle"
+      dropdown.menuSort = "dropdown-menu"
+    }
     return (
       <AppStyled>
         <header className="App-header">
           <h1 className="headline">Vumble</h1>
           <div className="sub-sort">
             <div className="dropdown">
-              <button className={dropdown.toggle} onClick={this.dropdownToggle} type="button">r/{currentSubreddit}<span className="down-arrow" /></button>
-              <div className={dropdown.menu}>
+              <button className={dropdown.toggleSub} onClick={this.dropdownSub} type="button">r/{currentSubreddit}<span className="down-arrow" /></button>
+              <div className={dropdown.menuSub}>
                 <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.videosSubreddit)}>r/videos</a>
                 <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.documentarySubreddit)}>r/documentaries</a>
                 <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.artisanSubreddit)}>r/artisanvideos</a>
                 <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.haikuSubreddit)}>r/youtubehaiku</a>
                 {this.subredditsArray.map((subreddit, index) => (
                   <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSubreddit(subreddit)}>r/{subreddit}</a>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          <div className="sub-sort">
+            <div className="dropdown" >
+              <button className={dropdown.toggleSort} onClick={this.dropdownSort} type="button" >{this.state.sort}</button>
+              <div className={dropdown.menuSort} aria-labelledby="dropdownMenuButton">
+                {this.sorts.map((sort, index) => (
+                  <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSort(sort)}>{sort}</a>
                 ))}
               </div>
             </div>

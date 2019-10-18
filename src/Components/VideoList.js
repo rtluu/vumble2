@@ -10,6 +10,7 @@ const VideoListStyled = styled.div`
     
     .grid{
         display: grid;
+        align-items: stretch;
         grid-template-columns: 100%;
         justify-content: space-evenly;	
 
