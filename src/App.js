@@ -4,67 +4,75 @@ import VideoList from './Components/VideoList';
 import styled from "styled-components";
 
 const AppStyled = styled.div`
+  
+  // Header Styling Only
   header{
+    background: #2A2B2A;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    margin: 2rem 2.5%;
-    position: relative;
+    justify-content: flex-start;
+    padding: .75rem 1.5rem;
+    position: fixed;
+    width: 100%;
     z-index: 5;
 
-    @media (max-width: 60rem) {
-        margin: 2rem 3.33%;
-    }
+    img{
+      display: block;
+      max-width: 7rem;
 
-    @media (max-width: 40rem) {
-        margin: 1rem 5%;
-    }
+      @media (max-width: 50rem) {
+          max-width: 6rem;
+      }
 
-    .headline{
-      position: absolute;
-      left: 50%;
-      transform: translate(-50%);
     }
-
 
     .sub-sort{
-      display: inline-block;
+      display: flex;
+      flex-direction: row;
       position: relative;
+      margin-left: 1rem;
       
       .dropdown{
+        margin: 0 0.25rem;
         position: relative;
 
         .dropdown-toggle{
           align-items: center;
+          border-color: white;
+          color: white;
           display: flex;
           justify-content: center;
           font-size: 1.125rem;
           transition: all 0.1s;
 
+          @media (max-width: 50rem) {
+            font-size: 1rem;
+          }
+
           @media (hover: hover) {
             &:hover{
-              background: black;
-              color: white;
+              background: white;
+              color: black;
 
               .down-arrow{
-                border-color: white;
+                border-color: black;
               }
             }
           }
 
           &.active{
-            background: black;
-            color: white;
+            background: white;
+            color: black;
 
             .down-arrow{
-              border-color: white;
+              border-color: black;
             }
           }
 
           .down-arrow{
             box-sizing: border-box;
             border-style: solid;
-            border-color: black;
+            border-color: white;
             border-width: 0 0.125rem 0.125rem 0;
             display: inline-block;
             height: 0.5rem;
@@ -104,6 +112,9 @@ const AppStyled = styled.div`
     }
   }
 `
+
+
+const logo = require("./images/vumble-logo.svg");
 
 class App extends React.Component {
 
@@ -250,7 +261,7 @@ class App extends React.Component {
     return (
       <AppStyled>
         <header className="App-header">
-          <h1 className="headline">Vumble</h1>
+          <a href="/"><img alt="Vumble-Logo" src={logo} /></a>
           <div className="sub-sort">
             <div className="dropdown">
               <button className={dropdown.toggleSub} onClick={this.dropdownSub} type="button">r/{currentSubreddit}<span className="down-arrow" /></button>
@@ -264,10 +275,6 @@ class App extends React.Component {
                 ))}
               </div>
             </div>
-
-          </div>
-
-          <div className="sub-sort">
             <div className="dropdown" >
               <button className={dropdown.toggleSort} onClick={this.dropdownSort} type="button" >{this.state.sort}</button>
               <div className={dropdown.menuSort} aria-labelledby="dropdownMenuButton">

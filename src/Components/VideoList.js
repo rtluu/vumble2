@@ -7,6 +7,7 @@ const VideoListStyled = styled.div`
     align-items: center;
     flex-direction: column;
     justify-content: center;
+    padding-top: 3.75rem;
     
     .grid{
         display: grid;

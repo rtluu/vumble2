@@ -1,3 +1,3 @@
-# Vumble2
+# Vumble
 
 Rebuilding vumble.com
