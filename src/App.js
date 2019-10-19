@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 const AppStyled = styled.div`
   
-  // Header Styling Only
+  // Header Styling
   header{
     background: #2A2B2A;
     display: flex;
@@ -111,6 +111,25 @@ const AppStyled = styled.div`
       }
     }
   }
+
+  // Main Container
+  .main-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .pagination{
+      display: block;
+      margin: 2rem 0;
+      text-align: center;
+
+      .page-switch{
+        display: inline-block;
+        padding: 1rem;
+        position: relative;
+      }
+    }
+  }
 `
 
 
@@ -130,6 +149,7 @@ class App extends React.Component {
 
     this.dropdownSub = this.dropdownSub.bind(this);
     this.dropdownSort = this.dropdownSort.bind(this);
+    this.nextPage = this.nextPage.bind(this);
   }
 
   state = {
@@ -146,7 +166,6 @@ class App extends React.Component {
   componentDidMount() {
     this.changeSubreddit(this.state.currentSubreddit);
   }
-
   changeSubreddit(sub) {
     this.setState({
       files: [],
@@ -155,21 +174,16 @@ class App extends React.Component {
       dropdownOpen: false
     });
     fetch(this.url + 'r/' + sub + "/" + this.state.sort + '.json')
-
       .then(res => res.json())
       .then((data) => {
-
         var array = data.data.children;
         var index = 0;
         var files = [];
         for (index = 0; index < array.length; index++) {
           if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
             files.push(array[index])
-          } else {
-            console.log(array[index]);
           }
         }
-
         this.setState({
           files: files,
           after: data.data.after,
@@ -197,9 +211,6 @@ class App extends React.Component {
         for (index = 0; index < array.length; index++) {
           if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
             files.push(array[index])
-            console.log('pushed', array[index].data.domain);
-          } else {
-
           }
         }
 
@@ -209,6 +220,29 @@ class App extends React.Component {
           before: data.data.before
         });
         window.scrollTo(0, 0);
+      })
+      .catch(console.log)
+  }
+
+  nextPage = () => {
+    console.log(this.state.files);
+    fetch(this.url + 'r/' + this.state.currentSubreddit + "/" + this.state.sort + ".json?count=" + (this.state.page * 25) + "&after=" + this.state.after)
+      .then(res => res.json())
+      .then((data) => {
+        var array = data.data.children;
+        var index = 0;
+        var files = this.state.files;
+        for (index = 0; index < array.length; index++) {
+          if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
+            files.push(array[index])
+          }
+        }
+        this.setState(() => ({
+          files: files,
+          after: data.data.after,
+          before: data.data.before,
+          page: this.state.page + 1
+        }));
       })
       .catch(console.log)
   }
@@ -241,6 +275,24 @@ class App extends React.Component {
       currentSubreddit = "YouTube Haiku";
     } else {
       currentSubreddit = "" + this.state.currentSubreddit;
+    }
+
+    let contentJSX;
+    if (this.state.files.length > 0) {
+      let pagingJSX;
+      const buttonNext = <button className="next-button" type="submit" onClick={this.nextPage}>Next</button>;
+      if (this.state.before === null && this.state.after !== null) {
+        // first page
+        pagingJSX = <div>{buttonNext}</div>;
+      } else if (this.state.before !== null && this.state.after !== null) {
+        // in between pages
+        pagingJSX = <div className="page-switch"><span className="next-button">Page {this.state.page}</span> {buttonNext}</div>;
+      } else {
+        pagingJSX = <div className="page-switch">That's all the videos we found!</div>;
+      }
+      contentJSX = <div className="main-container"><VideoList files={this.state.files} /><div className="pagination">{pagingJSX}</div></div>;
+    } else {
+      contentJSX = <div className="main-container"><h3>No videos found 🧐</h3></div>;
     }
 
     var dropdown = {};
@@ -285,9 +337,7 @@ class App extends React.Component {
             </div>
           </div>
         </header>
-        <div>
-          <VideoList files={this.state.files} />
-        </div>
+        {contentJSX}
       </AppStyled>
     );
   }
