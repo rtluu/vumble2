@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import VideoList from './Components/VideoList';
 import styled from "styled-components";
+import { Waypoint } from 'react-waypoint';
 
 const AppStyled = styled.div`
   
@@ -153,19 +154,21 @@ class App extends React.Component {
   }
 
   state = {
-    currentSubreddit: 'videos',
+    currentSubreddit: 'woahdude',
     files: [],
     page: 1,
     after: null,
     before: null,
     sort: 'hot',
 
-    dropdownOpen: false,
+    dropdownOpen: false
   };
+
 
   componentDidMount() {
     this.changeSubreddit(this.state.currentSubreddit);
   }
+
   changeSubreddit(sub) {
     this.setState({
       files: [],
@@ -183,6 +186,12 @@ class App extends React.Component {
           if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
             files.push(array[index])
           }
+          else if (array[index].data.domain === "v.redd.it") {
+            files.push(array[index])
+          }
+          // else if (array[index].data.domain === "gfycat.com") {
+          //   files.push(array[index])
+          // }
         }
         this.setState({
           files: files,
@@ -212,8 +221,10 @@ class App extends React.Component {
           if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
             files.push(array[index])
           }
+          else if (array[index].data.domain === "v.redd.it") {
+            files.push(array[index])
+          }
         }
-
         this.setState({
           files: files,
           after: data.data.after,
@@ -225,7 +236,7 @@ class App extends React.Component {
   }
 
   nextPage = () => {
-    console.log(this.state.files);
+    console.log('newpage');
     fetch(this.url + 'r/' + this.state.currentSubreddit + "/" + this.state.sort + ".json?count=" + (this.state.page * 25) + "&after=" + this.state.after)
       .then(res => res.json())
       .then((data) => {
@@ -234,6 +245,9 @@ class App extends React.Component {
         var files = this.state.files;
         for (index = 0; index < array.length; index++) {
           if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
+            files.push(array[index])
+          }
+          else if (array[index].data.domain === "v.redd.it") {
             files.push(array[index])
           }
         }
@@ -280,13 +294,13 @@ class App extends React.Component {
     let contentJSX;
     if (this.state.files.length > 0) {
       let pagingJSX;
-      const buttonNext = <button className="next-button" type="submit" onClick={this.nextPage}>Next</button>;
+      const buttonNext = <button className="next-button" type="submit" onClick={this.nextPage}>More</button>;
       if (this.state.before === null && this.state.after !== null) {
         // first page
         pagingJSX = <div>{buttonNext}</div>;
       } else if (this.state.before !== null && this.state.after !== null) {
         // in between pages
-        pagingJSX = <div className="page-switch"><span className="next-button">Page {this.state.page}</span> {buttonNext}</div>;
+        pagingJSX = <div className="page-switch">{buttonNext}</div>;
       } else {
         pagingJSX = <div className="page-switch">That's all the videos we found!</div>;
       }
@@ -338,6 +352,9 @@ class App extends React.Component {
           </div>
         </header>
         {contentJSX}
+        <div className="waypoint">
+          {/* <Waypoint onEnter={this.nextPage()} /> */}
+        </div>
       </AppStyled>
     );
   }
