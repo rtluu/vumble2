@@ -238,27 +238,56 @@ export default class Player extends Component {
         var upvotes = post.ups;
         var url = post.url;
         var id = '';
+        var playerReadyUrl = '';
+        var playerReadyThumbnail = '';
 
-
-
-        if (url.includes('.be/')) {
-            id = url.split('.be/')[1];
-        } else if (url.includes('/embed/')) {
-            id = url.split('/embed/')[1];
-        } else {
-            id = url.split('v=')[1];
+        if (post.domain === "youtube.com" | post.domain === "youtu.be" | post.domain === "m.youtube.com" && !post.url.includes('/channel/') && !post.url.includes('/playlist')) {
+            if (url.includes('.be/')) {
+                id = url.split('.be/')[1];
+            } else if (url.includes('/embed/')) {
+                id = url.split('/embed/')[1];
+            } else {
+                id = url.split('v=')[1];
+            }
+            // console.log('post', post);
+            // console.log('id', id);
+            if (id.includes('&')) {
+                id = id.split('&')[0];
+            } else if (id.includes('?t')) {
+                id = id.split('?t')[0];
+            }
+            playerReadyUrl = 'https://www.youtube.com/watch?v=' + id
+            playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg'
+        } else if (post.domain === "v.redd.it") {
+            if (post.crosspost_parent) {
+                url = post.crosspost_parent_list[0].preview.images[0].source.url
+                playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
+            }
+            else {
+                url = post.preview.images[0].source.url
+                playerReadyUrl = post.media.reddit_video.fallback_url;
+            }
+            url = url.split('&amp;').join('&');
+            playerReadyThumbnail = url;
+        } else if (post.domain === "gfycat.com") {
+            if (post.crosspost_parent) {
+                url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
+            }
+            else {
+                url = post.media.oembed.thumbnail_url;
+            }
+            url = url.split('.com/')[1];
+            id = url.split('-size')[0];
+            playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
+            playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
         }
-        // console.log('post', post);
-        // console.log('id', id);
-        if (id.includes('&')) {
-            id = id.split('&')[0];
-        } else if (id.includes('?t')) {
-            id = id.split('?t')[0];
-        }
+
+
 
         this.state = {
             //Post
-            vidID: id,
+            url: playerReadyUrl,
+            thumbnail: playerReadyThumbnail,
             title: title,
             upvotes: upvotes,
             isExpanded: false,
@@ -266,7 +295,6 @@ export default class Player extends Component {
             //Player
             isPlaying: false,
             muted: true,
-            volume: 0,
             isReady: false,
             duration: 0,
             played: 0,
@@ -295,7 +323,6 @@ export default class Player extends Component {
 
     vidStop() {
         this.setState({ isPlaying: false });
-        this.setState({ volume: 0 });
         this.setState({ muted: true })
         this.setState({ isReady: false });
     }
@@ -303,13 +330,11 @@ export default class Player extends Component {
     expandVideo() {
         this.setState({ isExpanded: true });
         this.setState({ muted: false })
-        this.setState({ volume: 70 });
         this.setState({ isPlaying: true });
     }
 
     closeVideo() {
         this.setState({ isExpanded: false });
-        this.setState({ volume: 0 });
         this.setState({ muted: true })
         this.setState({ isReady: false });
     }
@@ -359,21 +384,21 @@ export default class Player extends Component {
 
         return (
             <VideoStyled>
-                {!this.props.gridView && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
+                {!this.props.gridView && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
                 <div className={player.expand}>
                     <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker}>
                         <button className={player.button}>Click to expand w/sound</button>
                     </div>
                     <div className="post-card">
                         <div className="thumbnail-container">
-                            <img className="thumbnail" src={'https://img.youtube.com/vi/' + this.state.vidID + '/0.jpg'} />
+                            <img className="thumbnail" src={this.state.thumbnail} />
                         </div>
                         <div className="player-container">
                             <div className="player-holder">
                                 <div className="player-inner">
                                     {this.state.isPlaying &&
                                         <ReactPlayer
-                                            url={'https://www.youtube.com/watch?v=' + this.state.vidID}
+                                            url={this.state.url}
                                             volume={this.state.volume}
                                             playing={this.state.isPlaying}
                                             controls={true}
@@ -395,7 +420,7 @@ export default class Player extends Component {
                         </div>
                     </div>
                 </div>
-                {!this.props.viewList && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
+                {!this.props.gridView && !this.state.isExpanded && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
             </VideoStyled >
         )
     }
