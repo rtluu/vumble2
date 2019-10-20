@@ -260,16 +260,27 @@ export default class Player extends Component {
             playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg'
         } else if (post.domain === "v.redd.it") {
             if (post.crosspost_parent) {
+                url = post.crosspost_parent_list[0].preview.images[0].source.url
                 playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
             }
             else {
+                url = post.preview.images[0].source.url
                 playerReadyUrl = post.media.reddit_video.fallback_url;
             }
-            playerReadyThumbnail = post.thumbnail;
+            url = url.split('&amp;').join('&');
+            playerReadyThumbnail = url;
+        } else if (post.domain === "gfycat.com") {
+            if (post.crosspost_parent) {
+                url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
+            }
+            else {
+                url = post.media.oembed.thumbnail_url;
+            }
+            url = url.split('.com/')[1];
+            id = url.split('-size')[0];
+            playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
+            playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
         }
-        // else if (post.domain === "gfycat.com") {
-        //     console.log(post);
-        // }
 
 
 

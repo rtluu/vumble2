@@ -154,7 +154,7 @@ class App extends React.Component {
   }
 
   state = {
-    currentSubreddit: 'woahdude',
+    currentSubreddit: 'videos',
     files: [],
     page: 1,
     after: null,
@@ -185,13 +185,11 @@ class App extends React.Component {
         for (index = 0; index < array.length; index++) {
           if (array[index].data.domain === "youtube.com" | array[index].data.domain === "youtu.be" | array[index].data.domain === "m.youtube.com" && !array[index].data.url.includes('/channel/') && !array[index].data.url.includes('/playlist')) {
             files.push(array[index])
-          }
-          else if (array[index].data.domain === "v.redd.it") {
+          } else if (array[index].data.domain === "v.redd.it") {
+            files.push(array[index])
+          } else if (array[index].data.domain === "gfycat.com") {
             files.push(array[index])
           }
-          // else if (array[index].data.domain === "gfycat.com") {
-          //   files.push(array[index])
-          // }
         }
         this.setState({
           files: files,
