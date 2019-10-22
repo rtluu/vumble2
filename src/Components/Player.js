@@ -132,6 +132,23 @@ const VideoStyled = styled.div`
             overflow: hidden;
             text-align: left;
 
+            &.youtube{
+                .thumbnail-container{
+                    .thumbnail{
+                        transform: translateY(-12.5%);
+                    }
+                }
+                .player-container{
+                    .player-holder{
+                        .player-inner{
+                            div{
+                                
+                            }
+                        }
+                    }
+                }
+            }
+
             .thumbnail-container{
                 overflow: hidden;
                 position: relative;
@@ -143,8 +160,7 @@ const VideoStyled = styled.div`
                     left: 0;
                     position: absolute;
                     right: 0;
-                    top: 0;
-                    transform: translateY(-12.5%);
+                    top: 0;                    
                     width: 100%;
                 }
             }
@@ -184,13 +200,17 @@ const VideoStyled = styled.div`
                         right: 0;
                         top: 0;  
                     }
+                    
                     div{
                         transform: translateY(-30.005%);
                         height: 250% !important;
                         width: 100% !important;
+
+                        video{
+                            background: black;
+                        }
                     }
- 
-                    
+
                     .time-box{
                         bottom: 0;
                         position: absolute;
@@ -237,38 +257,43 @@ export default class Player extends Component {
         var title = post.title;
         var upvotes = post.ups;
         var url = post.url;
+        var thumbnail = '';
         var id = '';
         var playerReadyUrl = '';
         var playerReadyThumbnail = '';
+        var isYT = false;
 
-        if (post.domain === "youtube.com" | post.domain === "youtu.be" | post.domain === "m.youtube.com" && !post.url.includes('/channel/') && !post.url.includes('/playlist')) {
+        if (post.domain === "youtube.com" | post.domain === "youtu.be" | post.domain === "m.youtube.com" && !post.url.includes('/channel/') && !post.url.includes('/playlist') && !post.url.includes('it.')) {
+            //Trim YouTube domain off of URL
+            isYT = true;
             if (url.includes('.be/')) {
                 id = url.split('.be/')[1];
             } else if (url.includes('/embed/')) {
                 id = url.split('/embed/')[1];
-            } else {
+            } else if (url.includes('v=')) {
                 id = url.split('v=')[1];
             }
-            // console.log('post', post);
-            // console.log('id', id);
+            //Pinpoint YouTube ID
             if (id.includes('&')) {
                 id = id.split('&')[0];
             } else if (id.includes('?t')) {
                 id = id.split('?t')[0];
             }
-            playerReadyUrl = 'https://www.youtube.com/watch?v=' + id
-            playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg'
+            playerReadyUrl = 'https://www.youtube.com/watch?v=' + id;
+            playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg';
         } else if (post.domain === "v.redd.it") {
+            //Determine if Reddit video is a Crosspost or Original
             if (post.crosspost_parent) {
-                url = post.crosspost_parent_list[0].preview.images[0].source.url
+
+                thumbnail = post.crosspost_parent_list[0].preview.images[0].source.url
                 playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
-            }
-            else {
-                url = post.preview.images[0].source.url
+            } else {
+                thumbnail = post.preview.images[0].source.url
                 playerReadyUrl = post.media.reddit_video.fallback_url;
             }
-            url = url.split('&amp;').join('&');
-            playerReadyThumbnail = url;
+            //Un-encode Thumbnail URL
+            thumbnail = thumbnail.split('&amp;').join('&');
+            playerReadyThumbnail = thumbnail;
         } else if (post.domain === "gfycat.com") {
             if (post.crosspost_parent) {
                 url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
@@ -291,6 +316,7 @@ export default class Player extends Component {
             title: title,
             upvotes: upvotes,
             isExpanded: false,
+            isYT: isYT,
 
             //Player
             isPlaying: false,
@@ -357,39 +383,44 @@ export default class Player extends Component {
 
 
     render() {
-        var player = {};
+        var post = {};
         if (this.state.isReady | this.state.isPlaying) {
-            player.button = 'expand-button show';
-            player.time = 'time-box show';
+            post.button = 'expand-button show';
+            post.time = 'time-box show';
         } else {
-            player.button = 'expand-button';
-            player.time = 'time-box';
+            post.button = 'expand-button';
+            post.time = 'time-box';
         }
         if (this.state.isExpanded) {
-            player.expand = 'post-block expanded';
-            player.mouseEnter = undefined;
-            player.mouseLeave = undefined;
-            player.blocker = this.closeVideo;
-            player.button = 'expand-button hide';
+            post.expand = 'post-block expanded';
+            post.mouseEnter = undefined;
+            post.mouseLeave = undefined;
+            post.blocker = this.closeVideo;
+            post.button = 'expand-button hide';
         } else {
-            player.expand = 'post-block';
-            player.mouseEnter = this.vidPlay;
-            player.mouseLeave = this.vidStop;
-            player.blocker = this.expandVideo;
+            post.expand = 'post-block';
+            post.mouseEnter = this.vidPlay;
+            post.mouseLeave = this.vidStop;
+            post.blocker = this.expandVideo;
         }
         if (!this.props.gridView) {
-            player.mouseEnter = undefined;
-            player.mouseLeave = undefined;
+            post.mouseEnter = undefined;
+            post.mouseLeave = undefined;
+        }
+        if (this.state.isYT) {
+            post.card = 'post-card youtube';
+        } else {
+            post.card = 'post-card gifv';
         }
 
         return (
             <VideoStyled>
                 {!this.props.gridView && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
-                <div className={player.expand}>
-                    <div className="iframe-blocker" onMouseEnter={player.mouseEnter} onMouseLeave={player.mouseLeave} onClick={player.blocker}>
-                        <button className={player.button}>Click to expand w/sound</button>
+                <div className={post.expand}>
+                    <div className="iframe-blocker" onMouseEnter={post.mouseEnter} onMouseLeave={post.mouseLeave} onClick={post.blocker}>
+                        <button className={post.button}>Click to expand w/sound</button>
                     </div>
-                    <div className="post-card">
+                    <div className={post.card}>
                         <div className="thumbnail-container">
                             <img className="thumbnail" src={this.state.thumbnail} />
                         </div>
@@ -409,7 +440,7 @@ export default class Player extends Component {
                                         />
                                     }
                                 </div>
-                                <span className={player.time}>
+                                <span className={post.time}>
                                     <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
                                 </span>
                             </div>
