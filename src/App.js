@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import './App.css';
 import VideoList from './Components/VideoList';
@@ -9,106 +10,193 @@ const AppStyled = styled.div`
   // Header Styling
   header{
     background: #2A2B2A;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    padding: .75rem 1.5rem;
+    
     position: fixed;
     width: 100%;
     z-index: 5;
 
-    img{
-      display: block;
-      max-width: 7rem;
-
-      @media (max-width: 50rem) {
-          max-width: 6rem;
-      }
-
-    }
-
-    .sub-sort{
+    .header-options{
       display: flex;
+      box-sizing: border-box;
       flex-direction: row;
-      position: relative;
-      margin-left: 1rem;
-      
-      .dropdown{
-        margin: 0 0.25rem;
-        position: relative;
+      justify-content: space-between;
+      padding: 0.75rem 1.5rem;
+      width: 100%;
 
-        .dropdown-toggle{
-          align-items: center;
-          border-color: white;
-          color: white;
-          display: flex;
-          justify-content: center;
-          font-size: 1.125rem;
-          transition: all 0.1s;
+      img{
+        display: block;
+        max-width: 7rem;
+  
+        @media (max-width: 50rem) {
+            max-width: 6rem;
+        }
+  
+      }
+  
+      .subreddit-container{
+        display: flex;
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 20rem;
+        width: 50%;
 
-          @media (max-width: 50rem) {
-            font-size: 1rem;
-          }
-
-          @media (hover: hover) {
-            &:hover{
-              background: white;
-              color: black;
-
-              .down-arrow{
-                border-color: black;
+        &.search{
+          .subreddit-holder{
+            .dropdown{
+              .search-bar{
+                display: block;
+                border-radius: 0 0.25rem 0.25rem 0;
+                position: relative;
+                pointer-events: all;
+                top: auto;
+                opacity: 1;
+                z-index: 2;
+              }
+              .dropdown-toggle{
+                display: none;
               }
             }
           }
-
-          &.active{
+          .search-toggle{
             background: white;
-            color: black;
+            border: 0.0675rem solid white;
 
-            .down-arrow{
-              border-color: black;
-            }
-          }
-
-          .down-arrow{
-            box-sizing: border-box;
-            border-style: solid;
-            border-color: white;
-            border-width: 0 0.125rem 0.125rem 0;
-            display: inline-block;
-            height: 0.5rem;
-            margin-left: 0.25rem;
-            transform: rotate(45deg) translateY(-0.0675rem);
-            width: 0.5rem;
-            transition: all 0.1s;
+              .search-icon{
+                filter: brightness(0%);
+              }
           }
         }
-    
-        .dropdown-menu{
-          background: white;
+        
+        .subreddit-holder{
+          align-items: center;
+          background: #F2F2F2;
           border-radius: 0.25rem;
-          box-shadow: 0 0.125rem 0.25rem 0 rgba(0,0,0,0.5);
-          display: none;
-          flex-direction: column;
-          position: absolute;
+          display: flex;
+          flex-direction: row;
+          position: relative;
+          width: 100%;
 
-          &.open{
-            display: flex;
+          .r-slash{
+            background: #C4C4C4;
+            border-radius: 0.25rem 0 0 0.25rem;
+            color: black;
+            height: 100%;
+            padding: 0 0.5rem;
           }
 
-          .dropdown-item{
-            color: black;
-            padding: 0.5rem;
-            font-size: 1.125rem;
+          .dropdown{
+            height: 100%;
+            position: relative;
+            flex-grow: 1;
 
-            @media (hover: hover) {
-              &:hover{
-                background: black;
-                color: white;
+            .search-bar{
+              height: 100%;
+              position: absolute;
+              pointer-events: none;
+              top: -1000%;
+              opacity: 0;
+              flex-grow: 1;
+  
+              input{
+                box-sizing: border-box;
+                border-radius: 0 0.25rem 0.25rem 0;
+                border: none;
+                height: 100%;
+                outline: none;
+                position: relative;
+                width: 100%;
+                padding: 0 0.375rem !important;
+              }
+
+              .search-icon{
+                height: 1rem;
+                position: absolute;
+                right: 0.375rem;
+                top: 50%;
+                width: 1rem;
+                transform: translateY(-50%);
               }
             }
+    
+            .dropdown-toggle{
+              align-items: center;
+              border: none;
+              border-radius: 0 0.25rem 0.25rem 0;
+              display: flex;
+              height: 100%;
+              justify-content: space-between;
+              padding: 0 0.375rem;
+              position: relative;
+              text-align: left;
+              transition: all 0.1s;
+              width: 100%;    
+              z-index: 2;
+    
+              @media (max-width: 50rem) {
+                font-size: 1rem;
+              }
+    
+              @media (hover: hover) {
+                &:hover{
+                  background: white;
+                  color: black;
+    
+                  .down-arrow{
+                    border-color: black;
+                  }
+                }
+              }
+    
+              &.active{
+                background: white;
+                color: black;
+                border-radius: 0 0.25rem 0 0;
+    
+                .down-arrow{
+                  border-color: black;
+                }
+              }
+    
+              .down-arrow{
+                display: inline-block;
+                height: 0.375rem;
+                width: 0.75rem;
+                transition: all 0.1s;
+              }
+            }
+
+            .dropdown-menu{
+              background: white;
+              border-radius: 0 0 0.25rem 0.25rem;
+              box-shadow: 0 0.125rem 0.25rem 0 rgba(0,0,0,0.5);
+              display: none;
+              flex-direction: column;
+              min-width: 10rem;
+              position: absolute;
+              width: 100%;
+              z-index: 1;
+    
+              &.open{
+                display: flex;
+              }
+    
+              .dropdown-item{
+                color: black;
+                padding: 0.5rem;
+                font-size: 1rem;
+    
+                @media (hover: hover) {
+                  &:hover{
+                    background: #2A2B2A;
+                    color: white;
+                  }
+                }
+              }
+            } 
           }
-        } 
+        }
       }
     }
   }
@@ -135,6 +223,8 @@ const AppStyled = styled.div`
 
 
 const logo = require("./images/vumble-logo.svg");
+const downArrow = require("./images/down-arrow.svg");
+const search = require("./images/search.svg");
 
 class App extends React.Component {
 
@@ -148,20 +238,26 @@ class App extends React.Component {
     this.url = 'https://www.reddit.com/';
     this.sorts = ['hot', 'new', 'top'];
 
-    this.dropdownSub = this.dropdownSub.bind(this);
+    this.subDropdownOpen = this.subDropdownOpen.bind(this);
+    this.subDropdownClose = this.subDropdownClose.bind(this);
     this.dropdownSort = this.dropdownSort.bind(this);
     this.nextPage = this.nextPage.bind(this);
+    this.searchActive = this.searchActive.bind(this);
+    this.closeSearch = this.closeSearch.bind(this);
+    this.textInput = null;
   }
 
   state = {
-    currentSubreddit: 'videos',
+    currentSubreddit: 'all',
     files: [],
     page: 1,
     after: null,
     before: null,
     sort: 'hot',
 
-    dropdownOpen: false
+    subDropdown: false,
+    searchActive: false,
+    term: '',
   };
 
 
@@ -174,7 +270,7 @@ class App extends React.Component {
       files: [],
       currentSubreddit: sub,
       page: 1,
-      dropdownOpen: false
+      subDropdown: false
     });
     fetch(this.url + 'r/' + sub + "/" + this.state.sort + '.json')
       .then(res => res.json())
@@ -199,6 +295,7 @@ class App extends React.Component {
         window.scrollTo(0, 0);
       })
       .catch(console.log)
+    this.subDropdownClose();
   }
 
   changeSort(sort) {
@@ -206,7 +303,7 @@ class App extends React.Component {
       files: [],
       sort: sort,
       page: 1,
-      dropdownOpen: false
+      subDropdown: false
     })
     fetch(this.url + 'r/' + this.state.currentSubreddit + "/" + sort + '.json')
       .then(res => res.json())
@@ -234,7 +331,6 @@ class App extends React.Component {
   }
 
   nextPage = () => {
-    console.log('newpage');
     fetch(this.url + 'r/' + this.state.currentSubreddit + "/" + this.state.sort + ".json?count=" + (this.state.page * 25) + "&after=" + this.state.after)
       .then(res => res.json())
       .then((data) => {
@@ -267,24 +363,55 @@ class App extends React.Component {
     }
   }
 
-  dropdownSub() {
-    this.setState({ dropdownSub: !this.state.dropdownSub });
+  subDropdownOpen() {
+    this.setState({ subDropdown: true });
+  }
+
+  subDropdownClose() {
+    this.setState({ subDropdown: false });
+    this.setState({ searchActive: false });
+  }
+
+
+  searchActive() {
+    this.setState({ searchActive: !this.state.searchActive });
+    this.textInput.focus();
+    document.addEventListener('mousedown', this.handleClick, false);
+  }
+
+  closeSearch() {
+    this.setState({ searchActive: false });
+    this.setState({ subDropdown: false });
+    document.removeEventListener('mousedown', this.handleClick, false);
+  }
+
+  handleClick = (e) => {
+    if (this.node.contains(e.target)) {
+      return;
+    }
+    this.closeSearch();
   }
 
   dropdownSort() {
     this.setState({ dropdownSort: !this.state.dropdownSort });
   }
 
+  search(term) {
+    this.setState({ term });
+    this.searchSubreddit(term);
+  }
+
   render() {
+    const searchSubreddit = _.debounce((term) => { this.searchSubreddit(term) }, 600);
     let currentSubreddit;
     if (this.state.currentSubreddit === this.videosSubreddit) {
-      currentSubreddit = "Videos";
+      currentSubreddit = "videos";
     } else if (this.state.currentSubreddit === this.documentarySubreddit) {
-      currentSubreddit = "Documentaries";
+      currentSubreddit = "documentaries";
     } else if (this.state.currentSubreddit === this.artisanSubreddit) {
-      currentSubreddit = "Artisan Videos";
+      currentSubreddit = "artisanvideos";
     } else if (this.state.currentSubreddit === this.haikuSubreddit) {
-      currentSubreddit = "YouTube Haiku";
+      currentSubreddit = "youtubehaiku";
     } else {
       currentSubreddit = "" + this.state.currentSubreddit;
     }
@@ -308,7 +435,7 @@ class App extends React.Component {
     }
 
     var dropdown = {};
-    if (this.state.dropdownSub) {
+    if (this.state.subDropdown) {
       dropdown.toggleSub = "dropdown-toggle active"
       dropdown.menuSub = "dropdown-menu open"
     } else {
@@ -322,30 +449,56 @@ class App extends React.Component {
       dropdown.toggleSort = "dropdown-toggle"
       dropdown.menuSort = "dropdown-menu"
     }
+
+    var subreddit = {}
+    if (this.state.searchActive) {
+      subreddit.container = "subreddit-container search"
+    } else {
+      subreddit.container = "subreddit-container"
+    }
+
     return (
       <AppStyled>
         <header className="App-header">
-          <a href="/"><img alt="Vumble-Logo" src={logo} /></a>
-          <div className="sub-sort">
-            <div className="dropdown">
-              <button className={dropdown.toggleSub} onClick={this.dropdownSub} type="button">r/{currentSubreddit}<span className="down-arrow" /></button>
-              <div className={dropdown.menuSub}>
-                <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.videosSubreddit)}>r/videos</a>
-                <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.documentarySubreddit)}>r/documentaries</a>
-                <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.artisanSubreddit)}>r/artisanvideos</a>
-                <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.haikuSubreddit)}>r/youtubehaiku</a>
-                {this.subredditsArray.map((subreddit, index) => (
-                  <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSubreddit(subreddit)}>r/{subreddit}</a>
-                ))}
+          <div className="header-options">
+            <a href="/"><img alt="Vumble-Logo" src={logo} /></a>
+            <div className={subreddit.container}>
+              <div className="subreddit-holder">
+                <span className="r-slash"><h2>r/</h2></span>
+                <div className="dropdown" ref={node => this.node = node} >
+                  <button className={dropdown.toggleSub} onClick={() => { this.subDropdownOpen(); this.searchActive() }} type="button"><h2>{currentSubreddit}</h2><img className="down-arrow" src={downArrow} /></button>
+                  <div className="search-bar">
+                    <input type="text" className="form-control"
+                      onChange={event => this.search(event.target.value)}
+                      value={this.state.term}
+                      name="search"
+                      placeholder="Start typing..."
+                      ref={elem => (this.textInput = elem)}
+                      autocomplete="off" />
+                    <img className="search-icon" src={search} />
+                  </div>
+                  <div className={dropdown.menuSub}>
+                    <a className="dropdown-item" href="#subChange" onClick={() => { this.changeSubreddit(this.videosSubreddit); this.subDropdownClose() }}>r/videos</a>
+                    <a className="dropdown-item" href="#subChange" onClick={() => { this.changeSubreddit(this.documentarySubreddit); this.subDropdownClose() }}>r/documentaries</a>
+                    <a className="dropdown-item" href="#subChange" onClick={() => { this.changeSubreddit(this.artisanSubreddit); this.subDropdownClose() }}>r/artisanvideos</a>
+                    <a className="dropdown-item" href="#subChange" onClick={() => { this.changeSubreddit(this.haikuSubreddit); this.subDropdownClose() }}>r/youtubehaiku</a>
+                    {this.subredditsArray.map((subreddit, index) => (
+                      <a className="dropdown-item" key={index} href="#subChange" onClick={() => { this.changeSubreddit(subreddit); this.subDropdownClose() }}>r/{subreddit}</a>
+                    ))}
+                  </div>
+                </div>
               </div>
+              {/* <div className="dropdown" >
+                <button className={dropdown.toggleSort} onClick={this.dropdownSort} type="button" >{this.state.sort}</button>
+                <div className={dropdown.menuSort} aria-labelledby="dropdownMenuButton">
+                  {this.sorts.map((sort, index) => (
+                    <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSort(sort)}>{sort}</a>
+                  ))}
+                </div>
+              </div> */}
             </div>
-            <div className="dropdown" >
-              <button className={dropdown.toggleSort} onClick={this.dropdownSort} type="button" >{this.state.sort}</button>
-              <div className={dropdown.menuSort} aria-labelledby="dropdownMenuButton">
-                {this.sorts.map((sort, index) => (
-                  <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSort(sort)}>{sort}</a>
-                ))}
-              </div>
+            <div className="menu">
+              <button>Menu</button>
             </div>
           </div>
         </header>

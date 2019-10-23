@@ -21,6 +21,11 @@ h1{
   font-size: 2rem;
 }
 
+h2{
+  font-size: 1.125rem;
+  margin: 0.375rem 0;
+}
+
 h3{
   font-size: 1rem;
   margin: 0.25rem 0;
@@ -37,7 +42,6 @@ p{
 
 button{
   background: none;
-  border-radius: 0.25rem;
   box-shadow: none;
   cursor: pointer;
   outline: none;
@@ -45,4 +49,8 @@ button{
 
 a{
   text-decoration: none;
+}
+
+input{
+  font-size: 1.125rem;
 }
