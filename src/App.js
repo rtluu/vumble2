@@ -23,14 +23,21 @@ const AppStyled = styled.div`
       padding: 0.75rem 1.5rem;
       width: 100%;
 
-      img{
-        display: block;
-        max-width: 7rem;
-  
+      .logo-holder{
         @media (max-width: 50rem) {
-            max-width: 6rem;
+          overflow: hidden;
+          max-width: 1.75rem;
         }
-  
+
+        img{
+          display: block;
+          max-width: 7rem;
+    
+          @media (max-width: 50rem) {
+              max-width: 6rem;
+          }
+    
+        }
       }
   
       .subreddit-container{
@@ -461,7 +468,7 @@ class App extends React.Component {
       <AppStyled>
         <header className="App-header">
           <div className="header-options">
-            <a href="/"><img alt="Vumble-Logo" src={logo} /></a>
+            <div className="logo-holder"><a href="/"><img alt="Vumble-Logo" src={logo} /></a></div>
             <div className={subreddit.container}>
               <div className="subreddit-holder">
                 <span className="r-slash"><h2>r/</h2></span>
