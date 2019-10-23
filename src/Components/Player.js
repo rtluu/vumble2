@@ -284,8 +284,11 @@ export default class Player extends Component {
         } else if (post.domain === "v.redd.it") {
             //Determine if Reddit video is a Crosspost or Original
             if (post.crosspost_parent) {
-
-                thumbnail = post.crosspost_parent_list[0].preview.images[0].source.url
+                if (post.crosspost_parent_list[0].preview) {
+                    thumbnail = post.crosspost_parent_list[0].preview.images[0].source.url;
+                } else {
+                    thumbnail = post.thumbnail;
+                }
                 playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
             } else {
                 thumbnail = post.preview.images[0].source.url
