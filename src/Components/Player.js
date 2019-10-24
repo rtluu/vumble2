@@ -113,10 +113,11 @@ const VideoStyled = styled.div`
                 padding: 0.25rem 0.5rem;
                 transition: all 0.2s;
 
-                &:hover{ 
-                    background: rgba(0,0,0,0.8);
+                @media (hover: hover) {
+                    &:hover{ 
+                        background: rgba(0,0,0,0.8);
+                    }
                 }
-
 
                 &.hide{
                     display: none;

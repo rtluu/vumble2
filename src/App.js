@@ -16,12 +16,22 @@ const AppStyled = styled.div`
     z-index: 5;
 
     .header-options{
+      align-items: center;
       display: flex;
       box-sizing: border-box;
       flex-direction: row;
       justify-content: space-between;
-      padding: 0.75rem 1.5rem;
+      padding:  1rem 2% 1rem 2%;
+      max-width: 72rem;
       width: 100%;
+
+      @media (max-width: 60rem) {
+        padding:  1rem 3.33% 1rem 3.33%;
+      }
+
+      @media (max-width: 40rem) {
+        padding:  1rem 5% 1rem 5%;
+      }
 
       .logo-holder{
         @media (max-width: 50rem) {
@@ -36,7 +46,6 @@ const AppStyled = styled.div`
           @media (max-width: 50rem) {
               max-width: 6rem;
           }
-    
         }
       }
   
@@ -51,7 +60,7 @@ const AppStyled = styled.div`
 
         &.search{
           .subreddit-holder{
-            .dropdown{
+            .subreddit-dropdown{
               .search-bar{
                 display: block;
                 border-radius: 0 0.25rem 0.25rem 0;
@@ -93,7 +102,7 @@ const AppStyled = styled.div`
             padding: 0 0.5rem;
           }
 
-          .dropdown{
+          .subreddit-dropdown{
             height: 100%;
             position: relative;
             flex-grow: 1;
@@ -172,40 +181,170 @@ const AppStyled = styled.div`
                 width: 0.75rem;
                 transition: all 0.1s;
               }
-            }
 
-            .dropdown-menu{
-              background: white;
-              border-radius: 0 0 0.25rem 0.25rem;
-              box-shadow: 0 0.125rem 0.25rem 0 rgba(0,0,0,0.5);
-              display: none;
-              flex-direction: column;
-              min-width: 10rem;
-              position: absolute;
-              width: 100%;
-              z-index: 1;
-    
-              &.open{
-                display: flex;
-              }
-    
-              .dropdown-item{
-                color: black;
-                padding: 0.5rem;
-                font-size: 1rem;
-    
-                @media (hover: hover) {
-                  &:hover{
-                    background: #2A2B2A;
-                    color: white;
-                  }
-                }
+              .dropdown-menu{
+                min-width: 10rem;
               }
             } 
           }
         }
+
+        .dropdown-menu{
+          background: white;
+          border-radius: 0 0 0.25rem 0.25rem;
+          box-shadow: 0 0.125rem 0.25rem 0 rgba(0,0,0,0.5);
+          display: none;
+          flex-direction: column;
+          position: absolute;
+          width: 100%;
+          z-index: 1;
+
+          &.open{
+            display: flex;
+          }
+
+          .dropdown-item{
+            color: black;
+            padding: 0.5rem;
+            font-size: 1rem;
+
+            @media (hover: hover) {
+              &:hover{
+                background: #2A2B2A;
+                color: white;
+              }
+            }
+          }
+        }
+
+      }
+
+      .menu{
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        padding: 0.75rem 0.25rem;
+
+        @media (hover: hover) {
+          &:hover{ 
+              .circle{
+                background: white;
+              }
+          }
+        }
+
+        .circle{
+          align-items: center;
+          background: #C4C4C4;
+          border-radius: 50%;
+          display: block;
+          justify-content: center;
+          height: 0.375rem;
+          margin: 0.1rem;
+          width: 0.375rem;
+          transition: all 0.2s;
+        }
       }
     }
+  }
+
+  .filter-bar{
+    background: #2A2B2A;
+    border-top: 0.0675rem solid #333333;
+    display: inline-block;
+    margin-top: 4.25rem;
+    position: relative;
+    width: 100%;
+
+    @media (max-width: 50rem) {
+      margin-top: 4.0625rem;
+    }
+
+    .filter-container{
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      padding: 0.25rem 0;
+      position: relative;
+
+      .filter{
+        align-items: center;
+        display flex;
+        flex-direction: row;
+        position: relative;
+        
+        h6{
+          color: #555555;
+          font-size: 0.875rem;
+          font-weight: 600;
+        }
+
+        .sort-dropdown{
+          margin-left: 0.25rem;
+          
+          .dropdown-toggle{
+            border: 0;
+            opacity: 0.25;
+            padding: 0.125rem 0.5rem;
+            transition: all 0.1s;
+
+            @media (hover: hover) {
+              &:hover{ 
+                opacity: 0.7;
+              }
+            }            
+
+            div{
+              align-items: center;
+              display: flex;
+              img{
+                width: 0.75rem;
+              }
+
+              p{
+                color: white;
+                font-size: 1.125rem;
+                font-weight: 600;
+                margin-left: 0.375rem;
+                text-transform: capitalize;
+              }
+            }
+          }
+          .dropdown-menu{
+            background: white;
+            border-radius: 0 0 0.25rem 0.25rem;
+            box-shadow: 0 0.125rem 0.25rem 0 rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            width: 100%;
+            z-index: 1;
+      
+            &.open{
+              display: flex;
+            }
+      
+            .dropdown-item{
+              color: black;
+              padding: 0.5rem;
+              font-size: 1rem;
+              text-transform: capitalize;
+      
+              @media (hover: hover) {
+                &:hover{
+                  background: #2A2B2A;
+                  color: white;
+                }
+              }
+            }
+          }
+        }
+      }
+      
+    }
+
+    
   }
 
   // Main Container
@@ -228,11 +367,6 @@ const AppStyled = styled.div`
   }
 `
 
-
-const logo = require("./images/vumble-logo.svg");
-const downArrow = require("./images/down-arrow.svg");
-const search = require("./images/search.svg");
-
 class App extends React.Component {
 
   constructor(props) {
@@ -243,7 +377,7 @@ class App extends React.Component {
     this.haikuSubreddit = 'youtubehaiku';
     this.subredditsArray = ['mealtimevideos', 'music', 'woahdude'];
     this.url = 'https://www.reddit.com/';
-    this.sorts = ['hot', 'new', 'top'];
+    this.sorts = ['hot', 'new', 'top', 'rising'];
 
     this.subDropdownOpen = this.subDropdownOpen.bind(this);
     this.subDropdownClose = this.subDropdownClose.bind(this);
@@ -252,6 +386,8 @@ class App extends React.Component {
     this.searchActive = this.searchActive.bind(this);
     this.closeSearch = this.closeSearch.bind(this);
     this.textInput = null;
+    this.setList = this.setList.bind(this);
+    this.setGrid = this.setGrid.bind(this);
   }
 
   state = {
@@ -261,10 +397,10 @@ class App extends React.Component {
     after: null,
     before: null,
     sort: 'hot',
-
     subDropdown: false,
     searchActive: false,
     term: '',
+    gridView: true
   };
 
 
@@ -277,7 +413,7 @@ class App extends React.Component {
       files: [],
       currentSubreddit: sub,
       page: 1,
-      subDropdown: false
+      subDropdown: false,
     });
     fetch(this.url + 'r/' + sub + "/" + this.state.sort + '.json')
       .then(res => res.json())
@@ -310,7 +446,7 @@ class App extends React.Component {
       files: [],
       sort: sort,
       page: 1,
-      subDropdown: false
+      subDropdown: false,
     })
     fetch(this.url + 'r/' + this.state.currentSubreddit + "/" + sort + '.json')
       .then(res => res.json())
@@ -403,6 +539,14 @@ class App extends React.Component {
     this.setState({ dropdownSort: !this.state.dropdownSort });
   }
 
+  setList() {
+    this.setState({ gridView: false });
+  }
+
+  setGrid() {
+    this.setState({ gridView: true });
+  }
+
   search(term) {
     this.setState({ term });
     this.searchSubreddit(term);
@@ -410,6 +554,22 @@ class App extends React.Component {
 
   render() {
     const searchSubreddit = _.debounce((term) => { this.searchSubreddit(term) }, 600);
+    const logo = require("./images/vumble-logo.svg");
+    const downArrow = require("./images/down-arrow.svg");
+    const search = require("./images/search.svg");
+
+    var icon = require("./images/hot.svg");
+
+    if (this.state.sort === 'hot') {
+      icon = require("./images/hot.svg");
+    } else if (this.state.sort === 'new') {
+      icon = require("./images/new.svg");
+    } else if (this.state.sort === 'top') {
+      icon = require("./images/top.svg");
+    } else if (this.state.sort === 'rising') {
+      icon = require("./images/rising.svg");
+    }
+
     let currentSubreddit;
     if (this.state.currentSubreddit === this.videosSubreddit) {
       currentSubreddit = "videos";
@@ -436,7 +596,10 @@ class App extends React.Component {
       } else {
         pagingJSX = <div className="page-switch">That's all the videos we found!</div>;
       }
-      contentJSX = <div className="main-container"><VideoList files={this.state.files} /><div className="pagination">{pagingJSX}</div></div>;
+      contentJSX = <div className="main-container">
+        <VideoList files={this.state.files} gridView={this.state.gridView} />
+        <div className="pagination">{pagingJSX}</div>
+      </div>;
     } else {
       contentJSX = <div className="main-container"><h3>No videos found 🧐</h3></div>;
     }
@@ -472,7 +635,7 @@ class App extends React.Component {
             <div className={subreddit.container}>
               <div className="subreddit-holder">
                 <span className="r-slash"><h2>r/</h2></span>
-                <div className="dropdown" ref={node => this.node = node} >
+                <div className="subreddit-dropdown" ref={node => this.node = node} >
                   <button className={dropdown.toggleSub} onClick={() => { this.subDropdownOpen(); this.searchActive() }} type="button"><h2>{currentSubreddit}</h2><img className="down-arrow" src={downArrow} /></button>
                   <div className="search-bar">
                     <input type="text" className="form-control"
@@ -495,20 +658,35 @@ class App extends React.Component {
                   </div>
                 </div>
               </div>
-              {/* <div className="dropdown" >
-                <button className={dropdown.toggleSort} onClick={this.dropdownSort} type="button" >{this.state.sort}</button>
+            </div>
+            <div className="menu">
+              <span className="circle" />
+              <span className="circle" />
+              <span className="circle" />
+            </div>
+          </div>
+        </header>
+        <div className="filter-bar">
+          <div className="filter-container">
+            <div className="filter">
+              <div className='layout-switch'>
+                <button onClick={this.setGrid}>Grid</button>
+                <button onClick={this.setList}>List</button>
+              </div>
+            </div>
+            <div className="filter">
+              <h6>SORT</h6>
+              <div className="sort-dropdown" >
+                <button className={dropdown.toggleSort} onClick={this.dropdownSort} type="button" ><div><img src={icon} /><p>{this.state.sort}</p></div></button>
                 <div className={dropdown.menuSort} aria-labelledby="dropdownMenuButton">
                   {this.sorts.map((sort, index) => (
                     <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSort(sort)}>{sort}</a>
                   ))}
                 </div>
-              </div> */}
-            </div>
-            <div className="menu">
-              <button>Menu</button>
+              </div>
             </div>
           </div>
-        </header>
+        </div>
         {contentJSX}
         <div className="waypoint">
           {/* <Waypoint onEnter={this.nextPage()} /> */}
