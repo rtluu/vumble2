@@ -7,13 +7,15 @@ const VideoListStyled = styled.div`
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    padding-top: 3.75rem;
+    padding-top: 1rem;
     
     .grid{
         display: grid;
         align-items: stretch;
         grid-template-columns: 100%;
         justify-content: space-evenly;	
+        max-width: 72rem;
+        width: 100%;
 
         &.column{
             grid-template-columns: 30% 30% 30%;
@@ -37,24 +39,15 @@ export default class VideoList extends Component {
         super(props);
 
         this.state = {
-            gridView: true
+
         };
-
-        this.setList = this.setList.bind(this);
-        this.setGrid = this.setGrid.bind(this);
     }
 
-    setList() {
-        this.setState({ gridView: false });
-    }
 
-    setGrid() {
-        this.setState({ gridView: true });
-    }
 
     render() {
         var grid = {};
-        if (this.state.gridView) {
+        if (this.props.gridView) {
             grid.class = 'grid column';
         } else {
             grid.class = 'grid';
@@ -62,13 +55,9 @@ export default class VideoList extends Component {
         const files = this.props.files;
         return (
             <VideoListStyled>
-                <div className='layout-switch'>
-                    <button onClick={this.setGrid}>Grid</button>
-                    <button onClick={this.setList}>List</button>
-                </div>
                 <div className={grid.class}>
                     {files.map((file) => (
-                        <Player key={file.data.id} file={file} gridView={this.state.gridView} />
+                        <Player key={file.data.id} file={file} gridView={this.props.gridView} />
                     ))}
                 </div>
             </VideoListStyled>
