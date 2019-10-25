@@ -57,7 +57,7 @@ export default class VideoList extends Component {
             <VideoListStyled>
                 <div className={grid.class}>
                     {files.map((file) => (
-                        <Player key={file.data.id} file={file} gridView={this.state.gridView} />
+                        <Player key={file.data.id} file={file} gridView={this.props.gridView} />
                     ))}
                 </div>
             </VideoListStyled>

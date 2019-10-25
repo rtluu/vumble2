@@ -284,19 +284,27 @@ export default class Player extends Component {
             playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg';
         } else if (post.domain === "v.redd.it") {
             //Determine if Reddit video is a Crosspost or Original
-            if (post.crosspost_parent) {
-                if (post.crosspost_parent_list[0].preview) {
-                    thumbnail = post.crosspost_parent_list[0].preview.images[0].source.url;
+            if (post.thumbnail) {
+                if (post.crosspost_parent) {
+                    if (post.crosspost_parent_list[0].preview) {
+                        thumbnail = post.crosspost_parent_list[0].preview.images[0].source.url;
+                    } else {
+                        thumbnail = post.thumbnail;
+                    }
+                    playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
                 } else {
-                    thumbnail = post.thumbnail;
+                    console.log([post]);
+                    if (post.preview.images[0]) {
+                        thumbnail = post.preview.images[0].source.url;
+                    } else {
+                        thumbnail = post.thumbnail;
+                    }
+                    playerReadyUrl = post.media.reddit_video.fallback_url;
                 }
-                playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
-            } else {
-                thumbnail = post.preview.images[0].source.url
-                playerReadyUrl = post.media.reddit_video.fallback_url;
+                //Un-encode Thumbnail URL
+                thumbnail = thumbnail.split('&amp;').join('&');
             }
-            //Un-encode Thumbnail URL
-            thumbnail = thumbnail.split('&amp;').join('&');
+
             playerReadyThumbnail = thumbnail;
         } else if (post.domain === "gfycat.com") {
             if (post.crosspost_parent) {

@@ -13,7 +13,7 @@ const AppStyled = styled.div`
     
     position: fixed;
     width: 100%;
-    z-index: 5;
+    z-index: 12;
 
     .header-options{
       align-items: center;
@@ -21,16 +21,16 @@ const AppStyled = styled.div`
       box-sizing: border-box;
       flex-direction: row;
       justify-content: space-between;
-      padding:  1rem 2% 1rem 2%;
+      padding:  0.75rem 2% 0.75rem 2%;
       max-width: 72rem;
       width: 100%;
 
       @media (max-width: 60rem) {
-        padding:  1rem 3.33% 1rem 3.33%;
+        padding:  0.75rem 3.33% 0.75rem 3.33%;
       }
 
       @media (max-width: 40rem) {
-        padding:  1rem 5% 1rem 5%;
+        padding:  0.75rem 5% 0.75rem 5%;
       }
 
       .logo-holder{
@@ -253,12 +253,13 @@ const AppStyled = styled.div`
     background: #2A2B2A;
     border-top: 0.0675rem solid #333333;
     display: inline-block;
-    margin-top: 4.25rem;
+    margin-top: 3.75rem;
     position: relative;
     width: 100%;
+    z-index: 10;
 
     @media (max-width: 50rem) {
-      margin-top: 4.0625rem;
+      margin-top: 3.5625rem;
     }
 
     .filter-container{
@@ -272,12 +273,52 @@ const AppStyled = styled.div`
         align-items: center;
         display flex;
         flex-direction: row;
+        margin: 0 0.75rem;
         position: relative;
         
         h6{
-          color: #555555;
+          color: white;
           font-size: 0.875rem;
           font-weight: 600;
+          opacity: 0.2;
+        }
+
+        .layout-switch{
+          display: flex;
+          flex-direction: row;
+          margin-left: 0.675rem;
+
+          &.grid{
+            .grid{
+              opacity: 0.7;
+            }
+          }
+
+          &.list{
+            .list{
+              opacity: 0.7;
+            }
+          }
+
+          button{
+            align-items: center;
+            border: 0;
+            display: flex;
+            justify-content: center;
+            margin: 0 0.1875rem;
+            opacity: 0.25;
+            padding: 0.125rem 0.375rem;
+
+            &.grid{
+              padding: 0.125rem 0.25rem;
+            }
+
+            @media (hover: hover) {
+              &:hover{ 
+                opacity: 0.7;
+              }
+            }
+          }
         }
 
         .sort-dropdown{
@@ -288,6 +329,10 @@ const AppStyled = styled.div`
             opacity: 0.25;
             padding: 0.125rem 0.5rem;
             transition: all 0.1s;
+
+            &.active{
+              opacity: 0.7;
+            }
 
             @media (hover: hover) {
               &:hover{ 
@@ -313,7 +358,7 @@ const AppStyled = styled.div`
           }
           .dropdown-menu{
             background: white;
-            border-radius: 0 0 0.25rem 0.25rem;
+            border-radius: 0.25rem;
             box-shadow: 0 0.125rem 0.25rem 0 rgba(0,0,0,0.5);
             display: none;
             flex-direction: column;
@@ -340,6 +385,15 @@ const AppStyled = styled.div`
             }
           }
         }
+      }
+
+      .filter-divider{
+        background: white;
+        height: 1.5rem;
+        margin: 0 0.5rem 0 0.25rem;
+        opacity: 0.1;
+        position: relative;
+        width: 0.0675rem;
       }
       
     }
@@ -381,7 +435,8 @@ class App extends React.Component {
 
     this.subDropdownOpen = this.subDropdownOpen.bind(this);
     this.subDropdownClose = this.subDropdownClose.bind(this);
-    this.dropdownSort = this.dropdownSort.bind(this);
+    this.sortDropdownOpen = this.sortDropdownOpen.bind(this);
+    this.sortDropdownClose = this.sortDropdownClose.bind(this);
     this.nextPage = this.nextPage.bind(this);
     this.searchActive = this.searchActive.bind(this);
     this.closeSearch = this.closeSearch.bind(this);
@@ -400,7 +455,8 @@ class App extends React.Component {
     subDropdown: false,
     searchActive: false,
     term: '',
-    gridView: true
+    gridView: true,
+    dropdownSort: false,
   };
 
 
@@ -471,6 +527,7 @@ class App extends React.Component {
         window.scrollTo(0, 0);
       })
       .catch(console.log)
+    this.sortDropdownClose();
   }
 
   nextPage = () => {
@@ -535,8 +592,21 @@ class App extends React.Component {
     this.closeSearch();
   }
 
-  dropdownSort() {
-    this.setState({ dropdownSort: !this.state.dropdownSort });
+  handleClick2 = (e) => {
+    if (this.node2.contains(e.target)) {
+      return;
+    }
+    this.sortDropdownClose();
+  }
+
+  sortDropdownOpen() {
+    this.setState({ dropdownSort: true });
+    document.addEventListener('mousedown', this.handleClick2, false);
+  }
+
+  sortDropdownClose() {
+    this.setState({ dropdownSort: false });
+    document.removeEventListener('mousedown', this.handleClick2, false);
   }
 
   setList() {
@@ -557,6 +627,8 @@ class App extends React.Component {
     const logo = require("./images/vumble-logo.svg");
     const downArrow = require("./images/down-arrow.svg");
     const search = require("./images/search.svg");
+    const list = require("./images/list.svg");
+    const grid = require("./images/grid.svg");
 
     var icon = require("./images/hot.svg");
 
@@ -620,11 +692,18 @@ class App extends React.Component {
       dropdown.menuSort = "dropdown-menu"
     }
 
-    var subreddit = {}
+    var subreddit = {};
     if (this.state.searchActive) {
       subreddit.container = "subreddit-container search"
     } else {
       subreddit.container = "subreddit-container"
+    }
+
+    var view = {};
+    if (this.state.gridView) {
+      view.switch = "layout-switch grid"
+    } else {
+      view.switch = "layout-switch list"
     }
 
     return (
@@ -669,15 +748,17 @@ class App extends React.Component {
         <div className="filter-bar">
           <div className="filter-container">
             <div className="filter">
-              <div className='layout-switch'>
-                <button onClick={this.setGrid}>Grid</button>
-                <button onClick={this.setList}>List</button>
+              <h6>VIEW</h6>
+              <div className={view.switch}>
+                <button className="grid" onClick={this.setGrid}><img src={grid} /></button>
+                <button className="list" onClick={this.setList}><img src={list} /></button>
               </div>
             </div>
+            <div className="filter-divider" />
             <div className="filter">
               <h6>SORT</h6>
-              <div className="sort-dropdown" >
-                <button className={dropdown.toggleSort} onClick={this.dropdownSort} type="button" ><div><img src={icon} /><p>{this.state.sort}</p></div></button>
+              <div className="sort-dropdown" ref={node2 => this.node2 = node2} >
+                <button className={dropdown.toggleSort} onClick={this.sortDropdownOpen} type="button" ><div><img src={icon} /><p>{this.state.sort}</p></div></button>
                 <div className={dropdown.menuSort} aria-labelledby="dropdownMenuButton">
                   {this.sorts.map((sort, index) => (
                     <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSort(sort)}>{sort}</a>
