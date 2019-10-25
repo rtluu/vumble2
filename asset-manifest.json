@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/vumble2/static/css/main.79a013b6.chunk.css",
-    "main.js": "/vumble2/static/js/main.192178ff.chunk.js",
-    "main.js.map": "/vumble2/static/js/main.192178ff.chunk.js.map",
+    "main.js": "/vumble2/static/js/main.08d45076.chunk.js",
+    "main.js.map": "/vumble2/static/js/main.08d45076.chunk.js.map",
     "runtime-main.js": "/vumble2/static/js/runtime-main.676e0dec.js",
     "runtime-main.js.map": "/vumble2/static/js/runtime-main.676e0dec.js.map",
     "static/js/2.f866cd27.chunk.js": "/vumble2/static/js/2.f866cd27.chunk.js",
     "static/js/2.f866cd27.chunk.js.map": "/vumble2/static/js/2.f866cd27.chunk.js.map",
     "index.html": "/vumble2/index.html",
-    "precache-manifest.e271196e3c24a956bad8505fb276c3ba.js": "/vumble2/precache-manifest.e271196e3c24a956bad8505fb276c3ba.js",
+    "precache-manifest.a1409cd2fd7c5277020d3e5b5789d143.js": "/vumble2/precache-manifest.a1409cd2fd7c5277020d3e5b5789d143.js",
     "service-worker.js": "/vumble2/service-worker.js",
     "static/css/main.79a013b6.chunk.css.map": "/vumble2/static/css/main.79a013b6.chunk.css.map",
     "static/media/down-arrow.svg": "/vumble2/static/media/down-arrow.a9b06a06.svg",
@@ -25,6 +25,6 @@
     "static/js/runtime-main.676e0dec.js",
     "static/js/2.f866cd27.chunk.js",
     "static/css/main.79a013b6.chunk.css",
-    "static/js/main.192178ff.chunk.js"
+    "static/js/main.08d45076.chunk.js"
   ]
 }

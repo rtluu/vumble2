@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "5e8ca16486e829013da6d36eceddba7f",
+    "revision": "81ef13c53585db02811a7daa019d91fe",
     "url": "/vumble2/index.html"
   },
   {
-    "revision": "1de447e021e60d0f29b9",
+    "revision": "25c48ec5ca56e20c7da7",
     "url": "/vumble2/static/css/main.79a013b6.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/vumble2/static/js/2.f866cd27.chunk.js"
   },
   {
-    "revision": "1de447e021e60d0f29b9",
-    "url": "/vumble2/static/js/main.192178ff.chunk.js"
+    "revision": "25c48ec5ca56e20c7da7",
+    "url": "/vumble2/static/js/main.08d45076.chunk.js"
   },
   {
     "revision": "b7edab660bff709a0d09",
