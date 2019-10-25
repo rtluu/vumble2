@@ -449,6 +449,7 @@ export default class Player extends Component {
                                             onReady={this.vidReady}
                                             onDuration={this.handleDuration}
                                             onProgress={this.handleProgress}
+                                            playsinline={true}
                                         />
                                     }
                                 </div>
