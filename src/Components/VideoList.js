@@ -6,8 +6,9 @@ const VideoListStyled = styled.div`
     display: flex;
     align-items: center;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     padding-top: 1rem;
+    width: 100%;
     
     .grid{
         display: grid;
@@ -41,18 +42,20 @@ export default class VideoList extends Component {
         this.state = {
 
         };
+
     }
 
 
-
     render() {
+        const files = this.props.files;
+
         var grid = {};
         if (this.props.gridView) {
             grid.class = 'grid column';
         } else {
             grid.class = 'grid';
         }
-        const files = this.props.files;
+
         return (
             <VideoListStyled>
                 <div className={grid.class}>
@@ -60,6 +63,9 @@ export default class VideoList extends Component {
                         <Player key={file.data.id} file={file} gridView={this.props.gridView} />
                     ))}
                 </div>
+                {!files.length > 0 &&
+                    <h2>Loading Videos</h2>
+                }
             </VideoListStyled>
         );
     }

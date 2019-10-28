@@ -404,8 +404,19 @@ const AppStyled = styled.div`
   // Main Container
   .main-container{
     display: flex;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
+
+    .loading-box{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+
+      h2{
+        position: relative;
+      }
+    }
 
     .pagination{
       display: block;
@@ -673,7 +684,7 @@ class App extends React.Component {
         <div className="pagination">{pagingJSX}</div>
       </div>;
     } else {
-      contentJSX = <div className="main-container"><h3>No videos found 🧐</h3></div>;
+      contentJSX = <div className="main-container"><VideoList files={this.state.files} gridView={this.state.gridView} /></div>;
     }
 
     var dropdown = {};

@@ -19,6 +19,24 @@ const VideoStyled = styled.div`
         position: relative;
         width: 100%;
 
+        &.youtube{
+            .post-card{
+                .thumbnail-container{
+                    .thumbnail{
+                        transform: translateY(-12.5%);
+                    }
+                }
+            }
+        }
+
+        &.reddit{
+        
+        }
+
+        &.gfycat{
+        
+        }
+
         &.expanded{
             position: fixed;
             background: rgba(0,0,0,0.9);
@@ -133,23 +151,6 @@ const VideoStyled = styled.div`
             overflow: hidden;
             text-align: left;
 
-            &.youtube{
-                .thumbnail-container{
-                    .thumbnail{
-                        transform: translateY(-12.5%);
-                    }
-                }
-                .player-container{
-                    .player-holder{
-                        .player-inner{
-                            div{
-                                
-                            }
-                        }
-                    }
-                }
-            }
-
             .thumbnail-container{
                 overflow: hidden;
                 position: relative;
@@ -241,9 +242,32 @@ const VideoStyled = styled.div`
             }
             .post-info{
                 padding: 0.5rem 0.75rem;
-                
+
                 .post-title{
                     margin-bottom: 0.5rem;
+                }
+
+                .post-data{
+                    align-items: center;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    width: 100%;
+
+                    .data-left{
+                        display: flex;
+                        flex-direction: row;
+
+                        div{
+                            display: flex;
+                            flex-direction: row;
+                            margin-right: 0.675rem;
+                            h6{
+                                color: #D3D3D3;
+                                margin-left: 0.25rem !important;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -256,13 +280,51 @@ export default class Player extends Component {
 
         var post = this.props.file.data;
         var title = post.title;
-        var upvotes = post.ups;
         var url = post.url;
         var thumbnail = '';
         var id = '';
         var playerReadyUrl = '';
         var playerReadyThumbnail = '';
         var isYT = false;
+        var isReddit = false;
+        var isGfycat = false;
+
+        console.log(post);
+
+        var ups;
+        if (post.ups > 1000) {
+            var upsnumber = Math.round(post.ups / 1000) * 1000;
+            var digits = upsnumber.toString();
+            var realNumber;
+            if (digits.length === 6) {
+                realNumber = digits.substring(0, 3);
+            } else if (digits.length === 5) {
+                realNumber = digits.substring(0, 2);
+            } else if (digits.length === 4) {
+                realNumber = digits.substring(0, 1);
+            }
+            ups = realNumber + 'K';
+        } else {
+            ups = post.ups;
+        }
+        var upvotes = ups;
+        var comNum;
+        if (post.num_comments > 1000) {
+            var commentsnumber = Math.round(post.num_comments / 1000) * 1000;
+            var digits = commentsnumber.toString();
+            var realNumber;
+            if (digits.length === 6) {
+                realNumber = digits.substring(0, 3);
+            } else if (digits.length === 5) {
+                realNumber = digits.substring(0, 2);
+            } else if (digits.length === 4) {
+                realNumber = digits.substring(0, 1);
+            }
+            comNum = realNumber + 'K';
+        } else {
+            comNum = post.num_comments;
+        }
+        var comments = comNum;
 
         if (post.domain === "youtube.com" | post.domain === "youtu.be" | post.domain === "m.youtube.com" && !post.url.includes('/channel/') && !post.url.includes('/playlist') && !post.url.includes('it.')) {
             //Trim YouTube domain off of URL
@@ -283,6 +345,7 @@ export default class Player extends Component {
             playerReadyUrl = 'https://www.youtube.com/watch?v=' + id;
             playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg';
         } else if (post.domain === "v.redd.it") {
+            isReddit = true;
             //Determine if Reddit video is a Crosspost or Original
             if (post.thumbnail) {
                 if (post.crosspost_parent) {
@@ -307,6 +370,7 @@ export default class Player extends Component {
 
             playerReadyThumbnail = thumbnail;
         } else if (post.domain === "gfycat.com") {
+            isGfycat = true;
             if (post.crosspost_parent) {
                 url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
             }
@@ -327,8 +391,11 @@ export default class Player extends Component {
             thumbnail: playerReadyThumbnail,
             title: title,
             upvotes: upvotes,
+            comments: comments,
             isExpanded: false,
             isYT: isYT,
+            isReddit: isReddit,
+            isGfycat: isGfycat,
 
             //Player
             isPlaying: false,
@@ -395,6 +462,7 @@ export default class Player extends Component {
 
 
     render() {
+
         var post = {};
         if (this.state.isReady | this.state.isPlaying) {
             post.button = 'expand-button show';
@@ -419,20 +487,30 @@ export default class Player extends Component {
             post.mouseEnter = undefined;
             post.mouseLeave = undefined;
         }
+
+        //Post Data Images
+        var upvote = require("./images/upvote.svg");
+        var comment = require("./images/comments.svg");
+        var imgSrc;
         if (this.state.isYT) {
-            post.card = 'post-card youtube';
-        } else {
-            post.card = 'post-card gifv';
+            post.type = 'youtube';
+            imgSrc = require("./images/youtube-logo.svg");
+        } else if (this.state.isReddit) {
+            post.type = 'reddit';
+            imgSrc = require("./images/reddit-logo.svg");
+        } else if (this.state.isGfycat) {
+            post.type = 'gfycat';
+            imgSrc = require("./images/gfycat-logo.svg");
         }
 
         return (
             <VideoStyled>
                 {!this.props.gridView && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
-                <div className={post.expand}>
+                <div className={'' + post.expand + ' ' + post.type}>
                     <div className="iframe-blocker" onMouseEnter={post.mouseEnter} onMouseLeave={post.mouseLeave} onClick={post.blocker}>
-                        <button className={post.button}>Click to expand w/sound</button>
+                        <button className={post.button}>Click to expand</button>
                     </div>
-                    <div className={post.card}>
+                    <div className='post-card'>
                         <div className="thumbnail-container">
                             <img className="thumbnail" src={this.state.thumbnail} />
                         </div>
@@ -460,7 +538,25 @@ export default class Player extends Component {
                         </div>
                         <div className="post-info">
                             <h3 className="post-title">{this.state.title}</h3>
-                            <h6 className="post-votes">{this.state.upvotes} upvotes</h6>
+
+                            <div className="post-data">
+
+                                <div className="data-left">
+                                    <div className="post-vote">
+                                        <img src={upvote} />
+                                        <h6 className="vote-count">{this.state.upvotes}</h6>
+                                    </div>
+
+                                    <div className="post-comments">
+                                        <img src={comment} />
+                                        <h6 className="comments-count">{this.state.comments}</h6>
+                                    </div>
+                                </div>
+
+                                <div className={"post-type " + post.type}>
+                                    <img src={imgSrc} />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
