@@ -7,7 +7,6 @@ const VideoListStyled = styled.div`
     align-items: center;
     flex-direction: column;
     justify-content: flex-start;
-    min-height: calc(100vh - 6.875rem);
     padding-top: 1rem;
     width: 100%;
     
