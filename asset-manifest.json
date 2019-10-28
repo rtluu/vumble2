@@ -1,30 +1,35 @@
 {
   "files": {
     "main.css": "/vumble2/static/css/main.79a013b6.chunk.css",
-    "main.js": "/vumble2/static/js/main.08d45076.chunk.js",
-    "main.js.map": "/vumble2/static/js/main.08d45076.chunk.js.map",
+    "main.js": "/vumble2/static/js/main.78f4b825.chunk.js",
+    "main.js.map": "/vumble2/static/js/main.78f4b825.chunk.js.map",
     "runtime-main.js": "/vumble2/static/js/runtime-main.676e0dec.js",
     "runtime-main.js.map": "/vumble2/static/js/runtime-main.676e0dec.js.map",
     "static/js/2.f866cd27.chunk.js": "/vumble2/static/js/2.f866cd27.chunk.js",
     "static/js/2.f866cd27.chunk.js.map": "/vumble2/static/js/2.f866cd27.chunk.js.map",
     "index.html": "/vumble2/index.html",
-    "precache-manifest.a1409cd2fd7c5277020d3e5b5789d143.js": "/vumble2/precache-manifest.a1409cd2fd7c5277020d3e5b5789d143.js",
+    "precache-manifest.ad6160fbbf102da45aebc8ebb033bcd8.js": "/vumble2/precache-manifest.ad6160fbbf102da45aebc8ebb033bcd8.js",
     "service-worker.js": "/vumble2/service-worker.js",
     "static/css/main.79a013b6.chunk.css.map": "/vumble2/static/css/main.79a013b6.chunk.css.map",
+    "static/media/comments.svg": "/vumble2/static/media/comments.a2d27adb.svg",
     "static/media/down-arrow.svg": "/vumble2/static/media/down-arrow.a9b06a06.svg",
+    "static/media/gfycat-logo.svg": "/vumble2/static/media/gfycat-logo.60dffe6b.svg",
     "static/media/grid.svg": "/vumble2/static/media/grid.24d45ed1.svg",
     "static/media/hot.svg": "/vumble2/static/media/hot.17576659.svg",
     "static/media/list.svg": "/vumble2/static/media/list.e42d3e3d.svg",
     "static/media/new.svg": "/vumble2/static/media/new.7582d8f0.svg",
+    "static/media/reddit-logo.svg": "/vumble2/static/media/reddit-logo.3847fc58.svg",
     "static/media/rising.svg": "/vumble2/static/media/rising.30f7ea7e.svg",
     "static/media/search.svg": "/vumble2/static/media/search.96707ef8.svg",
     "static/media/top.svg": "/vumble2/static/media/top.31ed0e0c.svg",
-    "static/media/vumble-logo.svg": "/vumble2/static/media/vumble-logo.5ab8b2ab.svg"
+    "static/media/upvote.svg": "/vumble2/static/media/upvote.4f6b933c.svg",
+    "static/media/vumble-logo.svg": "/vumble2/static/media/vumble-logo.5ab8b2ab.svg",
+    "static/media/youtube-logo.svg": "/vumble2/static/media/youtube-logo.3bef7f9b.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.676e0dec.js",
     "static/js/2.f866cd27.chunk.js",
     "static/css/main.79a013b6.chunk.css",
-    "static/js/main.08d45076.chunk.js"
+    "static/js/main.78f4b825.chunk.js"
   ]
 }
