@@ -1,27 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "9650372f04030d075d0cd64ec3ce0295",
+    "revision": "f86ffc3381208b7f4e67d6a0859dcf7c",
     "url": "/vumble2/index.html"
   },
   {
-    "revision": "951c05e2cb3ee66c3235",
-    "url": "/vumble2/static/css/main.79a013b6.chunk.css"
+    "revision": "b1e29e10226e9066238a",
+    "url": "/vumble2/static/css/main.e859534e.chunk.css"
   },
   {
     "revision": "2b5411bb546748529268",
     "url": "/vumble2/static/js/2.f866cd27.chunk.js"
   },
   {
-    "revision": "951c05e2cb3ee66c3235",
-    "url": "/vumble2/static/js/main.78f4b825.chunk.js"
+    "revision": "b1e29e10226e9066238a",
+    "url": "/vumble2/static/js/main.05e7345d.chunk.js"
   },
   {
     "revision": "b7edab660bff709a0d09",
     "url": "/vumble2/static/js/runtime-main.676e0dec.js"
   },
   {
-    "revision": "a2d27adbb05c1008f70765bec89e7427",
-    "url": "/vumble2/static/media/comments.a2d27adb.svg"
+    "revision": "8de25a70ffd16128bb92a9a76ff7154e",
+    "url": "/vumble2/static/media/comments.8de25a70.svg"
   },
   {
     "revision": "a9b06a06c4011435017a0c33b5681b07",

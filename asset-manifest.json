@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/vumble2/static/css/main.79a013b6.chunk.css",
-    "main.js": "/vumble2/static/js/main.78f4b825.chunk.js",
-    "main.js.map": "/vumble2/static/js/main.78f4b825.chunk.js.map",
+    "main.css": "/vumble2/static/css/main.e859534e.chunk.css",
+    "main.js": "/vumble2/static/js/main.05e7345d.chunk.js",
+    "main.js.map": "/vumble2/static/js/main.05e7345d.chunk.js.map",
     "runtime-main.js": "/vumble2/static/js/runtime-main.676e0dec.js",
     "runtime-main.js.map": "/vumble2/static/js/runtime-main.676e0dec.js.map",
     "static/js/2.f866cd27.chunk.js": "/vumble2/static/js/2.f866cd27.chunk.js",
     "static/js/2.f866cd27.chunk.js.map": "/vumble2/static/js/2.f866cd27.chunk.js.map",
     "index.html": "/vumble2/index.html",
-    "precache-manifest.ad6160fbbf102da45aebc8ebb033bcd8.js": "/vumble2/precache-manifest.ad6160fbbf102da45aebc8ebb033bcd8.js",
+    "precache-manifest.eb04eaeeee0ccc1aef26d75b4adc208f.js": "/vumble2/precache-manifest.eb04eaeeee0ccc1aef26d75b4adc208f.js",
     "service-worker.js": "/vumble2/service-worker.js",
-    "static/css/main.79a013b6.chunk.css.map": "/vumble2/static/css/main.79a013b6.chunk.css.map",
-    "static/media/comments.svg": "/vumble2/static/media/comments.a2d27adb.svg",
+    "static/css/main.e859534e.chunk.css.map": "/vumble2/static/css/main.e859534e.chunk.css.map",
+    "static/media/comments.svg": "/vumble2/static/media/comments.8de25a70.svg",
     "static/media/down-arrow.svg": "/vumble2/static/media/down-arrow.a9b06a06.svg",
     "static/media/gfycat-logo.svg": "/vumble2/static/media/gfycat-logo.60dffe6b.svg",
     "static/media/grid.svg": "/vumble2/static/media/grid.24d45ed1.svg",
@@ -29,7 +29,7 @@
   "entrypoints": [
     "static/js/runtime-main.676e0dec.js",
     "static/js/2.f866cd27.chunk.js",
-    "static/css/main.79a013b6.chunk.css",
-    "static/js/main.78f4b825.chunk.js"
+    "static/css/main.e859534e.chunk.css",
+    "static/js/main.05e7345d.chunk.js"
   ]
 }
