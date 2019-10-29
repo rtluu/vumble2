@@ -260,13 +260,43 @@ const VideoStyled = styled.div`
 
                         div{
                             display: flex;
+                            align-items: center;
                             flex-direction: row;
-                            margin-right: 0.675rem;
+                            margin-right: 0.5rem;
+
+                            &.post-vote{
+                                img{
+                                    margin-top: -0.0625rem;
+                                }
+                            }
+
+                            &.post-comments{
+                                img{
+                                    height: 0.625rem;
+                                    width: 1.125rem;
+                                }
+                            }
+
+                            &.post-subreddit, &.post-time{
+                                h6{
+                                    margin-right: 0;
+                                    margin-left: 0;
+                                }
+                            }
+
+                            img{
+                                display: inline-block;
+                                position: relative;
+                            }
                             h6{
                                 color: #D3D3D3;
-                                margin-left: 0.25rem !important;
+                                margin-left: 0.1875rem;
                             }
                         }
+                    }
+                    .post-type{
+                        display: flex;
+                        align-items: center;
                     }
                 }
             }
@@ -281,6 +311,7 @@ export default class Player extends Component {
         var post = this.props.file.data;
         var title = post.title;
         var url = post.url;
+        var subreddit = post.subreddit_name_prefixed;
         var thumbnail = '';
         var id = '';
         var playerReadyUrl = '';
@@ -289,7 +320,26 @@ export default class Player extends Component {
         var isReddit = false;
         var isGfycat = false;
 
-        console.log(post);
+        //Time Posted Calculation
+        var createdTime = (post.created_utc);
+        var currentTime = Math.floor(Date.now() / 1000);
+        var timeSeconds = currentTime - createdTime;
+        var timeMinutes = timeSeconds / 60;
+        var timeHours = timeMinutes / 60;
+        var timeDays = timeHours / 24;
+        var timeYears = timeDays / 365;
+        var time;
+        if (timeYears >= 1) {
+            time = Math.floor(timeYears) + 'y';
+        } else if (timeYears < 1 & timeDays >= 1) {
+            time = Math.floor(timeDays) + 'd';
+        } else if (timeDays < 1 & timeHours >= 1) {
+            time = Math.floor(timeHours) + 'h';
+        } else if (timeHours < 1 & timeMinutes >= 1) {
+            time = Math.floor(timeMinutes) + 'm';
+        } else {
+            time = '1m';
+        }
 
         var ups;
         if (post.ups > 1000) {
@@ -356,7 +406,6 @@ export default class Player extends Component {
                     }
                     playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
                 } else {
-                    console.log([post]);
                     if (post.preview.images[0]) {
                         thumbnail = post.preview.images[0].source.url;
                     } else {
@@ -392,6 +441,8 @@ export default class Player extends Component {
             title: title,
             upvotes: upvotes,
             comments: comments,
+            subreddit: subreddit,
+            time: time,
             isExpanded: false,
             isYT: isYT,
             isReddit: isReddit,
@@ -550,6 +601,14 @@ export default class Player extends Component {
                                     <div className="post-comments">
                                         <img src={comment} />
                                         <h6 className="comments-count">{this.state.comments}</h6>
+                                    </div>
+
+                                    <div className="post-subreddit">
+                                        <h6 className="subreddit">{this.state.subreddit}</h6>
+                                    </div>
+
+                                    <div className="post-time">
+                                        <h6 className="time">{this.state.time}</h6>
                                     </div>
                                 </div>
 
