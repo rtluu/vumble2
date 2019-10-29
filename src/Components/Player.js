@@ -549,6 +549,7 @@ export default class Player extends Component {
 
     render() {
 
+        //For Reddit & Gfycat Thumbnail Centering
         const styles = {
             transform: `translateY(-${this.state.ratioTransform}%)`
         };
