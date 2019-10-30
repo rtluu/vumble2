@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import ReactPlayer from 'react-player'
+// import Comments from './Comments';
 import { Waypoint } from 'react-waypoint';
 
 const VideoStyled = styled.div`
     display: flex;
-    align-items: stretch;
+    align-items: center;
     flex-direction: column;
     margin: 1.5rem 0;
 
@@ -310,6 +311,7 @@ export default class Player extends Component {
         super(props);
 
         var post = this.props.file.data;
+        var permalink = post.permalink;
         var title = post.title;
         var url = post.url;
         var subreddit = post.subreddit_name_prefixed;
@@ -401,8 +403,8 @@ export default class Player extends Component {
             playerReadyUrl = 'https://www.youtube.com/watch?v=' + id;
             playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg';
         } else if (post.domain === "v.redd.it") {
-            console.log(post)
             isReddit = true;
+            console.log(post);
             //Determine if Reddit video is a Crosspost or Original
             if (post.thumbnail) {
                 if (post.crosspost_parent) {
@@ -475,6 +477,7 @@ export default class Player extends Component {
             upvotes: upvotes,
             comments: comments,
             subreddit: subreddit,
+            permalink: permalink,
             time: time,
             isExpanded: false,
             isYT: isYT,
@@ -665,6 +668,10 @@ export default class Player extends Component {
                                 </div>
                             </div>
                         </div>
+                        {/* Comments */}
+                        {/* {this.state.isExpanded &&
+                            <Comments permalink={this.state.permalink} />
+                        } */}
                     </div>
                 </div>
                 {!this.props.gridView && !this.state.isExpanded && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}

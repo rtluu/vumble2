@@ -10,17 +10,21 @@ const VideoListStyled = styled.div`
     padding-top: 1rem;
     width: 100%;
     
-    .grid{
+    .video-list{
+        align-items: center;
         display: grid;
-        align-items: stretch;
         grid-template-columns: 100%;
-        justify-content: space-evenly;	
-        max-width: 72rem;
-        width: 100%;
+        max-width: 72rem;  
+        width: 100%
+        
 
-        &.column{
+        &.grid{
+            align-items: stretch;
             grid-template-columns: 30% 30% 30%;
             grid-gap: 3rem 0;
+            justify-content: space-evenly;	
+            
+            width: 100%;
 
             @media (max-width: 60rem) {
                 grid-template-columns: 45% 45%;
@@ -49,16 +53,16 @@ export default class VideoList extends Component {
     render() {
         const files = this.props.files;
 
-        var grid = {};
+        var list = {};
         if (this.props.gridView) {
-            grid.class = 'grid column';
+            list.class = 'video-list grid';
         } else {
-            grid.class = 'grid';
+            list.class = 'video-list';
         }
 
         return (
             <VideoListStyled>
-                <div className={grid.class}>
+                <div className={list.class}>
                     {files.map((file) => (
                         <Player key={file.data.id} file={file} gridView={this.props.gridView} />
                     ))}
