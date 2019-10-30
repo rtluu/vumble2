@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/vumble2/precache-manifest.eb04eaeeee0ccc1aef26d75b4adc208f.js"
+  "/vumble2/precache-manifest.a641ed87a3bc53d2a02b030d17ef3c06.js"
 );
 
 self.addEventListener('message', (event) => {

@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/vumble2/static/css/main.e859534e.chunk.css",
-    "main.js": "/vumble2/static/js/main.05e7345d.chunk.js",
-    "main.js.map": "/vumble2/static/js/main.05e7345d.chunk.js.map",
+    "main.js": "/vumble2/static/js/main.fe7f9b86.chunk.js",
+    "main.js.map": "/vumble2/static/js/main.fe7f9b86.chunk.js.map",
     "runtime-main.js": "/vumble2/static/js/runtime-main.676e0dec.js",
     "runtime-main.js.map": "/vumble2/static/js/runtime-main.676e0dec.js.map",
     "static/js/2.f866cd27.chunk.js": "/vumble2/static/js/2.f866cd27.chunk.js",
     "static/js/2.f866cd27.chunk.js.map": "/vumble2/static/js/2.f866cd27.chunk.js.map",
     "index.html": "/vumble2/index.html",
-    "precache-manifest.eb04eaeeee0ccc1aef26d75b4adc208f.js": "/vumble2/precache-manifest.eb04eaeeee0ccc1aef26d75b4adc208f.js",
+    "precache-manifest.a641ed87a3bc53d2a02b030d17ef3c06.js": "/vumble2/precache-manifest.a641ed87a3bc53d2a02b030d17ef3c06.js",
     "service-worker.js": "/vumble2/service-worker.js",
     "static/css/main.e859534e.chunk.css.map": "/vumble2/static/css/main.e859534e.chunk.css.map",
     "static/media/comments.svg": "/vumble2/static/media/comments.8de25a70.svg",
@@ -30,6 +30,6 @@
     "static/js/runtime-main.676e0dec.js",
     "static/js/2.f866cd27.chunk.js",
     "static/css/main.e859534e.chunk.css",
-    "static/js/main.05e7345d.chunk.js"
+    "static/js/main.fe7f9b86.chunk.js"
   ]
 }
