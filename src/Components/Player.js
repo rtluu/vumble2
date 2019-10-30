@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import ReactPlayer from 'react-player'
+// import Comments from './Comments';
 import { Waypoint } from 'react-waypoint';
 
 const VideoStyled = styled.div`
     display: flex;
-    align-items: stretch;
+    align-items: center;
     flex-direction: column;
     margin: 1.5rem 0;
 
@@ -30,7 +31,7 @@ const VideoStyled = styled.div`
         }
 
         &.reddit{
-        
+            
         }
 
         &.gfycat{
@@ -244,7 +245,8 @@ const VideoStyled = styled.div`
                 padding: 0.5rem 0.75rem;
 
                 .post-title{
-                    margin-bottom: 0.5rem;
+                    font-size: 0.875rem;
+                    margin: 0.25rem 0 0.5rem 0;
                 }
 
                 .post-data{
@@ -309,6 +311,7 @@ export default class Player extends Component {
         super(props);
 
         var post = this.props.file.data;
+        var permalink = post.permalink;
         var title = post.title;
         var url = post.url;
         var subreddit = post.subreddit_name_prefixed;
@@ -319,6 +322,11 @@ export default class Player extends Component {
         var isYT = false;
         var isReddit = false;
         var isGfycat = false;
+        var vidVert = false;
+        var vidHeight;
+        var vidWidth;
+        var vidRatio;
+        var ratioTransform;
 
         //Time Posted Calculation
         var createdTime = (post.created_utc);
@@ -396,6 +404,7 @@ export default class Player extends Component {
             playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg';
         } else if (post.domain === "v.redd.it") {
             isReddit = true;
+            console.log(post);
             //Determine if Reddit video is a Crosspost or Original
             if (post.thumbnail) {
                 if (post.crosspost_parent) {
@@ -404,6 +413,8 @@ export default class Player extends Component {
                     } else {
                         thumbnail = post.thumbnail;
                     }
+                    vidHeight = post.crosspost_parent_list[0].media.reddit_video.height;
+                    vidWidth = post.crosspost_parent_list[0].media.reddit_video.width;
                     playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
                 } else {
                     if (post.preview.images[0]) {
@@ -411,10 +422,20 @@ export default class Player extends Component {
                     } else {
                         thumbnail = post.thumbnail;
                     }
+                    vidHeight = post.media.reddit_video.height;
+                    vidWidth = post.media.reddit_video.width;
                     playerReadyUrl = post.media.reddit_video.fallback_url;
                 }
                 //Un-encode Thumbnail URL
                 thumbnail = thumbnail.split('&amp;').join('&');
+            }
+
+            vidRatio = vidHeight / vidWidth;
+            if (vidRatio > 1) {
+                ratioTransform = 37.5;
+            } else if (vidRatio <= 1 & vidRatio > 0.57) {
+                vidVert = true;
+                ratioTransform = ((vidRatio - 0.5625) / 2) * 100;
             }
 
             playerReadyThumbnail = thumbnail;
@@ -422,14 +443,28 @@ export default class Player extends Component {
             isGfycat = true;
             if (post.crosspost_parent) {
                 url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
+                vidHeight = post.crosspost_parent_list[0].media.oembed.height;
+                vidWidth = post.crosspost_parent_list[0].media.oembed.width;
             }
             else {
                 url = post.media.oembed.thumbnail_url;
+                vidHeight = post.media.oembed.height;
+                vidWidth = post.media.oembed.width;
             }
             url = url.split('.com/')[1];
             id = url.split('-size')[0];
             playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
             playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
+
+            vidHeight = post.media.oembed.height;
+            vidWidth = post.media.oembed.width;
+            vidRatio = vidHeight / vidWidth;
+            if (vidRatio > 1) {
+                ratioTransform = 37.5;
+            } else if (vidRatio <= 1 & vidRatio > 0.57) {
+                vidVert = true;
+                ratioTransform = ((vidRatio - 0.5625) / 2) * 100;
+            }
         }
 
 
@@ -442,11 +477,14 @@ export default class Player extends Component {
             upvotes: upvotes,
             comments: comments,
             subreddit: subreddit,
+            permalink: permalink,
             time: time,
             isExpanded: false,
             isYT: isYT,
             isReddit: isReddit,
             isGfycat: isGfycat,
+            isVert: vidVert,
+            ratioTransform: ratioTransform,
 
             //Player
             isPlaying: false,
@@ -514,6 +552,11 @@ export default class Player extends Component {
 
     render() {
 
+        //For Reddit & Gfycat Thumbnail Centering
+        const styles = {
+            transform: `translateY(-${this.state.ratioTransform}%)`
+        };
+
         var post = {};
         if (this.state.isReady | this.state.isPlaying) {
             post.button = 'expand-button show';
@@ -554,6 +597,14 @@ export default class Player extends Component {
             imgSrc = require("./images/gfycat-logo.svg");
         }
 
+        if (this.state.isVert) {
+            post.thumbnail = "thumbnail vertical";
+        } else {
+            post.thumbnail = "thumbnail";
+        }
+
+
+
         return (
             <VideoStyled>
                 {!this.props.gridView && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
@@ -563,7 +614,7 @@ export default class Player extends Component {
                     </div>
                     <div className='post-card'>
                         <div className="thumbnail-container">
-                            <img className="thumbnail" src={this.state.thumbnail} />
+                            <img className={post.thumbnail} src={this.state.thumbnail} style={styles} />
                         </div>
                         <div className="player-container">
                             <div className="player-holder">
@@ -588,7 +639,7 @@ export default class Player extends Component {
                             </div>
                         </div>
                         <div className="post-info">
-                            <h3 className="post-title">{this.state.title}</h3>
+                            <h4 className="post-title">{this.state.title}</h4>
 
                             <div className="post-data">
 
@@ -617,6 +668,10 @@ export default class Player extends Component {
                                 </div>
                             </div>
                         </div>
+                        {/* Comments */}
+                        {/* {this.state.isExpanded &&
+                            <Comments permalink={this.state.permalink} />
+                        } */}
                     </div>
                 </div>
                 {!this.props.gridView && !this.state.isExpanded && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
