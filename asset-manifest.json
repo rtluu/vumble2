@@ -1,35 +1,35 @@
 {
   "files": {
     "main.css": "/vumble2/static/css/main.e859534e.chunk.css",
-    "main.js": "/vumble2/static/js/main.fe7f9b86.chunk.js",
-    "main.js.map": "/vumble2/static/js/main.fe7f9b86.chunk.js.map",
+    "main.js": "/vumble2/static/js/main.722169e9.chunk.js",
+    "main.js.map": "/vumble2/static/js/main.722169e9.chunk.js.map",
     "runtime-main.js": "/vumble2/static/js/runtime-main.676e0dec.js",
     "runtime-main.js.map": "/vumble2/static/js/runtime-main.676e0dec.js.map",
     "static/js/2.f866cd27.chunk.js": "/vumble2/static/js/2.f866cd27.chunk.js",
     "static/js/2.f866cd27.chunk.js.map": "/vumble2/static/js/2.f866cd27.chunk.js.map",
     "index.html": "/vumble2/index.html",
-    "precache-manifest.a641ed87a3bc53d2a02b030d17ef3c06.js": "/vumble2/precache-manifest.a641ed87a3bc53d2a02b030d17ef3c06.js",
+    "precache-manifest.829af2f3c47da5388c96c3ff10138aa6.js": "/vumble2/precache-manifest.829af2f3c47da5388c96c3ff10138aa6.js",
     "service-worker.js": "/vumble2/service-worker.js",
     "static/css/main.e859534e.chunk.css.map": "/vumble2/static/css/main.e859534e.chunk.css.map",
-    "static/media/comments.svg": "/vumble2/static/media/comments.8de25a70.svg",
-    "static/media/down-arrow.svg": "/vumble2/static/media/down-arrow.a9b06a06.svg",
-    "static/media/gfycat-logo.svg": "/vumble2/static/media/gfycat-logo.60dffe6b.svg",
-    "static/media/grid.svg": "/vumble2/static/media/grid.24d45ed1.svg",
-    "static/media/hot.svg": "/vumble2/static/media/hot.17576659.svg",
-    "static/media/list.svg": "/vumble2/static/media/list.e42d3e3d.svg",
-    "static/media/new.svg": "/vumble2/static/media/new.7582d8f0.svg",
-    "static/media/reddit-logo.svg": "/vumble2/static/media/reddit-logo.3847fc58.svg",
-    "static/media/rising.svg": "/vumble2/static/media/rising.30f7ea7e.svg",
-    "static/media/search.svg": "/vumble2/static/media/search.96707ef8.svg",
-    "static/media/top.svg": "/vumble2/static/media/top.31ed0e0c.svg",
-    "static/media/upvote.svg": "/vumble2/static/media/upvote.4f6b933c.svg",
-    "static/media/vumble-logo.svg": "/vumble2/static/media/vumble-logo.5ab8b2ab.svg",
-    "static/media/youtube-logo.svg": "/vumble2/static/media/youtube-logo.3bef7f9b.svg"
+    "static/media/comments.svg": "/vumble2/static/media/comments.e8565b9d.svg",
+    "static/media/down-arrow.svg": "/vumble2/static/media/down-arrow.da91046f.svg",
+    "static/media/gfycat-logo.svg": "/vumble2/static/media/gfycat-logo.f255a75e.svg",
+    "static/media/grid.svg": "/vumble2/static/media/grid.8fe988ee.svg",
+    "static/media/hot.svg": "/vumble2/static/media/hot.dcb96999.svg",
+    "static/media/list.svg": "/vumble2/static/media/list.d08c2ef3.svg",
+    "static/media/new.svg": "/vumble2/static/media/new.d4e9fb92.svg",
+    "static/media/reddit-logo.svg": "/vumble2/static/media/reddit-logo.1dcced60.svg",
+    "static/media/rising.svg": "/vumble2/static/media/rising.152c61be.svg",
+    "static/media/search.svg": "/vumble2/static/media/search.46707462.svg",
+    "static/media/top.svg": "/vumble2/static/media/top.9068549f.svg",
+    "static/media/upvote.svg": "/vumble2/static/media/upvote.b0456a9c.svg",
+    "static/media/vumble-logo.svg": "/vumble2/static/media/vumble-logo.96988d9c.svg",
+    "static/media/youtube-logo.svg": "/vumble2/static/media/youtube-logo.b2c36e02.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.676e0dec.js",
     "static/js/2.f866cd27.chunk.js",
     "static/css/main.e859534e.chunk.css",
-    "static/js/main.fe7f9b86.chunk.js"
+    "static/js/main.722169e9.chunk.js"
   ]
 }
