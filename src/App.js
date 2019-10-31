@@ -495,6 +495,8 @@ class App extends React.Component {
             files.push(array[index])
           } else if (array[index].data.domain === "gfycat.com") {
             files.push(array[index])
+          } else if (array[index].data.domain === "streamable.com") {
+            files.push(array[index])
           }
         }
         this.setState({

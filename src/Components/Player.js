@@ -322,6 +322,7 @@ export default class Player extends Component {
         var isYT = false;
         var isReddit = false;
         var isGfycat = false;
+        var isStreamable = false;
         var vidVert = false;
         var vidHeight;
         var vidWidth;
@@ -404,7 +405,6 @@ export default class Player extends Component {
             playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg';
         } else if (post.domain === "v.redd.it") {
             isReddit = true;
-            console.log(post);
             //Determine if Reddit video is a Crosspost or Original
             if (post.thumbnail) {
                 if (post.crosspost_parent) {
@@ -465,6 +465,22 @@ export default class Player extends Component {
                 vidVert = true;
                 ratioTransform = ((vidRatio - 0.5625) / 2) * 100;
             }
+        } else if (post.domain === "streamable.com") {
+            isStreamable = true;
+            if (post.crosspost_parent) {
+                url = post.crosspost_parent_list[0].url;
+            }
+            else {
+                url = post.url;
+            }
+            if (post.media != null) {
+                thumbnail = post.media.oembed.thumbnail_url;
+            } else {
+                thumbnail = null;
+            }
+
+            playerReadyUrl = url;
+            playerReadyThumbnail = thumbnail;
         }
 
 
@@ -483,6 +499,7 @@ export default class Player extends Component {
             isYT: isYT,
             isReddit: isReddit,
             isGfycat: isGfycat,
+            isStreamable: isStreamable,
             isVert: vidVert,
             ratioTransform: ratioTransform,
 
@@ -595,6 +612,9 @@ export default class Player extends Component {
         } else if (this.state.isGfycat) {
             post.type = 'gfycat';
             imgSrc = require("./images/gfycat-logo.svg");
+        } else if (this.state.isStreamable) {
+            post.type = 'streamable';
+            imgSrc = require("./images/streamable-logo.svg");
         }
 
         if (this.state.isVert) {
