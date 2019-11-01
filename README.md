@@ -5,9 +5,9 @@ Vumble was a project that a few friends and I built back in 2016 as a replacemen
 
 It's been down for a while and I've been missing it. So I decided to rebuild it in a more modern framework (*React*). It's still very much an MVP and I'm by no means a good developer, but I love building enjoyable user experiences and connecting with cool people that enjoy doing the same.
 
-<br/>
+---
 
-Products are always better when there is a community of people behind them. The thoughts, discussion and creative energy are what leads to building something useful.
+Products are always better when there is a community of people behind them. The thoughts, discussion and creative energy are what lead to building something useful.
 
 If you have any feedback, I'd love to hear your thoughts. And if you're interested in contributing that would be awesome too.
 
