@@ -456,9 +456,13 @@ export default class Player extends Component {
             playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
             playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
 
-            vidHeight = post.media.oembed.height;
-            vidWidth = post.media.oembed.width;
-            vidRatio = vidHeight / vidWidth;
+            console.log(post);
+            if (post.media) {
+                vidHeight = post.media.oembed.height;
+                vidWidth = post.media.oembed.width;
+                vidRatio = vidHeight / vidWidth;
+            }
+
             if (vidRatio > 1) {
                 ratioTransform = 37.5;
             } else if (vidRatio <= 1 & vidRatio > 0.57) {
