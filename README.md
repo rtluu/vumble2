@@ -1,8 +1,6 @@
 # Vumble
 _Easily enjoy the best videos on Reddit_
 
-<br/>
-
 ## History
 Vumble started as a project that a few friends and I built back in 2016 as a replacement for Reddit TV. 
 
@@ -18,6 +16,8 @@ It's still an very much an MVP, but building it has been fun and we really want 
 - **Reddit**: [r/vumble](https://www.reddit.com/r/vumble/)
 - **Instagram**: [@vumble](https://instagram.com/vumble)
 - **Twitter**: [@vumble](https://twitter.com/vumble)]
+
+---
 
 ## Development 
 Vumble is an open source project.
