@@ -26,6 +26,6 @@ Steps to install:
 1. clone the repo
 1. `npm install`
 1. `npm start`
-1. local:3000 page should open in your browser
+1. A localhost:3000 page should open in your browser
 
 We're always looking to connect and create with motivated people. If you'd like to contribute, join our community on [Discord](https://discord.gg/fJjYyXR).
