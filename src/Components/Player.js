@@ -30,12 +30,40 @@ const VideoStyled = styled.div`
             }
         }
 
-        &.reddit{
-            
-        }
+        &.list{
 
-        &.gfycat{
-        
+            .post-card{
+                &.vertical{
+    
+                    .player-container{
+                        .player-holder{
+                            padding-bottom: 100%;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            top: -33.3%;
+                            width: 58%;
+                        }
+                    }
+                }
+            }
+
+            .vertical-background-blur{
+                background: black;
+                bottom: 0;
+                content: '';
+                backdrop-filter: blur(500px);
+                left: 0;
+                position: absolute;
+                right: 0;
+                opacity: 0;
+                top: 0;
+                pointer-events: none;
+                transition: all 0.1s;
+
+                &.show{
+                    opacity: 0.7;
+                }
+            }
         }
 
         &.expanded{
@@ -82,6 +110,7 @@ const VideoStyled = styled.div`
                 }
                 .post-info{
                     padding: 0.75rem;
+                    
                     .post-title{
                         font-size: 1.25rem;
                     }  
@@ -166,6 +195,32 @@ const VideoStyled = styled.div`
                     top: 0;                    
                     width: 100%;
                 }
+
+                .time-box{
+                    bottom: 0;
+                    position: absolute;
+                    padding: 0.25rem;
+                    margin: 0.125rem;
+                    right: 0;
+                    opacity: 0;
+                    z-index: 3;
+                    transition: all 0.2s;
+
+                    &.show{
+                        opacity: 1;
+                    }
+
+                    .time-left{
+                        color: white;
+
+                        .spacer{
+                            display: inline-block;
+                            position: relative;
+                            height: 0.2rem
+                            width: 0.0675rem;
+                        }
+                    }
+                }  
             }
 
             .player-container{
@@ -213,36 +268,13 @@ const VideoStyled = styled.div`
                             background: black;
                         }
                     }
-
-                    .time-box{
-                        bottom: 0;
-                        position: absolute;
-                        padding: 0.25rem;
-                        margin: 0.125rem;
-                        right: 0;
-                        opacity: 0;
-                        z-index: 3;
-                        transition: all 0.2s;
-
-                        &.show{
-                            opacity: 1;
-                        }
-
-                        .time-left{
-                            color: white;
-
-                            .spacer{
-                                display: inline-block;
-                                position: relative;
-                                height: 0.2rem
-                                width: 0.0675rem;
-                            }
-                        }
-                    }
-                }  
+                }
             }
             .post-info{
                 padding: 0.5rem 0.75rem;
+                position: relative;
+                background: white;
+                z-index: 1;
 
                 .post-title{
                     font-size: 0.875rem;
@@ -350,6 +382,7 @@ export default class Player extends Component {
             time = '1m';
         }
 
+        // Calculating Upvotes
         var ups;
         if (post.ups > 1000) {
             var upsnumber = Math.round(post.ups / 1000) * 1000;
@@ -367,6 +400,8 @@ export default class Player extends Component {
             ups = post.ups;
         }
         var upvotes = ups;
+
+        // Calculating Comments
         var comNum;
         if (post.num_comments > 1000) {
             var commentsnumber = Math.round(post.num_comments / 1000) * 1000;
@@ -385,6 +420,7 @@ export default class Player extends Component {
         }
         var comments = comNum;
 
+        // Identifying Video Type
         if (post.domain === "youtube.com" | post.domain === "youtu.be" | post.domain === "m.youtube.com" && !post.url.includes('/channel/') && !post.url.includes('/playlist') && !post.url.includes('it.')) {
             //Trim YouTube domain off of URL
             isYT = true;
@@ -429,18 +465,19 @@ export default class Player extends Component {
                 //Un-encode Thumbnail URL
                 thumbnail = thumbnail.split('&amp;').join('&');
             }
-
+            // Detecting Video Ratio
             vidRatio = vidHeight / vidWidth;
             if (vidRatio > 1) {
                 ratioTransform = 37.5;
+                vidVert = true;
             } else if (vidRatio <= 1 & vidRatio > 0.57) {
                 vidVert = true;
                 ratioTransform = ((vidRatio - 0.5625) / 2) * 100;
             }
-
             playerReadyThumbnail = thumbnail;
         } else if (post.domain === "gfycat.com") {
             isGfycat = true;
+            //Determine if Gfycat video is a Crosspost or Original
             if (post.crosspost_parent) {
                 url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
                 vidHeight = post.crosspost_parent_list[0].media.oembed.height;
@@ -455,16 +492,15 @@ export default class Player extends Component {
             id = url.split('-size')[0];
             playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
             playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
-
-            console.log(post);
             if (post.media) {
                 vidHeight = post.media.oembed.height;
                 vidWidth = post.media.oembed.width;
                 vidRatio = vidHeight / vidWidth;
             }
-
+            // Detecting Video Ratio
             if (vidRatio > 1) {
                 ratioTransform = 37.5;
+                vidVert = true;
             } else if (vidRatio <= 1 & vidRatio > 0.57) {
                 vidVert = true;
                 ratioTransform = ((vidRatio - 0.5625) / 2) * 100;
@@ -572,12 +608,6 @@ export default class Player extends Component {
 
 
     render() {
-
-        //For Reddit & Gfycat Thumbnail Centering
-        const styles = {
-            transform: `translateY(-${this.state.ratioTransform}%)`
-        };
-
         var post = {};
         if (this.state.isReady | this.state.isPlaying) {
             post.button = 'expand-button show';
@@ -601,9 +631,10 @@ export default class Player extends Component {
         if (!this.props.gridView) {
             post.mouseEnter = undefined;
             post.mouseLeave = undefined;
+            post.view = 'list';
         }
 
-        //Post Data Images
+        //Determine which Source Icon Image to use
         var upvote = require("./images/upvote.svg");
         var comment = require("./images/comments.svg");
         var imgSrc;
@@ -621,10 +652,20 @@ export default class Player extends Component {
             imgSrc = require("./images/streamable-logo.svg");
         }
 
-        if (this.state.isVert) {
+        // Change style for vertical videos - Reddit & Gfycat
+        const ratioTransformThumbnail = {
+            transform: `translateY(-${this.state.ratioTransform}%)`
+        };
+        if (this.state.isVert && !this.state.isExpanded) {
             post.thumbnail = "thumbnail vertical";
+            post.card = "post-card vertical"
         } else {
             post.thumbnail = "thumbnail";
+            post.card = "post-card"
+        }
+
+        if (!this.props.gridView && this.state.isVert && this.state.isReady) {
+            post.blur = "show"
         }
 
 
@@ -632,14 +673,18 @@ export default class Player extends Component {
         return (
             <VideoStyled>
                 {!this.props.gridView && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
-                <div className={'' + post.expand + ' ' + post.type}>
+                <div className={'' + post.expand + ' ' + post.type + ' ' + post.view}>
                     <div className="iframe-blocker" onMouseEnter={post.mouseEnter} onMouseLeave={post.mouseLeave} onClick={post.blocker}>
                         <button className={post.button}>Click to expand</button>
                     </div>
-                    <div className='post-card'>
+                    <div className={post.card}>
                         <div className="thumbnail-container">
-                            <img className={post.thumbnail} src={this.state.thumbnail} style={styles} />
+                            <img className={post.thumbnail} src={this.state.thumbnail} style={ratioTransformThumbnail} />
+                            <span className={post.time}>
+                                <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
+                            </span>
                         </div>
+                        <div className={"vertical-background-blur " + post.blur} />
                         <div className="player-container">
                             <div className="player-holder">
                                 <div className="player-inner">
@@ -657,9 +702,6 @@ export default class Player extends Component {
                                         />
                                     }
                                 </div>
-                                <span className={post.time}>
-                                    <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
-                                </span>
                             </div>
                         </div>
                         <div className="post-info">
