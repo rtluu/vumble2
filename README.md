@@ -11,7 +11,7 @@ It's been down for a while and we've been missing it...
 ## Now
 So we decided to rebuild it in a more modern framework (*ReactJS*). 
 
-It's still an very much an MVP, but building it has been fun and we really want to build something that people find useful. [Here's a list of some features we're evaluating](https://github.com/rtluu/vumble2/projects). If you have any feedback, we'd love to hear your thoughts - let us know wherever's easiest for you:
+It's still an very much an MVP, but building it has been fun and we really want to build something that people find useful. [Here's a list of some features we're evaluating](https://github.com/rtluu/vumble2/projects/1). If you have any feedback, we'd love to hear your thoughts - let us know wherever's easiest for you:
 
 - **Reddit**: [r/vumble](https://www.reddit.com/r/vumble/)
 - **Instagram**: [@vumble](https://instagram.com/vumble)
