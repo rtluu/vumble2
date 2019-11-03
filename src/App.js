@@ -468,11 +468,15 @@ class App extends React.Component {
     term: '',
     gridView: true,
     dropdownSort: false,
+    width: window.innerWidth,
   };
 
 
   componentDidMount() {
     this.changeSubreddit(this.state.currentSubreddit);
+    if (this.state.width <= 640) {
+      this.setState({ gridView: false });
+    }
   }
 
   changeSubreddit(sub) {

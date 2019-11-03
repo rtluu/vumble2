@@ -645,7 +645,7 @@ export default class Player extends Component {
             post.mouseLeave = this.vidStop;
             post.blocker = this.expandVideo;
         }
-        if (!this.props.gridView) {
+        if (!this.props.gridView | this.props.isMobile) {
             post.mouseEnter = undefined;
             post.mouseLeave = undefined;
             post.view = 'list';
@@ -681,7 +681,7 @@ export default class Player extends Component {
             post.card = "post-card"
         }
 
-        if (!this.props.gridView && this.state.isVert && this.state.isReady) {
+        if (!this.props.gridView && this.state.isVert && this.state.isReady | this.props.isMobile && this.state.isVert && this.state.isReady) {
             post.blur = "show"
         }
 
@@ -689,7 +689,7 @@ export default class Player extends Component {
 
         return (
             <VideoStyled>
-                {!this.props.gridView && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
+                {!this.props.gridView && !this.state.isExpanded | this.props.isMobile && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
                 <div className={'' + post.expand + ' ' + post.type + ' ' + post.view}>
                     <div className="iframe-blocker" onMouseEnter={post.mouseEnter} onMouseLeave={post.mouseLeave} onClick={post.blocker}>
                         <button className={post.button}>Click to expand</button>
@@ -757,7 +757,7 @@ export default class Player extends Component {
                         } */}
                     </div>
                 </div>
-                {!this.props.gridView && !this.state.isExpanded && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
+                {!this.props.gridView && !this.state.isExpanded | this.props.isMobile && !this.state.isExpanded && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
             </VideoStyled >
         )
     }

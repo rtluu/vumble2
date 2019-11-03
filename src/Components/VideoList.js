@@ -49,12 +49,12 @@ export default class VideoList extends Component {
 
     }
 
-
     render() {
         const files = this.props.files;
 
+
         var list = {};
-        if (this.props.gridView) {
+        if (this.props.gridView && !this.state.isMobile) {
             list.class = 'video-list grid';
         } else {
             list.class = 'video-list';
@@ -64,7 +64,7 @@ export default class VideoList extends Component {
             <VideoListStyled>
                 <div className={list.class}>
                     {files.map((file) => (
-                        <Player key={file.data.id} file={file} gridView={this.props.gridView} />
+                        <Player key={file.data.id} file={file} gridView={this.props.gridView} isMobile={this.state.isMobile} />
                     ))}
                 </div>
                 {!files.length > 0 &&
