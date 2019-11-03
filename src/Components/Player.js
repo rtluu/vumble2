@@ -31,9 +31,26 @@ const VideoStyled = styled.div`
         }
 
         &.list{
-
             .post-card{
                 &.vertical{
+
+                    @media (max-width: 40rem) {
+                        .thumbnail-container{
+                            padding-bottom: 100%;
+                            .thumbnail{
+                                transform: translateY(0) !important;
+                            }
+                        }
+
+                        .player-container{
+
+                            .player-holder{
+                                padding-bottom: 100%;
+                                top: 0 !important;
+                                width: 100% !important;
+                            }
+                        }
+                    }
     
                     .player-container{
                         .player-holder{
