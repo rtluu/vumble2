@@ -2,6 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import './App.css';
 import VideoList from './Components/VideoList';
+import Footer from './Components/Footer'
 import styled from "styled-components";
 import { Waypoint } from 'react-waypoint';
 
@@ -10,7 +11,6 @@ const AppStyled = styled.div`
   // Header Styling
   header{
     background: #2A2B2A;
-    
     position: fixed;
     width: 100%;
     z-index: 12;
@@ -395,10 +395,7 @@ const AppStyled = styled.div`
         position: relative;
         width: 0.0675rem;
       }
-      
     }
-
-    
   }
 
   // Main Container
@@ -789,6 +786,8 @@ class App extends React.Component {
         <div className="waypoint">
           {/* <Waypoint onEnter={this.nextPage()} /> */}
         </div>
+
+        <Footer />
       </AppStyled>
     );
   }
