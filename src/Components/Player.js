@@ -70,16 +70,12 @@ const VideoStyled = styled.div`
                 content: '';
                 backdrop-filter: blur(500px);
                 left: 0;
+                opacity: 1;
                 position: absolute;
                 right: 0;
-                opacity: 0;
                 top: 0;
                 pointer-events: none;
                 transition: all 0.1s;
-
-                &.show{
-                    opacity: 0.7;
-                }
             }
         }
 
@@ -701,7 +697,9 @@ export default class Player extends Component {
                                 <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
                             </span>
                         </div>
-                        <div className={"vertical-background-blur " + post.blur} />
+                        {this.state.isPlaying &&
+                            <div className="vertical-background-blur" />
+                        }
                         <div className="player-container">
                             <div className="player-holder">
                                 <div className="player-inner">
