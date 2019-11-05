@@ -404,6 +404,15 @@ const AppStyled = styled.div`
     align-items: center;
     flex-direction: column;
     justify-content: center;
+    min-height: calc(100vh - 10.25rem);
+
+    @media (max-width: 60rem) {
+      min-height: calc(100vh - 10rem);
+    }
+
+    @media (max-width: 40rem) {
+      min-height: calc(100vh - 9.75rem);
+    }
 
     .loading-box{
       position: absolute;

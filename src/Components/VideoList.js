@@ -68,7 +68,7 @@ export default class VideoList extends Component {
                     ))}
                 </div>
                 {!files.length > 0 &&
-                    <h2>Loading Videos</h2>
+                    <h2>Loading videos...</h2>
                 }
             </VideoListStyled>
         );
