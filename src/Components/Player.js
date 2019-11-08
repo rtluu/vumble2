@@ -495,21 +495,32 @@ export default class Player extends Component {
                 url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
                 vidHeight = post.crosspost_parent_list[0].media.oembed.height;
                 vidWidth = post.crosspost_parent_list[0].media.oembed.width;
+                url = url.split('.com/')[1];
+                id = url.split('-size')[0];
+                playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
+                playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
             }
-            else {
+            else if (post.media) {
                 url = post.media.oembed.thumbnail_url;
                 vidHeight = post.media.oembed.height;
                 vidWidth = post.media.oembed.width;
+                url = url.split('.com/')[1];
+                id = url.split('-size')[0];
+                playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
+                playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
+            } else {
+                vidHeight = post.preview.images[0].source.height;
+                vidWidth = post.preview.images[0].source.width;
+                id = post.url.split('.com/')[1];
+                playerReadyUrl = post.preview.reddit_video_preview.fallback_url;
+                playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
+                console.log(post);
             }
-            url = url.split('.com/')[1];
-            id = url.split('-size')[0];
-            playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
-            playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
-            if (post.media) {
-                vidHeight = post.media.oembed.height;
-                vidWidth = post.media.oembed.width;
-                vidRatio = vidHeight / vidWidth;
-            }
+
+
+
+
+            vidRatio = vidHeight / vidWidth;
             // Detecting Video Ratio
             if (vidRatio > 1) {
                 ratioTransform = 37.5;
