@@ -20,6 +20,18 @@ const VideoStyled = styled.div`
         position: relative;
         width: 100%;
 
+        &:hover{
+            .post-card{
+                .player-container{
+                    .player-holder{
+                        &:after{
+                            display:inline-block;
+                        }
+                    }
+                }
+            }
+        }
+
         &.youtube{
             .post-card{
                 .thumbnail-container{
@@ -195,6 +207,7 @@ const VideoStyled = styled.div`
             text-align: left;
 
             .thumbnail-container{
+                background: #e2e2e2;
                 overflow: hidden;
                 position: relative;
                 padding-bottom: 56.25%;
@@ -216,6 +229,7 @@ const VideoStyled = styled.div`
                     margin: 0.125rem;
                     right: 0;
                     opacity: 0;
+                    pointer-events: none;
                     z-index: 3;
                     transition: all 0.2s;
 
@@ -255,6 +269,7 @@ const VideoStyled = styled.div`
                         border-radius: 2rem 0 0 0;
                         box-shadow: -1rem -1rem 4rem 1.5rem rgba(0,0,0,0.4);
                         content: '';
+                        display: none;
                         position: absolute;
                         bottom: 0;
                         right: 0;
@@ -374,7 +389,7 @@ export default class Player extends Component {
         var vidRatio;
         var ratioTransform;
 
-        //Time Posted Calculation
+        //Calculating Time Posted
         var createdTime = (post.created_utc);
         var currentTime = Math.floor(Date.now() / 1000);
         var timeSeconds = currentTime - createdTime;
@@ -513,13 +528,11 @@ export default class Player extends Component {
                 vidWidth = post.preview.images[0].source.width;
                 id = post.url.split('.com/')[1];
                 playerReadyUrl = post.preview.reddit_video_preview.fallback_url;
-                playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
-                console.log(post);
+
+                //Need to Add 'No Thumbnail Found'
+                playerReadyThumbnail = require("./images/confused-bee.png");;
+
             }
-
-
-
-
             vidRatio = vidHeight / vidWidth;
             // Detecting Video Ratio
             if (vidRatio > 1) {
