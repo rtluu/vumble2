@@ -277,8 +277,56 @@ const VideoStyled = styled.div`
                         width: 0;
                         z-index: 2;
                     }
-                    
- 
+
+                    .loading-spinner{
+                        align-items: center;
+                        display: flex;
+                        justify-content: center;
+                        height: 3rem;
+                        left: 50%;
+                        position: absolute;
+                        top: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 3rem;
+
+                        .circle{
+                            display: block;
+                            border-radius: 50%;
+                            border: 0.25rem solid #fff;
+                            position: absolute;
+                           
+                            &.large{
+                                animation: spin-right 1s linear infinite;
+                                border-color: #fff #fff #fff transparent;
+                                height: 2.5rem;
+                                width: 2.5rem;
+                            }
+
+                            &.small{
+                                animation: spin-left 1s linear infinite;
+                                border-color: #fff #fff #fff transparent;
+                                height: 1.25rem;
+                                width: 1.25rem;
+                            }
+                        }
+                    }
+                    @keyframes spin-right {
+                        0% {
+                            transform: rotate(0deg);
+                        }
+                        100% {
+                            transform: rotate(360deg);
+                        }
+                    }
+                    @keyframes spin-left {
+                        0% {
+                            transform: rotate(0deg);
+                        }
+                        100% {
+                            transform: rotate(-360deg);
+                        }
+                    }
+
                     .player-inner{
                         position: absolute;
                         bottom: 0;
@@ -583,7 +631,8 @@ export default class Player extends Component {
             //Player
             isPlaying: false,
             muted: true,
-            isReady: false,
+            hasStarted: false,
+            hasEnded: false,
             duration: 0,
             played: 0,
             loaded: 0,
@@ -593,7 +642,8 @@ export default class Player extends Component {
             secondsLeft: '00',
         };
 
-        this.vidReady = this.vidReady.bind(this);
+        this.vidStart = this.vidStart.bind(this);
+        this.vidEnd = this.vidEnd.bind(this);
         this.vidPlay = this.vidPlay.bind(this);
         this.vidStop = this.vidStop.bind(this);
         this.expandVideo = this.expandVideo.bind(this);
@@ -601,8 +651,13 @@ export default class Player extends Component {
         this.handleDuration = this.handleDuration.bind(this);
     }
 
-    vidReady() {
-        this.setState({ isReady: true });
+    vidStart() {
+        this.setState({ hasStarted: true });
+        this.setState({ hasEnded: false });
+    }
+
+    vidEnd() {
+        this.setState({ hasEnded: true });
     }
 
     vidPlay() {
@@ -611,8 +666,8 @@ export default class Player extends Component {
 
     vidStop() {
         this.setState({ isPlaying: false });
+        this.setState({ hasStarted: false });
         this.setState({ muted: true })
-        this.setState({ isReady: false });
     }
 
     expandVideo() {
@@ -624,7 +679,6 @@ export default class Player extends Component {
     closeVideo() {
         this.setState({ isExpanded: false });
         this.setState({ muted: true })
-        this.setState({ isReady: false });
     }
 
     handleDuration = (duration) => {
@@ -646,12 +700,15 @@ export default class Player extends Component {
 
     render() {
         var post = {};
-        if (this.state.isReady | this.state.isPlaying) {
-            post.button = 'expand-button show';
+        if (this.state.hasStarted && !this.state.hasEnded) {
             post.time = 'time-box show';
         } else {
-            post.button = 'expand-button';
             post.time = 'time-box';
+        }
+        if (this.state.hasStarted) {
+            post.button = 'expand-button show';
+        } else {
+            post.button = 'expand-button';
         }
         if (this.state.isExpanded) {
             post.expand = 'post-block expanded';
@@ -701,10 +758,6 @@ export default class Player extends Component {
             post.card = "post-card"
         }
 
-        if (!this.props.gridView && this.state.isVert && this.state.isReady | this.props.isMobile && this.state.isVert && this.state.isReady) {
-            post.blur = "show"
-        }
-
 
 
         return (
@@ -734,13 +787,20 @@ export default class Player extends Component {
                                             playing={this.state.isPlaying}
                                             controls={true}
                                             muted={this.state.muted}
-                                            onReady={this.vidReady}
+                                            onStart={this.vidStart}
+                                            onEnded={this.vidEnd}
                                             onDuration={this.handleDuration}
                                             onProgress={this.handleProgress}
                                             playsinline={true}
                                         />
                                     }
                                 </div>
+                                {this.state.isPlaying && !this.state.hasStarted &&
+                                    <span className="loading-spinner">
+                                        <span className="circle large" />
+                                        <span className="circle small" />
+                                    </span>
+                                }
                             </div>
                         </div>
                         <div className="post-info">
