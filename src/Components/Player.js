@@ -102,7 +102,10 @@ const VideoStyled = styled.div`
             max-width: none;
             width: 100%;
 
+            
+
             .post-card{
+                box-shadow: none;
                 max-width: 72rem;
                 left: 50%;
                 top: 50%;
@@ -116,6 +119,10 @@ const VideoStyled = styled.div`
 
                 .thumbnail-container{
                     display: none;
+                    &.ended{
+                        display: inline-block;
+                        position: absolute;
+                    } 
                 }
     
                 .player-container{
@@ -212,6 +219,48 @@ const VideoStyled = styled.div`
                 position: relative;
                 padding-bottom: 56.25%;
                 width: 100%;
+
+                &.ended{
+                    z-index: 2;
+
+                    &:after{
+                        background: rgba(0,0,0,0.6);
+                        content: "";
+                        display: block;
+                        height: 100%;
+                        position: absolute;
+                        width: 100%;
+                    }
+
+                    .replay{
+                        display: inline-block;
+                    }
+                    
+                }
+
+                .replay{
+                    border: none;
+                    cursor: pointer;
+                    display: none;
+                    left: 50%;
+                    position: absolute;
+                    opacity: 0.8;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                    transition: all 0.1s;
+                    z-index: 3;
+
+                    @media (hover: hover) {
+                        &:hover{
+                            opacity: 1;
+                        }
+                    }
+
+                    @media (hover: none) {
+                        opacity: 1;
+                    }
+                    
+                }
  
                 .thumbnail{
                     bottom: 0;
@@ -645,6 +694,7 @@ export default class Player extends Component {
         this.vidStart = this.vidStart.bind(this);
         this.vidEnd = this.vidEnd.bind(this);
         this.vidPlay = this.vidPlay.bind(this);
+        this.vidReplay = this.vidReplay.bind(this);
         this.vidStop = this.vidStop.bind(this);
         this.expandVideo = this.expandVideo.bind(this);
         this.closeVideo = this.closeVideo.bind(this);
@@ -664,6 +714,13 @@ export default class Player extends Component {
         this.setState({ isPlaying: true });
     }
 
+    vidReplay() {
+        this.setState({ hasEnded: false });
+        this.setState({ hasStarted: true });
+        this.player.seekTo(0);
+        this.setState({ isPlaying: true });
+    }
+
     vidStop() {
         this.setState({ isPlaying: false });
         this.setState({ hasStarted: false });
@@ -679,6 +736,7 @@ export default class Player extends Component {
     closeVideo() {
         this.setState({ isExpanded: false });
         this.setState({ muted: true })
+        this.setState({ hasEnded: false });
     }
 
     handleDuration = (duration) => {
@@ -697,8 +755,12 @@ export default class Player extends Component {
         this.setState({ secondsLeft: secondsLeft });
     }
 
+    ref = player => {
+        this.player = player
+    }
 
     render() {
+        const replay = require("./images/replay.svg");
         var post = {};
         if (this.state.hasStarted && !this.state.hasEnded) {
             post.time = 'time-box show';
@@ -727,6 +789,12 @@ export default class Player extends Component {
             post.mouseLeave = undefined;
             post.view = 'list';
         }
+        if (this.state.hasEnded) {
+            post.thumbContain = "thumbnail-container ended"
+        } else {
+            post.thumbContain = "thumbnail-container"
+        }
+
 
         //Determine which Source Icon Image to use
         var upvote = require("./images/upvote.svg");
@@ -759,7 +827,6 @@ export default class Player extends Component {
         }
 
 
-
         return (
             <VideoStyled>
                 {!this.props.gridView && !this.state.isExpanded | this.props.isMobile && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
@@ -768,11 +835,12 @@ export default class Player extends Component {
                         <button className={post.button}>Click to expand</button>
                     </div>
                     <div className={post.card}>
-                        <div className="thumbnail-container">
+                        <div className={post.thumbContain}>
                             <img className={post.thumbnail} src={this.state.thumbnail} style={ratioTransformThumbnail} />
                             <span className={post.time}>
                                 <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
                             </span>
+                            {this.state.hasEnded && <button onClick={this.vidReplay} className="replay"><img src={replay} /> </button>}
                         </div>
                         {this.state.isPlaying &&
                             <div className="vertical-background-blur" />
@@ -780,8 +848,9 @@ export default class Player extends Component {
                         <div className="player-container">
                             <div className="player-holder">
                                 <div className="player-inner">
-                                    {this.state.isPlaying &&
+                                    {this.state.isPlaying | this.state.hasEnded &&
                                         <ReactPlayer
+                                            ref={this.ref}
                                             url={this.state.url}
                                             volume={this.state.volume}
                                             playing={this.state.isPlaying}
