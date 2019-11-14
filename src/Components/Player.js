@@ -832,7 +832,7 @@ export default class Player extends Component {
             post.card = "post-card"
         }
 
-        if (this.state.hasStarted) {
+        if (this.state.hasStarted && !this.state.hasEnded) {
             post.thumbHide = "hide"
         } else {
             post.thumbHide = ""
