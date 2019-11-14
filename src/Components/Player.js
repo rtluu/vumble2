@@ -158,7 +158,7 @@ const VideoStyled = styled.div`
             right: 0;
             top: 0;
             text-align: left;
-            z-index: 2;
+            z-index: 3;
 
             @media (hover: hover) {
                 &:hover{
@@ -206,7 +206,7 @@ const VideoStyled = styled.div`
         }
 
         .post-card{
-            background: white;
+            background: #e2e2e2;
             border-radius: 0.25rem;
             box-shadow: 0 0.0675rem 0.25rem 0 rgba(0,0,0,0.15);
             position: relative;
@@ -214,11 +214,11 @@ const VideoStyled = styled.div`
             text-align: left;
 
             .thumbnail-container{
-                background: #e2e2e2;
                 overflow: hidden;
                 position: relative;
                 padding-bottom: 56.25%;
                 width: 100%;
+                z-index: 2;
 
                 &.ended{
                     z-index: 2;
@@ -237,6 +237,57 @@ const VideoStyled = styled.div`
                     }
                     
                 }
+
+                .loading-spinner{
+                    align-items: center;
+                    display: flex;
+                    justify-content: center;
+                    height: 3rem;
+                    left: 50%;
+                    position: absolute;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 3rem;
+                    z-index: 1;
+
+                    .circle{
+                        display: block;
+                        border-radius: 50%;
+                        border: 0.25rem solid #fff;
+                        position: absolute;
+                       
+                        &.large{
+                            animation: spin-right 1s linear infinite;
+                            border-color: #fff #fff #fff transparent;
+                            height: 2.5rem;
+                            width: 2.5rem;
+                        }
+
+                        &.small{
+                            animation: spin-left 1s linear infinite;
+                            border-color: #fff #fff #fff transparent;
+                            height: 1.25rem;
+                            width: 1.25rem;
+                        }
+                    }
+                }
+                @keyframes spin-right {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(360deg);
+                    }
+                }
+                @keyframes spin-left {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(-360deg);
+                    }
+                }
+
 
                 .replay{
                     border: none;
@@ -269,6 +320,10 @@ const VideoStyled = styled.div`
                     right: 0;
                     top: 0;                    
                     width: 100%;
+
+                    &.hide{
+                        opacity: 0;
+                    }
                 }
 
                 .time-box{
@@ -325,55 +380,6 @@ const VideoStyled = styled.div`
                         height: 0;
                         width: 0;
                         z-index: 2;
-                    }
-
-                    .loading-spinner{
-                        align-items: center;
-                        display: flex;
-                        justify-content: center;
-                        height: 3rem;
-                        left: 50%;
-                        position: absolute;
-                        top: 50%;
-                        transform: translate(-50%, -50%);
-                        width: 3rem;
-
-                        .circle{
-                            display: block;
-                            border-radius: 50%;
-                            border: 0.25rem solid #fff;
-                            position: absolute;
-                           
-                            &.large{
-                                animation: spin-right 1s linear infinite;
-                                border-color: #fff #fff #fff transparent;
-                                height: 2.5rem;
-                                width: 2.5rem;
-                            }
-
-                            &.small{
-                                animation: spin-left 1s linear infinite;
-                                border-color: #fff #fff #fff transparent;
-                                height: 1.25rem;
-                                width: 1.25rem;
-                            }
-                        }
-                    }
-                    @keyframes spin-right {
-                        0% {
-                            transform: rotate(0deg);
-                        }
-                        100% {
-                            transform: rotate(360deg);
-                        }
-                    }
-                    @keyframes spin-left {
-                        0% {
-                            transform: rotate(0deg);
-                        }
-                        100% {
-                            transform: rotate(-360deg);
-                        }
                     }
 
                     .player-inner{
@@ -826,6 +832,12 @@ export default class Player extends Component {
             post.card = "post-card"
         }
 
+        if (this.state.hasStarted) {
+            post.thumbHide = "hide"
+        } else {
+            post.thumbHide = ""
+        }
+
 
         return (
             <VideoStyled>
@@ -836,7 +848,13 @@ export default class Player extends Component {
                     </div>
                     <div className={post.card}>
                         <div className={post.thumbContain}>
-                            <img className={post.thumbnail} src={this.state.thumbnail} style={ratioTransformThumbnail} />
+                            {this.state.isPlaying && !this.state.hasStarted &&
+                                <span className="loading-spinner">
+                                    <span className="circle large" />
+                                    <span className="circle small" />
+                                </span>
+                            }
+                            <img className={post.thumbnail + ' ' + post.thumbHide} src={this.state.thumbnail} style={ratioTransformThumbnail} />
                             <span className={post.time}>
                                 <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
                             </span>
@@ -864,12 +882,6 @@ export default class Player extends Component {
                                         />
                                     }
                                 </div>
-                                {this.state.isPlaying && !this.state.hasStarted &&
-                                    <span className="loading-spinner">
-                                        <span className="circle large" />
-                                        <span className="circle small" />
-                                    </span>
-                                }
                             </div>
                         </div>
                         <div className="post-info">
