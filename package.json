@@ -7,6 +7,7 @@
     "lodash": "^4.17.15",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
+    "react-ga": "^2.7.0",
     "react-player": "^1.13.0",
     "react-scripts": "3.2.0",
     "react-waypoint": "^9.0.2",
