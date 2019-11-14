@@ -7,10 +7,9 @@ import styled from "styled-components";
 import { Waypoint } from 'react-waypoint';
 import ReactGA from 'react-ga';
 
-function initializeReactGA() {
-  ReactGA.initialize('UA-152512551-1');
-  ReactGA.pageview('/home');
-}
+ReactGA.initialize('UA-152512551-1');
+ReactGA.pageview('/home');
+
 
 const AppStyled = styled.div`
   
