@@ -490,6 +490,12 @@ class App extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.state.files.length > 0 && this.state.files.length < 7) {
+      this.nextPage();
+    }
+  }
+
   changeSubreddit(sub) {
     this.setState({
       files: [],

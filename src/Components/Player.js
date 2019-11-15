@@ -573,31 +573,43 @@ export default class Player extends Component {
         } else if (post.domain === "v.redd.it") {
             isReddit = true;
             //Determine if Reddit video is a Crosspost or Original
-            if (post.thumbnail) {
-                if (post.crosspost_parent) {
-                    if (post.crosspost_parent_list[0].preview) {
-                        thumbnail = post.crosspost_parent_list[0].preview.images[0].source.url;
-                    } else {
-                        thumbnail = post.thumbnail;
-                    }
-                    vidHeight = post.crosspost_parent_list[0].media.reddit_video.height;
-                    vidWidth = post.crosspost_parent_list[0].media.reddit_video.width;
-                    playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
+            if (post.crosspost_parent) {
+                vidHeight = post.crosspost_parent_list[0].media.reddit_video.height;
+                vidWidth = post.crosspost_parent_list[0].media.reddit_video.width;
+                playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
+
+                if (post.crosspost_parent_list[0].preview) {
+                    thumbnail = post.crosspost_parent_list[0].preview.images[0].source.url;
+                    thumbnail = thumbnail.split('&amp;').join('&');
+                    vidRatio = vidHeight / vidWidth;
+                } else if (post.thumbnail) {
+                    thumbnail = post.thumbnail;
+                    thumbnail = thumbnail.split('&amp;').join('&');
+                    vidRatio = vidHeight / vidWidth;
                 } else {
-                    if (post.preview.images[0]) {
-                        thumbnail = post.preview.images[0].source.url;
-                    } else {
-                        thumbnail = post.thumbnail;
-                    }
-                    vidHeight = post.media.reddit_video.height;
-                    vidWidth = post.media.reddit_video.width;
-                    playerReadyUrl = post.media.reddit_video.fallback_url;
+                    thumbnail = require("./images/confused-bee.png");
+                    vidRatio = null;
                 }
-                //Un-encode Thumbnail URL
-                thumbnail = thumbnail.split('&amp;').join('&');
+
+            } else {
+                vidHeight = post.media.reddit_video.height;
+                vidWidth = post.media.reddit_video.width;
+                playerReadyUrl = post.media.reddit_video.fallback_url;
+                if (post.preview) {
+                    thumbnail = post.preview.images[0].source.url;
+                    thumbnail = thumbnail.split('&amp;').join('&');
+                    vidRatio = vidHeight / vidWidth;
+                } else if (post.thumbnail) {
+                    thumbnail = post.thumbnail;
+                    thumbnail = thumbnail.split('&amp;').join('&');
+                    vidRatio = vidHeight / vidWidth;
+                } else {
+                    thumbnail = require("./images/confused-bee.png");
+                    vidRatio = null;
+                }
+
             }
-            // Detecting Video Ratio
-            vidRatio = vidHeight / vidWidth;
+
             if (vidRatio > 1) {
                 ratioTransform = 37.5;
                 vidVert = true;
@@ -613,6 +625,7 @@ export default class Player extends Component {
                 url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
                 vidHeight = post.crosspost_parent_list[0].media.oembed.height;
                 vidWidth = post.crosspost_parent_list[0].media.oembed.width;
+                vidRatio = vidHeight / vidWidth;
                 url = url.split('.com/')[1];
                 id = url.split('-size')[0];
                 playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
@@ -622,21 +635,17 @@ export default class Player extends Component {
                 url = post.media.oembed.thumbnail_url;
                 vidHeight = post.media.oembed.height;
                 vidWidth = post.media.oembed.width;
+                vidRatio = vidHeight / vidWidth;
                 url = url.split('.com/')[1];
                 id = url.split('-size')[0];
                 playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
                 playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
             } else {
-                vidHeight = post.preview.images[0].source.height;
-                vidWidth = post.preview.images[0].source.width;
                 id = post.url.split('.com/')[1];
                 playerReadyUrl = post.preview.reddit_video_preview.fallback_url;
-
-                //Need to Add 'No Thumbnail Found'
-                playerReadyThumbnail = require("./images/confused-bee.png");;
+                playerReadyThumbnail = require("./images/confused-bee.png");
 
             }
-            vidRatio = vidHeight / vidWidth;
             // Detecting Video Ratio
             if (vidRatio > 1) {
                 ratioTransform = 37.5;
@@ -656,7 +665,7 @@ export default class Player extends Component {
             if (post.media != null) {
                 thumbnail = post.media.oembed.thumbnail_url;
             } else {
-                thumbnail = null;
+                thumbnail = require("./images/confused-bee.png");
             }
 
             playerReadyUrl = url;
