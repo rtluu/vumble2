@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import ReactPlayer from 'react-player'
-// import Comments from './Comments';
+import Comments from './Comments';
 import { Waypoint } from 'react-waypoint';
 
 const VideoStyled = styled.div`
@@ -923,10 +923,9 @@ export default class Player extends Component {
                                 </div>
                             </div>
                         </div>
-                        {/* Comments */}
-                        {/* {this.state.isExpanded &&
+                        {this.state.isExpanded &&
                             <Comments permalink={this.state.permalink} />
-                        } */}
+                        }
                     </div>
                 </div>
                 {!this.props.gridView && !this.state.isExpanded | this.props.isMobile && !this.state.isExpanded && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}

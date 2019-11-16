@@ -11,6 +11,7 @@
     "react-player": "^1.13.0",
     "react-scripts": "3.2.0",
     "react-waypoint": "^9.0.2",
+    "snoowrap": "^1.20.1",
     "styled-components": "^4.4.0"
   },
   "scripts": {
