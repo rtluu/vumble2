@@ -21,12 +21,13 @@ const VideoStyled = styled.div`
         width: 100%;
 
         &:hover{
-            .post-card{
-                .player-container{
-                    .player-holder{
-                        &:after{
-                            display:inline-block;
-                        }
+            .iframeblocker{
+                iframe-icons{
+                    &:before{
+                        display:inline-block;
+                    }
+                    &:after{
+                        display:inline-block;
                     }
                 }
             }
@@ -102,7 +103,11 @@ const VideoStyled = styled.div`
             max-width: none;
             width: 100%;
 
-            
+            .iframe-blocker{
+                .iframe-icons{
+                    display: none;
+                }
+            }
 
             .post-card{
                 box-shadow: none;
@@ -135,10 +140,6 @@ const VideoStyled = styled.div`
                             width: 100% !important;
                         }
                     }
-                    
-                    .time-box{
-                        display: none;
-                    }
                 }
                 .post-info{
                     padding: 0.75rem;
@@ -162,47 +163,140 @@ const VideoStyled = styled.div`
 
             @media (hover: hover) {
                 &:hover{
-                    .expand-button{
+                    .iframe-icons{
                         &.show{
                             opacity: 1;
                         }
                     }
+                    
                 }
             }
 
             @media (hover: none) {
-                .expand-button{
+                .iframe-icons{
                     &.show{
                         opacity: 1;
                     }
                 }
+                
             }
 
-            .expand-button{
-                background: rgba(0,0,0,0.2);
-                border: 0.0675rem solid white;
-                border-radius: 0.25rem;
-                color: white;
-                cursor: pointer;
-                font-size: 0.75rem;
-                font-weight: 700;
-                margin: 0.75rem;
-                opacity: 0;
-                outline: none;
+            .iframe-icons{
+                overflow: hidden;
                 position: relative;
-                padding: 0.25rem 0.5rem;
+                padding-bottom: 56.25%;
+                width: 100%;
+                opacity: 0;
                 transition: all 0.2s;
 
-                @media (hover: hover) {
-                    &:hover{ 
-                        background: rgba(0,0,0,0.8);
+                &:before{
+                    border-radius: 2rem 0 0 0;
+                    box-shadow: 1rem -1rem 4rem 1.5rem rgba(0,0,0,0.4);
+                    content: '';
+                    display: inline-block;
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    height: 0;
+                    width: 0;
+                    z-index: 2;
+                }
+
+                &:after{
+                    border-radius: 2rem 0 0 0;
+                    box-shadow: -1rem -1rem 4rem 1.5rem rgba(0,0,0,0.4);
+                    content: '';
+                    display: inline-block;
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    height: 0;
+                    width: 0;
+                    z-index: 2;
+                }
+
+                .expand-button{
+                    background: rgba(0,0,0,0.2);
+                    border: 0.0675rem solid white;
+                    border-radius: 0.25rem;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    margin: 0.5rem;
+                    outline: none;
+                    position: absolute;
+                    padding: 0.25rem 0.5rem;
+    
+                    @media (hover: hover) {
+                        &:hover{ 
+                            background: rgba(0,0,0,0.8);
+                        }
+                    }
+    
+                    &.hide{
+                        display: none;
                     }
                 }
 
-                &.hide{
-                    display: none;
+                .sound-icon{
+                    bottom: 0;
+                    display: flex;
+                    flex-direction: row;
+                    padding: 0.375rem 0.5rem;
+                    position: absolute;
+                    left: 0;
+                    z-index: 2;
+
+                    @media (hover: hover) {
+                        &:hover{
+                            .sound-text{
+                                opacity: 1;
+                            }    
+                        }
+                    }
+        
+                    @media (hover: none) {
+                        .sound-text{
+                            opacity: 1;
+                        }  
+                    }
+                    
+                    img{
+                        display: block;
+                    }
+
+                    .sound-text{
+                        color: white;
+                        margin-left: 0.1875rem;
+                        opacity: 0;
+                        transition: all 0.2s;
+                    }
                 }
+
+                .time-box{
+                    bottom: 0;
+                    position: absolute;
+                    padding: 0.375rem 0.5rem;
+                    right: 0;
+                    pointer-events: none;
+                    z-index: 3;
+                    transition: all 0.2s;
+
+                    .time-left{
+                        color: white;
+
+                        .spacer{
+                            display: inline-block;
+                            position: relative;
+                            height: 0.2rem
+                            width: 0.0675rem;
+                        }
+                    }
+                }  
             }
+
+            
         }
 
         .post-card{
@@ -325,36 +419,10 @@ const VideoStyled = styled.div`
                         opacity: 0;
                     }
                 }
-
-                .time-box{
-                    bottom: 0;
-                    position: absolute;
-                    padding: 0.25rem;
-                    margin: 0.125rem;
-                    right: 0;
-                    opacity: 0;
-                    pointer-events: none;
-                    z-index: 3;
-                    transition: all 0.2s;
-
-                    &.show{
-                        opacity: 1;
-                    }
-
-                    .time-left{
-                        color: white;
-
-                        .spacer{
-                            display: inline-block;
-                            position: relative;
-                            height: 0.2rem
-                            width: 0.0675rem;
-                        }
-                    }
-                }  
             }
 
             .player-container{
+                background: black;
                 cursor: pointer;
                 position: absolute;
                 bottom: 0;
@@ -369,18 +437,6 @@ const VideoStyled = styled.div`
                     overflow: hidden;
                     top: 0;
 
-                    &:after{
-                        border-radius: 2rem 0 0 0;
-                        box-shadow: -1rem -1rem 4rem 1.5rem rgba(0,0,0,0.4);
-                        content: '';
-                        display: none;
-                        position: absolute;
-                        bottom: 0;
-                        right: 0;
-                        height: 0;
-                        width: 0;
-                        z-index: 2;
-                    }
 
                     .player-inner{
                         position: absolute;
@@ -722,11 +778,15 @@ export default class Player extends Component {
     }
 
     vidEnd() {
+        if (!this.state.isExpanded) {
+            this.setState({ isPlaying: false });
+        }
         this.setState({ hasEnded: true });
     }
 
     vidPlay() {
         this.setState({ isPlaying: true });
+        this.setState({ hasEnded: false });
     }
 
     vidReplay() {
@@ -778,14 +838,9 @@ export default class Player extends Component {
         const replay = require("./images/replay.svg");
         var post = {};
         if (this.state.hasStarted && !this.state.hasEnded) {
-            post.time = 'time-box show';
+            post.icons = 'iframe-icons show';
         } else {
-            post.time = 'time-box';
-        }
-        if (this.state.hasStarted) {
-            post.button = 'expand-button show';
-        } else {
-            post.button = 'expand-button';
+            post.icons = 'iframe-icons';
         }
         if (this.state.isExpanded) {
             post.expand = 'post-block expanded';
@@ -814,19 +869,26 @@ export default class Player extends Component {
         //Determine which Source Icon Image to use
         var upvote = require("./images/upvote.svg");
         var comment = require("./images/comments.svg");
-        var imgSrc;
         if (this.state.isYT) {
             post.type = 'youtube';
-            imgSrc = require("./images/youtube-logo.svg");
+            post.imgSrc = require("./images/youtube-logo.svg");
+            post.soundSrc = require("./images/muted.svg");
+            post.soundText = "Muted";
         } else if (this.state.isReddit) {
             post.type = 'reddit';
-            imgSrc = require("./images/reddit-logo.svg");
+            post.imgSrc = require("./images/reddit-logo.svg");
+            post.soundSrc = require("./images/no-sound.svg");
+            post.soundText = "No sound";
         } else if (this.state.isGfycat) {
             post.type = 'gfycat';
-            imgSrc = require("./images/gfycat-logo.svg");
+            post.imgSrc = require("./images/gfycat-logo.svg");
+            post.soundSrc = require("./images/no-sound.svg");
+            post.soundText = "No sound";
         } else if (this.state.isStreamable) {
             post.type = 'streamable';
-            imgSrc = require("./images/streamable-logo.svg");
+            post.imgSrc = require("./images/streamable-logo.svg");
+            post.soundSrc = require("./images/muted.svg");
+            post.soundText = "Muted";
         }
 
         // Change style for vertical videos - Reddit & Gfycat
@@ -853,7 +915,16 @@ export default class Player extends Component {
                 {!this.props.gridView && !this.state.isExpanded | this.props.isMobile && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
                 <div className={'' + post.expand + ' ' + post.type + ' ' + post.view}>
                     <div className="iframe-blocker" onMouseEnter={post.mouseEnter} onMouseLeave={post.mouseLeave} onClick={post.blocker}>
-                        <button className={post.button}>Click to expand</button>
+                        <div className={post.icons}>
+                            <button className="expand-button">Click to expand</button>
+                            <div className="sound-icon">
+                                <img src={post.soundSrc} />
+                                <p className="sound-text">{post.soundText}</p>
+                            </div>
+                            <span className="time-box">
+                                <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
+                            </span>
+                        </div>
                     </div>
                     <div className={post.card}>
                         <div className={post.thumbContain}>
@@ -864,9 +935,6 @@ export default class Player extends Component {
                                 </span>
                             }
                             <img className={post.thumbnail + ' ' + post.thumbHide} src={this.state.thumbnail} style={ratioTransformThumbnail} />
-                            <span className={post.time}>
-                                <p className="time-left">-<span className="spacer" />{this.state.minutesLeft}:{this.state.secondsLeft}</p>
-                            </span>
                             {this.state.hasEnded && <button onClick={this.vidReplay} className="replay"><img src={replay} /> </button>}
                         </div>
                         {this.state.isPlaying &&
@@ -875,7 +943,7 @@ export default class Player extends Component {
                         <div className="player-container">
                             <div className="player-holder">
                                 <div className="player-inner">
-                                    {this.state.isPlaying | this.state.hasEnded &&
+                                    {this.state.isPlaying | (this.state.hasEnded && !this.state.isExpanded) &&
                                         <ReactPlayer
                                             ref={this.ref}
                                             url={this.state.url}
@@ -919,7 +987,7 @@ export default class Player extends Component {
                                 </div>
 
                                 <div className={"post-type " + post.type}>
-                                    <img src={imgSrc} />
+                                    <img src={post.imgSrc} />
                                 </div>
                             </div>
                         </div>
