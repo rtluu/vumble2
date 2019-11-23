@@ -23,6 +23,60 @@ const VideoListStyled = styled.div`
             grid-template-columns: 30% 30% 30%;
             grid-gap: 3rem 0;
             justify-content: space-evenly;	
+
+            .iBniid{
+                &:nth-child(1){
+                    grid-column: 1 / -1;
+                    flex-direction: row;
+
+                    .post-block{
+                        max-width: none;
+
+                        .iframe-blocker{
+                            display: flex;
+                            flex-direction: row;
+
+                            &:after{
+                                content: '';
+                                display: inline-block;
+                                padding: 0.75rem;
+                                max-width: 15rem !important;
+                                min-width: 15rem !important;
+                            }
+                            .iframe-icons{
+                                padding-bottom: 45.5%;
+                            }
+                        }
+
+                        .post-card{
+                            display: flex;
+                            flex-direction: row;
+
+                            .thumbnail-container{
+                                padding-bottom: 45.5%;
+                            }
+
+                            .player-container{
+                                .player-holder{
+                                    padding-bottom: 45.5%;
+                                    &:after{
+                                        content: '';
+                                        display: inline-block;
+                                        padding: 0.75rem;
+                                        min-width: 15rem !important;
+                                    }
+                                }
+                            }
+
+                            .post-info{
+                                max-width: 15rem !important;
+                                min-width: 15rem !important;
+                            }
+                        }
+                    }
+                }
+            }
+            
             
             width: 100%;
 
@@ -63,8 +117,8 @@ export default class VideoList extends Component {
         return (
             <VideoListStyled>
                 <div className={list.class}>
-                    {files.map((file) => (
-                        <Player key={file.data.id} file={file} gridView={this.props.gridView} isMobile={this.state.isMobile} />
+                    {files.map((file, index) => (
+                        <Player key={file.data.id} index={index} file={file} gridView={this.props.gridView} isMobile={this.state.isMobile} />
                     ))}
                 </div>
                 {!files.length > 0 &&

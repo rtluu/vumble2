@@ -772,6 +772,12 @@ export default class Player extends Component {
         this.handleDuration = this.handleDuration.bind(this);
     }
 
+    componentDidMount() {
+        if (this.props.index === 0) {
+            this.vidPlay();
+        }
+    }
+
     vidStart() {
         this.setState({ hasStarted: true });
         this.setState({ hasEnded: false });
