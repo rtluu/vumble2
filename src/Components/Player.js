@@ -44,9 +44,15 @@ const VideoStyled = styled.div`
         }
 
         &.list{
-            .post-card{
-                &.vertical{
+            &.vertical{
 
+                .iframe-blocker{
+                    .iframe-icons{
+                        padding-bottom: 100%;
+                    }
+                }
+
+                .post-card{
                     @media (max-width: 40rem) {
                         .thumbnail-container{
                             padding-bottom: 100%;
@@ -54,9 +60,9 @@ const VideoStyled = styled.div`
                                 transform: translateY(0) !important;
                             }
                         }
-
+    
                         .player-container{
-
+    
                             .player-holder{
                                 padding-bottom: 100%;
                                 top: 0 !important;
@@ -76,6 +82,7 @@ const VideoStyled = styled.div`
                     }
                 }
             }
+            
 
             .vertical-background-blur{
                 background: black;
@@ -897,10 +904,10 @@ export default class Player extends Component {
         };
         if (this.state.isVert && !this.state.isExpanded) {
             post.thumbnail = "thumbnail vertical";
-            post.card = "post-card vertical"
+            post.vertical = "vertical"
         } else {
             post.thumbnail = "thumbnail";
-            post.card = "post-card"
+            post.vertical = ""
         }
 
         if (this.state.hasStarted && !this.state.hasEnded) {
@@ -913,7 +920,7 @@ export default class Player extends Component {
         return (
             <VideoStyled>
                 {!this.props.gridView && !this.state.isExpanded | this.props.isMobile && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
-                <div className={'' + post.expand + ' ' + post.type + ' ' + post.view}>
+                <div className={'' + post.expand + ' ' + post.type + ' ' + post.view + ' ' + post.vertical}>
                     <div className="iframe-blocker" onMouseEnter={post.mouseEnter} onMouseLeave={post.mouseLeave} onClick={post.blocker}>
                         <div className={post.icons}>
                             <button className="expand-button">Click to expand</button>
@@ -926,7 +933,7 @@ export default class Player extends Component {
                             </span>
                         </div>
                     </div>
-                    <div className={post.card}>
+                    <div className="post-card">
                         <div className={post.thumbContain}>
                             {this.state.isPlaying && !this.state.hasStarted &&
                                 <span className="loading-spinner">
