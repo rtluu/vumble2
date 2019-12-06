@@ -683,20 +683,26 @@ export default class Player extends Component {
             playerReadyThumbnail = thumbnail;
         } else if (post.domain === "gfycat.com") {
             isGfycat = true;
-
-            console.log(post);
             //Determine if Gfycat video is a Crosspost or Original
             if (post.crosspost_parent) {
+                url = post.crosspost_parent_list[0].media.oembed.thumbnail_url;
+                vidHeight = post.crosspost_parent_list[0].media.oembed.height;
+                vidWidth = post.crosspost_parent_list[0].media.oembed.width;
+                vidRatio = vidHeight / vidWidth;
                 url = url.split('.com/')[1];
                 id = url.split('-size')[0];
                 playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
-                playerReadyThumbnail = post.thumbnail;
+                playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
             }
-            else if (post.thumbnail) {
+            else if (post.media) {
+                url = post.media.oembed.thumbnail_url;
+                vidHeight = post.media.oembed.height;
+                vidWidth = post.media.oembed.width;
+                vidRatio = vidHeight / vidWidth;
                 url = url.split('.com/')[1];
                 id = url.split('-size')[0];
                 playerReadyUrl = 'https://thumbs.gfycat.com/' + id + '-mobile.mp4';
-                playerReadyThumbnail = post.thumbnail;
+                playerReadyThumbnail = 'https://thumbs.gfycat.com/' + id + '-mobile.jpg';
             } else {
                 id = post.url.split('.com/')[1];
                 playerReadyUrl = post.preview.reddit_video_preview.fallback_url;
