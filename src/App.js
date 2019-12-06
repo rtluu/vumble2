@@ -2,9 +2,10 @@ import _ from 'lodash';
 import React from 'react';
 import './App.css';
 import VideoList from './Components/VideoList';
-import Footer from './Components/Footer'
+import Footer from './Components/Footer';
 import styled from "styled-components";
 import { Waypoint } from 'react-waypoint';
+import { Link } from 'react-router-dom';
 import ReactGA from 'react-ga';
 
 ReactGA.initialize('UA-152512551-1');
@@ -225,30 +226,32 @@ const AppStyled = styled.div`
       }
 
       .menu{
+        align-items: center;
+        background: white;
         border-radius: 50%;
         cursor: pointer;
         display: flex;
-        flex-direction: row;
-        padding: 0.75rem 0.25rem;
+        justify-content: center; 
+        height: 1.75rem;
+        width: 1.75rem;
+
+        @media (max-width: 50rem) {
+          height: 1.5rem;
+          width: 1.5rem;
+        }
 
         @media (hover: hover) {
           &:hover{ 
-              .circle{
-                background: white;
-              }
+              background: #FFCF20;
           }
         }
 
-        .circle{
-          align-items: center;
-          background: #C4C4C4;
-          border-radius: 50%;
-          display: block;
-          justify-content: center;
-          height: 0.375rem;
-          margin: 0.1rem;
-          width: 0.375rem;
-          transition: all 0.2s;
+        .i{
+          color: black;
+          font-size: 1.25rem;
+          @media (max-width: 50rem) {
+            font-size: 1rem;
+          }
         }
       }
     }
@@ -264,7 +267,7 @@ const AppStyled = styled.div`
     z-index: 10;
 
     @media (max-width: 50rem) {
-      margin-top: 3.5625rem;
+      margin-top: 3.425rem;
     }
 
     .filter-container{
@@ -744,7 +747,7 @@ class App extends React.Component {
       <AppStyled>
         <header className="App-header">
           <div className="header-options">
-            <div className="logo-holder"><a href="/"><img alt="Vumble-Logo" src={logo} /></a></div>
+            <div className="logo-holder"><a href="/"><img alt="Vumble logo" src={logo} /></a></div>
             <div className={subreddit.container}>
               <div className="subreddit-holder">
                 <span className="r-slash"><h2>r/</h2></span>
@@ -772,11 +775,9 @@ class App extends React.Component {
                 </div>
               </div>
             </div>
-            <div className="menu">
-              <span className="circle" />
-              <span className="circle" />
-              <span className="circle" />
-            </div>
+            <Link className="menu" to="/about">
+              <span className="i">i</span>
+            </Link>
           </div>
         </header>
         <div className="filter-bar">
