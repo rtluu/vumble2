@@ -1,17 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.e859534e.chunk.css",
-    "main.js": "/static/js/main.611915ad.chunk.js",
-    "main.js.map": "/static/js/main.611915ad.chunk.js.map",
+    "main.js": "/static/js/main.1c88f094.chunk.js",
+    "main.js.map": "/static/js/main.1c88f094.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.7dada75e.js",
     "runtime-main.js.map": "/static/js/runtime-main.7dada75e.js.map",
-    "static/js/2.ca7ca5a2.chunk.js": "/static/js/2.ca7ca5a2.chunk.js",
-    "static/js/2.ca7ca5a2.chunk.js.map": "/static/js/2.ca7ca5a2.chunk.js.map",
+    "static/js/2.d84d0f68.chunk.js": "/static/js/2.d84d0f68.chunk.js",
+    "static/js/2.d84d0f68.chunk.js.map": "/static/js/2.d84d0f68.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.99cc5a232585d1d32b13a69bda1b6d31.js": "/precache-manifest.99cc5a232585d1d32b13a69bda1b6d31.js",
+    "precache-manifest.67812f2ec2e289a6437daffe8158df1a.js": "/precache-manifest.67812f2ec2e289a6437daffe8158df1a.js",
     "service-worker.js": "/service-worker.js",
     "static/css/main.e859534e.chunk.css.map": "/static/css/main.e859534e.chunk.css.map",
-    "static/media/about-banner.png": "/static/media/about-banner.336f0b68.png",
     "static/media/comments.svg": "/static/media/comments.8de25a70.svg",
     "static/media/down-arrow.svg": "/static/media/down-arrow.a9b06a06.svg",
     "static/media/gfycat-logo.svg": "/static/media/gfycat-logo.60dffe6b.svg",
@@ -33,8 +32,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.7dada75e.js",
-    "static/js/2.ca7ca5a2.chunk.js",
+    "static/js/2.d84d0f68.chunk.js",
     "static/css/main.e859534e.chunk.css",
-    "static/js/main.611915ad.chunk.js"
+    "static/js/main.1c88f094.chunk.js"
   ]
 }
