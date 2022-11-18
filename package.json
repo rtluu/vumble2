@@ -9,7 +9,7 @@
     "react-dom": "^16.10.2",
     "react-ga": "^2.7.0",
     "react-player": "^1.13.0",
-    "react-scripts": "3.2.0",
+    "react-scripts": "5.0.1",
     "react-waypoint": "^9.0.2",
     "styled-components": "^4.4.0"
   },
