@@ -9,21 +9,21 @@ const VideoListStyled = styled.div`
     justify-content: flex-start;
     padding-top: 1rem;
     width: 100%;
-    
+
     .video-list{
         align-items: center;
         display: grid;
         grid-template-columns: 100%;
-        max-width: 72rem;  
+        max-width: 72rem;
         width: 100%
-        
+
 
         &.grid{
             align-items: stretch;
             grid-template-columns: 30% 30% 30%;
             grid-gap: 1rem 0;
-            justify-content: space-evenly;	
-            
+            justify-content: space-evenly;
+
             width: 100%;
 
             @media (max-width: 60rem) {
@@ -40,18 +40,29 @@ const VideoListStyled = styled.div`
 `
 
 export default class VideoList extends Component {
-    constructor(props) {
-        super(props);
+    state = {
+        expandedIndex: null,
+    };
 
-        this.state = {
+    handleExpand = (index) => {
+        this.setState({ expandedIndex: index });
+    }
 
-        };
+    handleClose = () => {
+        this.setState({ expandedIndex: null });
+    }
 
+    handlePrev = () => {
+        this.setState(s => ({ expandedIndex: s.expandedIndex - 1 }));
+    }
+
+    handleNext = () => {
+        this.setState(s => ({ expandedIndex: s.expandedIndex + 1 }));
     }
 
     render() {
         const files = this.props.files;
-
+        const { expandedIndex } = this.state;
 
         var list = {};
         if (this.props.gridView && !this.state.isMobile) {
@@ -63,8 +74,18 @@ export default class VideoList extends Component {
         return (
             <VideoListStyled>
                 <div className={list.class}>
-                    {files.map((file) => (
-                        <Player key={file.data.id} file={file} gridView={this.props.gridView} isMobile={this.state.isMobile} />
+                    {files.map((file, index) => (
+                        <Player
+                            key={file.data.id}
+                            file={file}
+                            gridView={this.props.gridView}
+                            isMobile={this.state.isMobile}
+                            isExpanded={expandedIndex === index}
+                            onExpand={() => this.handleExpand(index)}
+                            onClose={this.handleClose}
+                            onPrev={expandedIndex > 0 ? this.handlePrev : null}
+                            onNext={expandedIndex < files.length - 1 ? this.handleNext : null}
+                        />
                     ))}
                 </div>
                 {!files.length > 0 &&

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import ReactPlayer from 'react-player'
-// import Comments from './Comments';
+import Comments from './Comments';
 import { Waypoint } from 'react-waypoint';
 
 const VideoStyled = styled.div`
@@ -105,27 +105,66 @@ const VideoStyled = styled.div`
             z-index: 100;
             bottom: 0;
             left: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             right: 0;
             top: 0;
             max-width: none;
             width: 100%;
 
             .iframe-blocker{
-                .iframe-icons{
-                    display: none;
+                display: none;
+            }
+
+            .close-btn, .prev-btn, .next-btn{
+                background: rgba(0,0,0,0.5);
+                border: 0.0675rem solid rgba(255,255,255,0.25);
+                border-radius: 50%;
+                color: white;
+                cursor: pointer;
+                font-size: 1.125rem;
+                height: 2.25rem;
+                line-height: 2.25rem;
+                position: fixed;
+                width: 2.25rem;
+                z-index: 200;
+
+                @media (hover: hover) {
+                    &:hover{
+                        background: rgba(255,255,255,0.2);
+                    }
                 }
+            }
+
+            .close-btn{
+                right: 1rem;
+                top: 1rem;
+            }
+
+            .prev-btn{
+                left: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .next-btn{
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
             }
 
             .post-card{
                 box-shadow: none;
-                max-width: 72rem;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
+                left: auto;
+                margin: 2rem auto;
+                max-width: 60rem;
+                top: auto;
+                transform: none;
                 width: calc(100% - 4rem);
                 z-index: 3;
 
                 @media (max-width: 40rem) {
+                    margin: 0 auto;
                     width: 100%;
                 }
 
@@ -134,9 +173,9 @@ const VideoStyled = styled.div`
                     &.ended{
                         display: inline-block;
                         position: absolute;
-                    } 
+                    }
                 }
-    
+
                 .player-container{
                     position: relative;
 
@@ -150,12 +189,12 @@ const VideoStyled = styled.div`
                 }
                 .post-info{
                     padding: 0.75rem;
-                    
+
                     .post-title{
                         font-size: 1.25rem;
-                    }  
+                    }
                 }
-            } 
+            }
         }
 
         .iframe-blocker{
@@ -813,16 +852,23 @@ export default class Player extends Component {
         this.setState({ muted: true })
     }
 
+    componentDidUpdate(prevProps) {
+        // Sync expansion driven by prev/next navigation
+        if (!prevProps.isExpanded && this.props.isExpanded && !this.state.isExpanded) {
+            this.setState({ isExpanded: true, muted: false, isPlaying: true });
+        } else if (prevProps.isExpanded && !this.props.isExpanded && this.state.isExpanded) {
+            this.setState({ isExpanded: false, muted: true, hasEnded: false, isPlaying: false });
+        }
+    }
+
     expandVideo() {
-        this.setState({ isExpanded: true });
-        this.setState({ muted: false })
-        this.setState({ isPlaying: true });
+        this.setState({ isExpanded: true, muted: false, isPlaying: true });
+        this.props.onExpand();
     }
 
     closeVideo() {
-        this.setState({ isExpanded: false });
-        this.setState({ muted: true })
-        this.setState({ hasEnded: false });
+        this.setState({ isExpanded: false, muted: true, hasEnded: false });
+        this.props.onClose();
     }
 
     handleDuration = (duration) => {
@@ -924,7 +970,16 @@ export default class Player extends Component {
         return (
             <VideoStyled>
                 {!this.props.gridView && !this.state.isExpanded | this.props.isMobile && !this.state.isExpanded && <Waypoint onEnter={this.vidPlay} bottomOffset={'30%'} />}
-                <div className={'' + post.expand + ' ' + post.type + ' ' + post.view + ' ' + post.vertical}>
+                <div className={'' + post.expand + ' ' + post.type + ' ' + post.view + ' ' + post.vertical} onClick={this.state.isExpanded ? this.closeVideo : undefined}>
+                    {this.state.isExpanded && (
+                        <button className="close-btn" onClick={this.closeVideo}>✕</button>
+                    )}
+                    {this.state.isExpanded && this.props.onPrev && (
+                        <button className="prev-btn" onClick={e => { e.stopPropagation(); this.props.onPrev(); }}>‹</button>
+                    )}
+                    {this.state.isExpanded && this.props.onNext && (
+                        <button className="next-btn" onClick={e => { e.stopPropagation(); this.props.onNext(); }}>›</button>
+                    )}
                     <div className="iframe-blocker" onMouseEnter={post.mouseEnter} onMouseLeave={post.mouseLeave} onClick={post.blocker}>
                         <div className={post.icons}>
                             <button className="expand-button">Click to expand</button>
@@ -937,7 +992,7 @@ export default class Player extends Component {
                             </span>
                         </div>
                     </div>
-                    <div className="post-card">
+                    <div className="post-card" onClick={this.state.isExpanded ? e => e.stopPropagation() : undefined}>
                         <div className={post.thumbContain}>
                             {this.state.isPlaying && !this.state.hasStarted &&
                                 <span className="loading-spinner">
@@ -1002,10 +1057,9 @@ export default class Player extends Component {
                                 </div>
                             </div>
                         </div>
-                        {/* Comments */}
-                        {/* {this.state.isExpanded &&
+                        {this.state.isExpanded &&
                             <Comments permalink={this.state.permalink} />
-                        } */}
+                        }
                     </div>
                 </div>
                 {!this.props.gridView && !this.state.isExpanded | this.props.isMobile && !this.state.isExpanded && <Waypoint onLeave={this.vidStop} topOffset={'30%'} />}
