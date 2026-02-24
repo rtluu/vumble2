@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React from 'react';
 import './App.css';
 import VideoList from './Components/VideoList';
@@ -258,7 +257,7 @@ const AppStyled = styled.div`
     background: #2A2B2A;
     border-top: 0.0675rem solid #333333;
     display: inline-block;
-    margin-top: 3.75rem;
+    margin-top: 3.6rem;
     position: relative;
     width: 100%;
     z-index: 10;
@@ -439,6 +438,45 @@ const AppStyled = styled.div`
         padding: 1rem;
         position: relative;
       }
+
+      .loading-spinner {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 3rem;
+        width: 3rem;
+        position: relative;
+
+        .circle {
+          display: block;
+          border-radius: 50%;
+          border: 0.25rem solid #fff;
+          position: absolute;
+
+          &.large {
+            animation: spin-right 1s linear infinite;
+            border-color: #C4C4C4 #C4C4C4 #C4C4C4 transparent;
+            height: 2.5rem;
+            width: 2.5rem;
+          }
+
+          &.small {
+            animation: spin-left 1s linear infinite;
+            border-color: #C4C4C4 #C4C4C4 #C4C4C4 transparent;
+            height: 1.25rem;
+            width: 1.25rem;
+          }
+        }
+      }
+
+      @keyframes spin-right {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes spin-left {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(-360deg); }
+      }
     }
   }
 `
@@ -480,28 +518,43 @@ class App extends React.Component {
     gridView: true,
     dropdownSort: false,
     width: window.innerWidth,
+    loading: false,
+    hasMore: true,
   };
 
 
   componentDidMount() {
-    this.changeSubreddit(this.state.currentSubreddit);
+    const sub = (this.props.match && this.props.match.params.subreddit) || 'all';
+    this.changeSubreddit(sub, false);
     if (this.state.width <= 640) {
       this.setState({ gridView: false });
     }
   }
 
-  componentDidUpdate() {
-    if (this.state.files.length > 0 && this.state.files.length < 7) {
+  componentDidUpdate(prevProps) {
+    // Handle browser back/forward navigation
+    const prevSub = prevProps.match && prevProps.match.params.subreddit;
+    const nextSub = this.props.match && this.props.match.params.subreddit;
+    if (prevSub !== nextSub) {
+      this.changeSubreddit(nextSub || 'all', false);
+      return;
+    }
+    if (this.state.files.length > 0 && this.state.files.length < 7 && !this.state.loading && this.state.hasMore) {
       this.nextPage();
     }
   }
 
-  changeSubreddit(sub) {
+  changeSubreddit(sub, pushHistory = true) {
+    if (pushHistory && this.props.history) {
+      this.props.history.push('/r/' + sub);
+    }
     this.setState({
       files: [],
       currentSubreddit: sub,
       page: 1,
       subDropdown: false,
+      loading: false,
+      hasMore: true,
     });
     fetch(this.url + 'r/' + sub + "/" + this.state.sort + '.json')
       .then(res => res.json())
@@ -537,6 +590,8 @@ class App extends React.Component {
       sort: sort,
       page: 1,
       subDropdown: false,
+      loading: false,
+      hasMore: true,
     })
     fetch(this.url + 'r/' + this.state.currentSubreddit + "/" + sort + '.json')
       .then(res => res.json())
@@ -565,6 +620,8 @@ class App extends React.Component {
   }
 
   nextPage = () => {
+    if (this.state.loading || !this.state.hasMore || !this.state.after) return;
+    this.setState({ loading: true });
     fetch(this.url + 'r/' + this.state.currentSubreddit + "/" + this.state.sort + ".json?count=" + (this.state.page * 25) + "&after=" + this.state.after)
       .then(res => res.json())
       .then((data) => {
@@ -583,10 +640,12 @@ class App extends React.Component {
           files: files,
           after: data.data.after,
           before: data.data.before,
-          page: this.state.page + 1
+          page: this.state.page + 1,
+          loading: false,
+          hasMore: !!data.data.after,
         }));
       })
-      .catch(console.log)
+      .catch(() => this.setState({ loading: false }))
   }
 
   searchSubreddit(subreddit) {
@@ -657,7 +716,6 @@ class App extends React.Component {
   }
 
   render() {
-    const searchSubreddit = _.debounce((term) => { this.searchSubreddit(term) }, 600);
     const logo = require("./images/vumble-logo.svg");
     const downArrow = require("./images/down-arrow.svg");
     const search = require("./images/search.svg");
@@ -692,13 +750,18 @@ class App extends React.Component {
     let contentJSX;
     if (this.state.files.length > 0) {
       let pagingJSX;
-      const buttonNext = <button className="next-button" type="submit" onClick={this.nextPage}>More</button>;
-      if (this.state.before === null && this.state.after !== null) {
-        // first page
-        pagingJSX = <div>{buttonNext}</div>;
-      } else if (this.state.before !== null && this.state.after !== null) {
-        // in between pages
-        pagingJSX = <div className="page-switch">{buttonNext}</div>;
+      if (this.state.hasMore) {
+        pagingJSX = (
+          <div>
+            <Waypoint onEnter={this.nextPage} bottomOffset="-200px" />
+            {this.state.loading && (
+              <div className="loading-spinner">
+                <span className="circle large" />
+                <span className="circle small" />
+              </div>
+            )}
+          </div>
+        );
       } else {
         pagingJSX = <div className="page-switch">That's all the videos we found!</div>;
       }
@@ -749,7 +812,7 @@ class App extends React.Component {
               <div className="subreddit-holder">
                 <span className="r-slash"><h2>r/</h2></span>
                 <div className="subreddit-dropdown" ref={node => this.node = node} >
-                  <button className={dropdown.toggleSub} onClick={() => { this.subDropdownOpen(); this.searchActive() }} type="button"><h2>{currentSubreddit}</h2><img className="down-arrow" src={downArrow} /></button>
+                  <button className={dropdown.toggleSub} onClick={() => { this.subDropdownOpen(); this.searchActive() }} type="button"><h2>{currentSubreddit}</h2><img className="down-arrow" src={downArrow} alt="" /></button>
                   <div className="search-bar">
                     <input type="text" className="form-control"
                       onChange={event => this.search(event.target.value)}
@@ -758,15 +821,15 @@ class App extends React.Component {
                       placeholder="Start typing..."
                       ref={elem => (this.textInput = elem)}
                       autocomplete="off" />
-                    <img className="search-icon" src={search} />
+                    <img className="search-icon" src={search} alt="" />
                   </div>
                   <div className={dropdown.menuSub}>
-                    <a className="dropdown-item" href="#subChange" onClick={() => { this.changeSubreddit(this.videosSubreddit); this.subDropdownClose() }}>r/videos</a>
-                    <a className="dropdown-item" href="#subChange" onClick={() => { this.changeSubreddit(this.documentarySubreddit); this.subDropdownClose() }}>r/documentaries</a>
-                    <a className="dropdown-item" href="#subChange" onClick={() => { this.changeSubreddit(this.artisanSubreddit); this.subDropdownClose() }}>r/artisanvideos</a>
-                    <a className="dropdown-item" href="#subChange" onClick={() => { this.changeSubreddit(this.haikuSubreddit); this.subDropdownClose() }}>r/youtubehaiku</a>
+                    <button className="dropdown-item" onClick={() => { this.changeSubreddit(this.videosSubreddit); this.subDropdownClose() }}>r/videos</button>
+                    <button className="dropdown-item" onClick={() => { this.changeSubreddit(this.documentarySubreddit); this.subDropdownClose() }}>r/documentaries</button>
+                    <button className="dropdown-item" onClick={() => { this.changeSubreddit(this.artisanSubreddit); this.subDropdownClose() }}>r/artisanvideos</button>
+                    <button className="dropdown-item" onClick={() => { this.changeSubreddit(this.haikuSubreddit); this.subDropdownClose() }}>r/youtubehaiku</button>
                     {this.subredditsArray.map((subreddit, index) => (
-                      <a className="dropdown-item" key={index} href="#subChange" onClick={() => { this.changeSubreddit(subreddit); this.subDropdownClose() }}>r/{subreddit}</a>
+                      <button className="dropdown-item" key={index} onClick={() => { this.changeSubreddit(subreddit); this.subDropdownClose() }}>r/{subreddit}</button>
                     ))}
                   </div>
                 </div>
@@ -784,18 +847,18 @@ class App extends React.Component {
             <div className="filter">
               <h6>VIEW</h6>
               <div className={view.switch}>
-                <button className="grid" onClick={this.setGrid}><img src={grid} /></button>
-                <button className="list" onClick={this.setList}><img src={list} /></button>
+                <button className="grid" onClick={this.setGrid}><img src={grid} alt="Grid view" /></button>
+                <button className="list" onClick={this.setList}><img src={list} alt="List view" /></button>
               </div>
             </div>
             <div className="filter-divider" />
             <div className="filter">
               <h6>SORT</h6>
               <div className="sort-dropdown" ref={node2 => this.node2 = node2} >
-                <button className={dropdown.toggleSort} onClick={this.sortDropdownOpen} type="button" ><div><img src={icon} /><p>{this.state.sort}</p></div></button>
+                <button className={dropdown.toggleSort} onClick={this.sortDropdownOpen} type="button" ><div><img src={icon} alt="" /><p>{this.state.sort}</p></div></button>
                 <div className={dropdown.menuSort} aria-labelledby="dropdownMenuButton">
                   {this.sorts.map((sort, index) => (
-                    <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSort(sort)}>{sort}</a>
+                    <button className="dropdown-item" key={index} onClick={() => this.changeSort(sort)}>{sort}</button>
                   ))}
                 </div>
               </div>
@@ -803,9 +866,7 @@ class App extends React.Component {
           </div>
         </div>
         {contentJSX}
-        <div className="waypoint">
-          {/* <Waypoint onEnter={this.nextPage()} /> */}
-        </div>
+
 
         <Footer />
       </AppStyled>

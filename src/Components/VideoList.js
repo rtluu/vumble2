@@ -21,7 +21,7 @@ const VideoListStyled = styled.div`
         &.grid{
             align-items: stretch;
             grid-template-columns: 30% 30% 30%;
-            grid-gap: 3rem 0;
+            grid-gap: 1rem 0;
             justify-content: space-evenly;	
             
             width: 100%;

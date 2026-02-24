@@ -86,14 +86,6 @@ const FooterStyled = styled.footer`
 `
 
 export default class Player extends Component {
-    constructor(props) {
-        super(props);
-
-    }
-    state = {
-
-    }
-
     render() {
         const bee = require("./images/vumble-bee.png")
 
@@ -103,7 +95,7 @@ export default class Player extends Component {
                     <p><a href="https://github.com/rtluu/vumble2">Github</a></p>
 
                     <button className='bee-holder'>
-                        <img className="bee" src={bee} />
+                        <img className="bee" src={bee} alt="Vumble bee" />
                     </button>
 
                     <p>© Vumble 2019</p>

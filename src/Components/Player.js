@@ -599,16 +599,16 @@ export default class Player extends Component {
         var comNum;
         if (post.num_comments > 1000) {
             var commentsnumber = Math.round(post.num_comments / 1000) * 1000;
-            var digits = commentsnumber.toString();
-            var realNumber;
-            if (digits.length === 6) {
-                realNumber = digits.substring(0, 3);
-            } else if (digits.length === 5) {
-                realNumber = digits.substring(0, 2);
-            } else if (digits.length === 4) {
-                realNumber = digits.substring(0, 1);
+            var comDigits = commentsnumber.toString();
+            var comRealNumber;
+            if (comDigits.length === 6) {
+                comRealNumber = comDigits.substring(0, 3);
+            } else if (comDigits.length === 5) {
+                comRealNumber = comDigits.substring(0, 2);
+            } else if (comDigits.length === 4) {
+                comRealNumber = comDigits.substring(0, 1);
             }
-            comNum = realNumber + 'K';
+            comNum = comRealNumber + 'K';
         } else {
             comNum = post.num_comments;
         }
@@ -632,22 +632,26 @@ export default class Player extends Component {
                 id = id.split('?t')[0];
             }
             playerReadyUrl = 'https://www.youtube.com/watch?v=' + id;
-            playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/0.jpg';
+            if (post.preview && post.preview.images && post.preview.images[0]) {
+                playerReadyThumbnail = post.preview.images[0].source.url.split('&amp;').join('&').replace(/^http:\/\//i, 'https://');
+            } else {
+                playerReadyThumbnail = 'https://img.youtube.com/vi/' + id + '/hqdefault.jpg';
+            }
         } else if (post.domain === "v.redd.it") {
             isReddit = true;
             //Determine if Reddit video is a Crosspost or Original
             if (post.crosspost_parent) {
                 vidHeight = post.crosspost_parent_list[0].media.reddit_video.height;
                 vidWidth = post.crosspost_parent_list[0].media.reddit_video.width;
-                playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.fallback_url;
+                playerReadyUrl = post.crosspost_parent_list[0].media.reddit_video.hls_url || post.crosspost_parent_list[0].media.reddit_video.fallback_url;
 
                 if (post.crosspost_parent_list[0].preview) {
                     thumbnail = post.crosspost_parent_list[0].preview.images[0].source.url;
-                    thumbnail = thumbnail.split('&amp;').join('&');
+                    thumbnail = thumbnail.split('&amp;').join('&').replace(/^http:\/\//i, 'https://');
                     vidRatio = vidHeight / vidWidth;
                 } else if (post.thumbnail) {
                     thumbnail = post.thumbnail;
-                    thumbnail = thumbnail.split('&amp;').join('&');
+                    thumbnail = thumbnail.split('&amp;').join('&').replace(/^http:\/\//i, 'https://');
                     vidRatio = vidHeight / vidWidth;
                 } else {
                     thumbnail = require("./images/confused-bee.png");
@@ -657,14 +661,14 @@ export default class Player extends Component {
             } else {
                 vidHeight = post.media.reddit_video.height;
                 vidWidth = post.media.reddit_video.width;
-                playerReadyUrl = post.media.reddit_video.fallback_url;
+                playerReadyUrl = post.media.reddit_video.hls_url || post.media.reddit_video.fallback_url;
                 if (post.preview) {
                     thumbnail = post.preview.images[0].source.url;
-                    thumbnail = thumbnail.split('&amp;').join('&');
+                    thumbnail = thumbnail.split('&amp;').join('&').replace(/^http:\/\//i, 'https://');
                     vidRatio = vidHeight / vidWidth;
                 } else if (post.thumbnail) {
                     thumbnail = post.thumbnail;
-                    thumbnail = thumbnail.split('&amp;').join('&');
+                    thumbnail = thumbnail.split('&amp;').join('&').replace(/^http:\/\//i, 'https://');
                     vidRatio = vidHeight / vidWidth;
                 } else {
                     thumbnail = require("./images/confused-bee.png");
@@ -884,8 +888,8 @@ export default class Player extends Component {
         } else if (this.state.isReddit) {
             post.type = 'reddit';
             post.imgSrc = require("./images/reddit-logo.svg");
-            post.soundSrc = require("./images/no-sound.svg");
-            post.soundText = "No sound";
+            post.soundSrc = require("./images/muted.svg");
+            post.soundText = "Muted";
         } else if (this.state.isGfycat) {
             post.type = 'gfycat';
             post.imgSrc = require("./images/gfycat-logo.svg");
@@ -925,7 +929,7 @@ export default class Player extends Component {
                         <div className={post.icons}>
                             <button className="expand-button">Click to expand</button>
                             <div className="sound-icon">
-                                <img src={post.soundSrc} />
+                                <img src={post.soundSrc} alt="" />
                                 <p className="sound-text">{post.soundText}</p>
                             </div>
                             <span className="time-box">
@@ -941,8 +945,8 @@ export default class Player extends Component {
                                     <span className="circle small" />
                                 </span>
                             }
-                            <img className={post.thumbnail + ' ' + post.thumbHide} src={this.state.thumbnail} style={ratioTransformThumbnail} />
-                            {this.state.hasEnded && <button onClick={this.vidReplay} className="replay"><img src={replay} /> </button>}
+                            <img className={post.thumbnail + ' ' + post.thumbHide} src={this.state.thumbnail} style={ratioTransformThumbnail} alt="" />
+                            {this.state.hasEnded && <button onClick={this.vidReplay} className="replay"><img src={replay} alt="Replay" /> </button>}
                         </div>
                         {this.state.isPlaying &&
                             <div className="vertical-background-blur" />
@@ -975,12 +979,12 @@ export default class Player extends Component {
 
                                 <div className="data-left">
                                     <div className="post-vote">
-                                        <img src={upvote} />
+                                        <img src={upvote} alt="" />
                                         <h6 className="vote-count">{this.state.upvotes}</h6>
                                     </div>
 
                                     <div className="post-comments">
-                                        <img src={comment} />
+                                        <img src={comment} alt="" />
                                         <h6 className="comments-count">{this.state.comments}</h6>
                                     </div>
 
@@ -994,7 +998,7 @@ export default class Player extends Component {
                                 </div>
 
                                 <div className={"post-type " + post.type}>
-                                    <img src={post.imgSrc} />
+                                    <img src={post.imgSrc} alt="" />
                                 </div>
                             </div>
                         </div>
