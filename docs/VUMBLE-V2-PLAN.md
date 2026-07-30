@@ -199,7 +199,13 @@ Two constraints deserve to be enforced in the schema, not in application code, b
 
 Measured Wikidata coverage on 2018 films: IMDb id 86%, genre 81%, director 74%, runtime 52%.
 
-**The one thing open data cannot give is artwork.** Posters are copyrighted whoever serves them, and Wikidata carries an image for roughly 4% of films. The queue card is therefore typographic by design (§2b) rather than poster-led — artwork appears when it exists and reserves no space when it does not. This is a real product constraint, not a temporary gap.
+**Artwork, and why the card shows a trailer instead.** Posters are copyrighted whoever serves them. Wikipedia does hold one for essentially every notable film, but its API marks them `NonFree: true` / `LicenseShortName: Fair use` — usable only under a rationale you supply yourself, not freely licensed. Wikidata's freely-licensed image field covers about 4% of films.
+
+Rather than take on that risk for a static image, queue cards embed the **trailer**. It sidesteps the licence question completely — embedding is what YouTube's player exists for and a trailer is published to be embedded — and it is strictly more useful, since thirty seconds of footage decides more than cover art does.
+
+Trailers resolve in three steps: Wikidata **P1651**, then the YouTube Data API if a (free) key is configured, then **Piped**, an open-source keyless YouTube frontend, with instance failover. Every candidate is verified against the work's name and year before use, *including* P1651 — that property is "YouTube video ID", not "trailer", and on several films it points at the YouTube Movies listing for the paid film rather than a preview. A wrong trailer is worse than none.
+
+Artwork still renders when it genuinely exists and reserves no space when it does not.
 
 **Where-to-watch is also unsolved by open data**, and is the strongest candidate for community contribution: letting members record "this is on X in the UK" uses the same muscle as voting, produces data Vumble owns outright, and avoids a licensing relationship entirely.
 

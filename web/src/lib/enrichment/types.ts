@@ -52,6 +52,8 @@ export interface EnrichmentResult {
   height?: number;
   /** Facet tag slugs inferred from the source's own genre vocabulary. */
   tags?: string[];
+  /** Authoritative YouTube id for the work's trailer, when the source has one. */
+  trailerVideoId?: string;
   externalIds?: {
     wikidata?: string;
     imdb?: string;

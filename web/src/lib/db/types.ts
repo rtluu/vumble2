@@ -79,9 +79,14 @@ export interface TitlesTable {
   enrichment_failures: ColumnType<number, number | undefined, number>;
 }
 
+export type SourceRole = "primary" | "trailer";
+
 export interface SourcesTable {
   id: Generated<number>;
   title_id: number;
+  role: ColumnType<SourceRole, SourceRole | undefined, SourceRole>;
+  /** How a trailer was found; decides how much to trust it. */
+  provenance: string | null;
   platform: DbPlatform;
   external_id: string;
   url: string;

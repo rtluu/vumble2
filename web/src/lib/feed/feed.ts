@@ -53,6 +53,11 @@ export interface FeedItem {
   };
   /** Null for catalog Titles with no embeddable source yet (plan §3/P2). */
   source: FeedSource | null;
+  /**
+   * A trailer for the work, where one has been found. Never the work itself,
+   * so it does not affect card mode — it is a preview shown on queue cards.
+   */
+  trailer: { videoId: string; provenance: string | null } | null;
   /** The viewer's own vote, when a viewer was supplied. */
   viewerVote: 1 | -1 | null;
 }
@@ -127,6 +132,19 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
     .innerJoin("users", "users.id", "posts.author_id")
     .leftJoin("creators", "creators.id", "titles.creator_id")
     .leftJoin(
+      (eb) =>
+        eb
+          .selectFrom("sources")
+          .select([
+            "sources.title_id as trailer_title_id",
+            "sources.external_id as trailer_video_id",
+            "sources.provenance as trailer_provenance",
+          ])
+          .where("sources.role", "=", "trailer")
+          .as("tr"),
+      (join) => join.onRef("tr.trailer_title_id", "=", "titles.id"),
+    )
+    .leftJoin(
       // One source per Title for rendering: prefer an embeddable one, then
       // the earliest added, so the choice is stable across requests.
       (eb) =>
@@ -144,6 +162,10 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
               order by sources.embeddable desc, sources.id asc
             )`.as("rn"),
           ])
+          // Trailers are excluded here on purpose: a preview must never be
+          // mistaken for the work, or every catalog Title would flip to
+          // watch mode and offer marketing in place of the film.
+          .where("sources.role", "=", "primary")
           .as("s"),
       (join) => join.onRef("s.title_id", "=", "titles.id").on("s.rn", "=", 1),
     )
@@ -173,6 +195,8 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
       "s.url as source_url",
       "s.embeddable",
       "s.start_seconds",
+      "tr.trailer_video_id",
+      "tr.trailer_provenance",
       sql<string[] | null>`(
         select array_agg(tt.tag order by tt.tag)
         from title_tags tt
@@ -272,6 +296,12 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
           url: r.source_url!,
           embeddable: r.embeddable!,
           startSeconds: r.start_seconds,
+        }
+      : null,
+    trailer: r.trailer_video_id
+      ? {
+          videoId: r.trailer_video_id,
+          provenance: r.trailer_provenance,
         }
       : null,
     viewerVote: (r.viewer_vote as 1 | -1 | null) ?? null,

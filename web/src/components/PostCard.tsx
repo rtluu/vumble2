@@ -175,11 +175,11 @@ function QueueCard({
     <article className="post-card queue">
       <div className="queue-body">
         {/*
-          Artwork is shown when it happens to exist and takes no space when it
-          does not. Posters are copyrighted whoever serves them, so no open
-          dataset supplies them — Wikidata carries an image for about 4% of
-          films. Reserving a placeholder column would mean a hole on almost
-          every card, so the layout is typographic by default.
+          Artwork when it exists, and no reserved slot when it does not.
+          Posters are copyrighted whoever serves them, so open datasets carry
+          few — Wikidata has an image for about 4% of films. The trailer below
+          does the work a poster would have: it is embeddable by design, and
+          more useful, since you can watch it and decide.
         */}
         {item.title.posterUrl && (
           // Remote art; we host no media.
@@ -213,6 +213,26 @@ function QueueCard({
           )}
           {item.body && <p className="body">{item.body}</p>}
           <Tags tags={item.title.tags} />
+
+          {/*
+            A preview, not the work. `role = 'trailer'` keeps it out of the
+            source that decides card mode, so this cannot turn a film into a
+            two-minute watch-mode post. Lazily framed so a feed of these does
+            not open a dozen players at once.
+          */}
+          {item.trailer && (
+            <div className="trailer">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${item.trailer.videoId}?rel=0&modestbranding=1`}
+                title={`${item.title.canonicalName} — trailer`}
+                allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              />
+              <span className="trailer-label">Trailer</span>
+            </div>
+          )}
+
           {item.source && (
             <a
               className="watch-link"

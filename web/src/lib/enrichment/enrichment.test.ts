@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTestDb, type Db } from "@/lib/db/client";
+import { cardMode, getPost } from "@/lib/feed/feed";
 import { submitUrl } from "@/lib/submit/submit";
 import {
   enrichPending,
@@ -354,6 +355,147 @@ describe("enrichTitle", () => {
       }),
     ]);
     expect(outcome.status).toBe("no_provider");
+  });
+});
+
+describe("trailers", () => {
+  async function catalogTitle(name = "Some Film", year = 1999) {
+    const t = await db
+      .insertInto("titles")
+      .values({ kind: "film", canonical_name: name, year })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+    return t.id;
+  }
+
+  const catalogProvider = (extra: Record<string, unknown> = {}) =>
+    fakeProvider(async () => ({ canonicalName: "Some Film", ...extra }), {
+      name: "fake-catalog",
+      accepts: "catalog",
+      platforms: [],
+    });
+
+  it("attaches a trailer as a non-primary source", async () => {
+    const titleId = await catalogTitle();
+
+    await enrichTitle(db, titleId, [catalogProvider()], async () => ({
+      videoId: "4NNeksFtulA",
+      title: "Arrival Trailer",
+      provenance: "piped-search",
+    }));
+
+    const rows = await db
+      .selectFrom("sources")
+      .selectAll()
+      .where("title_id", "=", titleId)
+      .execute();
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.role).toBe("trailer");
+    expect(rows[0]!.external_id).toBe("4NNeksFtulA");
+    expect(rows[0]!.provenance).toBe("piped-search");
+  });
+
+  it("keeps a trailer out of the feed's playable source", async () => {
+    // The failure this guards: a trailer counting as a source would flip the
+    // Title to watch mode and serve marketing in place of the film.
+    const titleId = await catalogTitle();
+
+    await enrichTitle(db, titleId, [catalogProvider()], async () => ({
+      videoId: "4NNeksFtulA",
+      title: "Arrival Trailer",
+      provenance: "piped-search",
+    }));
+
+    const community = await db
+      .selectFrom("communities")
+      .select("id")
+      .where("slug", "=", "horror")
+      .executeTakeFirstOrThrow();
+
+    const post = await db
+      .insertInto("posts")
+      .values({
+        title_id: titleId,
+        community_id: community.id,
+        author_id: alice,
+        headline: "A film",
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    const item = await getPost(db, post.id);
+    expect(item!.source).toBeNull(); // still queue mode
+    expect(cardMode(item!)).toBe("queue");
+    expect(item!.trailer?.videoId).toBe("4NNeksFtulA");
+  });
+
+  it("does not look for a trailer for a Title that is already playable", async () => {
+    const { titleId } = await submit(1);
+    let called = false;
+
+    await enrichTitle(db, titleId, [fakeProvider(async () => ({ canonicalName: "X" }))], async () => {
+      called = true;
+      return null;
+    });
+
+    expect(called).toBe(false);
+  });
+
+  it("does not replace a trailer it already has", async () => {
+    const titleId = await catalogTitle();
+    const lookup = async () => ({
+      videoId: "4NNeksFtulA",
+      title: "t",
+      provenance: "piped-search" as const,
+    });
+
+    await enrichTitle(db, titleId, [catalogProvider()], lookup);
+    await db
+      .updateTable("titles")
+      .set({ enriched_at: null })
+      .where("id", "=", titleId)
+      .execute();
+    await enrichTitle(db, titleId, [catalogProvider()], async () => ({
+      videoId: "aaaaaaaaaaa",
+      title: "different",
+      provenance: "piped-search" as const,
+    }));
+
+    const rows = await db
+      .selectFrom("sources")
+      .select("external_id")
+      .where("title_id", "=", titleId)
+      .where("role", "=", "trailer")
+      .execute();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.external_id).toBe("4NNeksFtulA");
+  });
+
+  it("survives a lookup that throws", async () => {
+    const titleId = await catalogTitle();
+    const outcome = await enrichTitle(db, titleId, [catalogProvider()], async () => {
+      throw new Error("every instance down");
+    });
+    // Enrichment still succeeded; the trailer is simply absent.
+    expect(outcome.status).toBe("enriched");
+  });
+
+  it("passes the Wikidata id through for verification rather than assuming", async () => {
+    const titleId = await catalogTitle();
+    let sawWikidataId: string | null | undefined;
+
+    await enrichTitle(
+      db,
+      titleId,
+      [catalogProvider({ trailerVideoId: "4NNeksFtulA" })],
+      async (_work, opts) => {
+        sawWikidataId = opts?.wikidataVideoId;
+        return null;
+      },
+    );
+
+    expect(sawWikidataId).toBe("4NNeksFtulA");
   });
 });
 

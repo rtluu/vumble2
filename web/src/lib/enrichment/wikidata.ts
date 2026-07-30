@@ -117,7 +117,7 @@ export function buildQuery(
       ? ""
       : `FILTER(?year = ${year} || ?year = ${year - 1} || ?year = ${year + 1})`;
 
-  return `SELECT ?item ?itemLabel ?runtime ?year ?directorLabel ?genreLabel ?imdb ?image WHERE {
+  return `SELECT ?item ?itemLabel ?runtime ?year ?directorLabel ?genreLabel ?imdb ?image ?youtube WHERE {
   VALUES ?root { ${roots} }
   ?item wdt:P31/wdt:P279* ?root ; rdfs:label "${quote(name)}"@en ; wdt:P577 ?pub .
   BIND(YEAR(?pub) AS ?year)
@@ -127,6 +127,7 @@ export function buildQuery(
   OPTIONAL { ?item wdt:P136 ?genre }
   OPTIONAL { ?item wdt:P345 ?imdb }
   OPTIONAL { ?item wdt:P18 ?image }
+  OPTIONAL { ?item wdt:P1651 ?youtube }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
 }
 LIMIT 40`;
@@ -247,6 +248,13 @@ export function foldBindings(
   // Present for only ~4% of films, so treated as a bonus rather than relied on.
   const image = rows.find((r) => r.image?.value)?.image?.value;
   if (image) result.posterUrl = image;
+
+  // P1651. Curated per work, so trusted without verification — unlike a
+  // search result. Also ~4% coverage, hence the search fallback.
+  const youtube = rows.find((r) => r.youtube?.value)?.youtube?.value;
+  if (youtube && /^[A-Za-z0-9_-]{11}$/.test(youtube)) {
+    result.trailerVideoId = youtube;
+  }
 
   const genres = rows
     .map((r) => r.genreLabel?.value)

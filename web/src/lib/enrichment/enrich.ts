@@ -6,6 +6,7 @@ import {
   type EnrichmentTarget,
   TransientEnrichmentError,
 } from "./types";
+import { findTrailer } from "./trailer";
 import { wikidata } from "./wikidata";
 
 /**
@@ -34,6 +35,72 @@ export function providerFor(
   return BY_PLATFORM.get(platform) ?? null;
 }
 
+/** Injectable so tests never reach the network. */
+export type TrailerLookup = typeof findTrailer;
+
+/**
+ * Attach a trailer to a catalog Title, if one can be found and trusted.
+ *
+ * Entirely best-effort: a Title without a trailer is still perfectly usable,
+ * so every failure here is swallowed. Returns the provenance when one was
+ * attached, so the caller can report how much to trust it.
+ */
+export async function attachTrailer(
+  db: Db,
+  titleId: number,
+  input: {
+    name: string;
+    year: number | null;
+    wikidataVideoId?: string | null;
+    lookup?: TrailerLookup;
+  },
+): Promise<string | null> {
+  const existing = await db
+    .selectFrom("sources")
+    .select("id")
+    .where("title_id", "=", titleId)
+    .where("role", "=", "trailer")
+    .executeTakeFirst();
+  if (existing) return null;
+
+  let candidate;
+  try {
+    candidate = await (input.lookup ?? findTrailer)(
+      { name: input.name, year: input.year },
+      {
+        wikidataVideoId: input.wikidataVideoId,
+        apiKey: process.env.YOUTUBE_API_KEY,
+      },
+    );
+  } catch {
+    return null;
+  }
+  if (!candidate) return null;
+
+  try {
+    await db
+      .insertInto("sources")
+      .values({
+        title_id: titleId,
+        role: "trailer",
+        platform: "youtube",
+        external_id: candidate.videoId,
+        url: `https://www.youtube.com/watch?v=${candidate.videoId}`,
+        embeddable: true,
+        provenance: candidate.provenance,
+      })
+      // The same video can already exist as some other Title's source; the
+      // (platform, external_id) key makes that a conflict rather than a
+      // duplicate, and a missing trailer is not worth failing enrichment for.
+      .onConflict((oc) => oc.doNothing())
+      .execute();
+  } catch {
+    return null;
+  }
+
+  return candidate.provenance;
+}
+
 export type EnrichOutcome =
   | { status: "enriched"; provider: string; fields: string[] }
   | { status: "no_provider" }
@@ -44,6 +111,7 @@ export async function enrichTitle(
   db: Db,
   titleId: number,
   providers: readonly EnrichmentProvider[] = PROVIDERS,
+  trailerLookup?: TrailerLookup,
 ): Promise<EnrichOutcome> {
   const title = await db
     .selectFrom("titles")
@@ -55,6 +123,10 @@ export async function enrichTitle(
     .selectFrom("sources")
     .select(["platform", "external_id", "url"])
     .where("title_id", "=", titleId)
+    // Only the work itself. A trailer must not make a catalog Title look as
+    // though it has something playable, or it would stop being enriched as a
+    // catalog entry at all.
+    .where("role", "=", "primary")
     // Prefer an embeddable source, then the earliest — same rule the feed
     // uses to pick which source to render, so they never disagree.
     .orderBy("embeddable", "desc")
@@ -209,6 +281,18 @@ export async function enrichTitle(
     }
   });
 
+  // Trailers apply only to catalog Titles. A Title that already has a
+  // playable source does not need a preview of itself.
+  if (target.kind === "catalog") {
+    const attached = await attachTrailer(db, titleId, {
+      name: result.canonicalName ?? target.name,
+      year: result.year ?? target.year,
+      wikidataVideoId: result.trailerVideoId ?? null,
+      lookup: trailerLookup,
+    });
+    if (attached) fields.push(`trailer(${attached})`);
+  }
+
   return { status: "enriched", provider: provider.name, fields };
 }
 
@@ -230,7 +314,11 @@ export interface SweepSummary {
  */
 export async function enrichPending(
   db: Db,
-  options: { limit?: number; providers?: readonly EnrichmentProvider[] } = {},
+  options: {
+    limit?: number;
+    providers?: readonly EnrichmentProvider[];
+    trailerLookup?: TrailerLookup;
+  } = {},
 ): Promise<SweepSummary> {
   const limit = options.limit ?? 50;
 
@@ -257,7 +345,12 @@ export async function enrichPending(
   };
 
   for (const row of rows) {
-    const outcome = await enrichTitle(db, row.id, options.providers);
+    const outcome = await enrichTitle(
+      db,
+      row.id,
+      options.providers,
+      options.trailerLookup,
+    );
     switch (outcome.status) {
       case "enriched":
         summary.enriched++;
