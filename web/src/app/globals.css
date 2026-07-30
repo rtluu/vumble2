@@ -275,18 +275,297 @@ a:hover {
 
 .post-footer {
   display: flex;
+  align-items: center;
   gap: 0.85rem;
   padding-top: 0.6rem;
   font-size: 0.75rem;
   color: var(--muted);
 }
-.post-footer .score {
-  font-weight: 700;
-  color: var(--fg);
-}
 .post-footer .platform {
   margin-left: auto;
   text-transform: lowercase;
+}
+.comment-link:hover {
+  color: var(--fg);
+}
+
+/* ----------------------------------------------------------------- votes */
+
+.vote,
+.comment-vote {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.inline-form {
+  display: inline;
+}
+
+.vote form {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.vote-score {
+  font-weight: 700;
+  color: var(--fg);
+  min-width: 1.1rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.vote-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0.15rem 0.2rem;
+  border-radius: 0.2rem;
+}
+.vote-btn.small {
+  font-size: 0.65rem;
+}
+.vote-btn:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--border);
+}
+.vote-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+.vote-btn.on.up {
+  color: #22c55e;
+}
+.vote-btn.on.down {
+  color: #ef4444;
+}
+
+/* --------------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-block;
+  background: var(--fg);
+  color: var(--bg);
+  border: 1px solid var(--fg);
+  border-radius: 0.3rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn:hover {
+  text-decoration: none;
+  opacity: 0.85;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn.small {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+}
+.btn.wide {
+  width: 100%;
+  text-align: center;
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--border);
+}
+
+.linkish {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+  padding: 0;
+}
+.linkish:hover {
+  color: var(--fg);
+  text-decoration: underline;
+}
+
+.who {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.who .handle {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- joining */
+
+.join-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-top: 0.75rem;
+}
+.member-count {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.crumb {
+  padding: 1rem 0 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.shell.narrow {
+  max-width: 34rem;
+}
+
+.account-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ------------------------------------------------------------ submit form */
+
+.submit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding-top: 0.5rem;
+}
+.submit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.submit-form label em {
+  font-weight: 400;
+  font-style: normal;
+  color: var(--muted);
+}
+.submit-form input,
+.submit-form select,
+.submit-form textarea,
+.comment-form textarea {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  background: var(--surface);
+  color: var(--fg);
+  width: 100%;
+  resize: vertical;
+}
+.submit-form input:focus,
+.submit-form select:focus,
+.submit-form textarea:focus,
+.comment-form textarea:focus {
+  outline: 2px solid var(--muted);
+  outline-offset: -1px;
+}
+
+.form-error {
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--proposed);
+  background: var(--proposed-bg);
+}
+.form-note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* -------------------------------------------------------------- comments */
+
+.comments {
+  padding-top: 1.75rem;
+}
+.comments-title {
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+}
+
+.comment-list,
+.comment-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.comment-children {
+  margin-left: 0.9rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--border);
+}
+
+.comment {
+  padding: 0.6rem 0;
+}
+
+.comment-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.comment-author {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.comment-body {
+  margin: 0.25rem 0 0.35rem;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.comment-body.removed {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.reply summary {
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--muted);
+  list-style: none;
+}
+.reply summary::-webkit-details-marker {
+  display: none;
+}
+.reply summary:hover {
+  color: var(--fg);
+}
+.reply[open] summary {
+  margin-bottom: 0.4rem;
 }
 
 /* ------------------------------------------------------------ queue card */

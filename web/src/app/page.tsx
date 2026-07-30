@@ -1,5 +1,7 @@
 import { FeedView } from "@/components/FeedView";
+import { SiteHeader } from "@/components/SiteHeader";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { joinedSlugs } from "@/lib/community/membership";
 import { getDb } from "@/lib/db/client";
 import type { FeedSort, FeedSurface } from "@/lib/feed/feed";
 
@@ -20,29 +22,27 @@ export default async function Home({
     params.surface === "proposed" ? "proposed" : "promoted";
 
   const [user, db] = await Promise.all([getCurrentUser(), getDb()]);
-  const communities = await db
-    .selectFrom("communities")
-    .select(["slug", "name"])
-    .orderBy("slug")
-    .execute();
+  const [communities, joined] = await Promise.all([
+    db.selectFrom("communities").select(["slug", "name"]).orderBy("slug").execute(),
+    joinedSlugs(db, user?.id),
+  ]);
 
   return (
     <main className="shell">
-      <header className="site-header">
-        <a href="/" className="wordmark">
-          Vumble
-        </a>
-        <nav className="communities">
-          {communities.map((c) => (
-            <a key={c.slug} href={`/v/${c.slug}`}>
-              /v/{c.slug}
-            </a>
-          ))}
-        </nav>
-        <span className="who">{user ? user.handle : "signed out"}</span>
-      </header>
+      <SiteHeader user={user} communities={communities} />
 
-      <FeedView sort={sort} surface={surface} viewerId={user?.id ?? null} />
+      {user && joined.length === 0 && (
+        <p className="queue-note">
+          You have not joined anything yet — join a community to post to it.
+        </p>
+      )}
+
+      <FeedView
+        sort={sort}
+        surface={surface}
+        viewerId={user?.id ?? null}
+        signedIn={!!user}
+      />
     </main>
   );
 }

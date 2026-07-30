@@ -166,6 +166,22 @@ export interface WatchlistTable {
   watched_at: Timestamp | null;
 }
 
+export type MemberRole = "member" | "moderator";
+
+export interface CommunityMembersTable {
+  user_id: number;
+  community_id: number;
+  role: ColumnType<MemberRole, MemberRole | undefined, MemberRole>;
+  joined_at: Timestamp;
+}
+
+export interface CommentVotesTable {
+  user_id: number;
+  comment_id: number;
+  value: number;
+  created_at: Timestamp;
+}
+
 export interface SessionsTable {
   token_hash: string;
   user_id: number;
@@ -196,6 +212,8 @@ export interface Database {
   watchlist: WatchlistTable;
   curation_scores: CurationScoresTable;
   sessions: SessionsTable;
+  community_members: CommunityMembersTable;
+  comment_votes: CommentVotesTable;
 }
 
 export type Post = Selectable<PostsTable>;

@@ -1,3 +1,4 @@
+import { PostVote } from "@/components/VoteButtons";
 import { cardMode, type FeedItem } from "@/lib/feed/feed";
 import { embedUrl } from "@/lib/resolvers/embed";
 
@@ -58,12 +59,25 @@ function Tags({ tags }: { tags: string[] }) {
   );
 }
 
-function Footer({ item }: { item: FeedItem }) {
+function Footer({
+  item,
+  signedIn,
+}: {
+  item: FeedItem;
+  signedIn: boolean;
+}) {
   const time = runtime(item.title.runtimeSeconds);
   return (
     <div className="post-footer">
-      <span className="score">{item.score}</span>
-      <span>{item.commentCount} comments</span>
+      <PostVote
+        postId={item.postId}
+        score={item.score}
+        viewerVote={item.viewerVote}
+        disabled={!signedIn}
+      />
+      <a href={`/p/${item.postId}`} className="comment-link">
+        {item.commentCount} {item.commentCount === 1 ? "comment" : "comments"}
+      </a>
       {time && <span>{time}</span>}
       {item.source && <span className="platform">{item.source.platform}</span>}
     </div>
@@ -74,7 +88,15 @@ function Footer({ item }: { item: FeedItem }) {
  * Watch mode: the embeddable, consume-now card. This is the V1 Vumble
  * experience, and the reason the resolver exists.
  */
-function WatchCard({ item }: { item: FeedItem }) {
+function WatchCard({
+  item,
+  signedIn,
+  expanded,
+}: {
+  item: FeedItem;
+  signedIn: boolean;
+  expanded?: boolean;
+}) {
   const src = item.source
     ? embedUrl(item.source.platform, item.source.externalId, item.source.startSeconds)
     : null;
@@ -82,7 +104,13 @@ function WatchCard({ item }: { item: FeedItem }) {
   return (
     <article className="post-card watch">
       <Meta item={item} />
-      <h2 className="headline">{item.headline}</h2>
+      <h2 className="headline">
+        {expanded ? (
+          item.headline
+        ) : (
+          <a href={`/p/${item.postId}`}>{item.headline}</a>
+        )}
+      </h2>
       <div className="frame">
         {src ? (
           <iframe
@@ -97,7 +125,8 @@ function WatchCard({ item }: { item: FeedItem }) {
         )}
       </div>
       <Tags tags={item.title.tags} />
-      <Footer item={item} />
+      {expanded && item.body && <p className="body">{item.body}</p>}
+      <Footer item={item} signedIn={signedIn} />
     </article>
   );
 }
@@ -107,7 +136,15 @@ function WatchCard({ item }: { item: FeedItem }) {
  * carry films and series cannot be embedded at all (plan §3/P2), so the
  * card links out rather than pretending to play.
  */
-function QueueCard({ item }: { item: FeedItem }) {
+function QueueCard({
+  item,
+  signedIn,
+  expanded,
+}: {
+  item: FeedItem;
+  signedIn: boolean;
+  expanded?: boolean;
+}) {
   return (
     <article className="post-card queue">
       <div className="queue-body">
@@ -125,7 +162,13 @@ function QueueCard({ item }: { item: FeedItem }) {
         )}
         <div className="queue-text">
           <Meta item={item} />
-          <h2 className="headline">{item.headline}</h2>
+          <h2 className="headline">
+            {expanded ? (
+              item.headline
+            ) : (
+              <a href={`/p/${item.postId}`}>{item.headline}</a>
+            )}
+          </h2>
           <p className="canonical">
             {item.title.canonicalName}
             {item.title.year && <span className="year"> ({item.title.year})</span>}
@@ -142,17 +185,26 @@ function QueueCard({ item }: { item: FeedItem }) {
               Watch on {item.source.platform} →
             </a>
           )}
-          <Footer item={item} />
+          <Footer item={item} signedIn={signedIn} />
         </div>
       </div>
     </article>
   );
 }
 
-export function PostCard({ item }: { item: FeedItem }) {
+export function PostCard({
+  item,
+  signedIn = false,
+  expanded = false,
+}: {
+  item: FeedItem;
+  signedIn?: boolean;
+  /** True on the post's own page: no self-link, body always shown. */
+  expanded?: boolean;
+}) {
   return cardMode(item) === "watch" ? (
-    <WatchCard item={item} />
+    <WatchCard item={item} signedIn={signedIn} expanded={expanded} />
   ) : (
-    <QueueCard item={item} />
+    <QueueCard item={item} signedIn={signedIn} expanded={expanded} />
   );
 }

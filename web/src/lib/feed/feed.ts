@@ -59,6 +59,8 @@ export interface FeedQuery {
   communitySlug?: string;
   /** Facet tag. Cuts across communities — the retrieval axis (plan §2c). */
   tag?: string;
+  /** Fetch one post by id, ignoring the surface filter. Used by getPost. */
+  postId?: number;
   sort?: FeedSort;
   surface?: FeedSurface;
   limit?: number;
@@ -186,8 +188,13 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
             .where("votes.user_id", "=", query.viewerId)
             .as("viewer_vote")
         : sql<number | null>`null`.as("viewer_vote"),
-    ])
-    .where("posts.state", "=", surface);
+    ]);
+
+  // A direct link to a post should resolve whether or not it has been
+  // promoted — the surface filter is a browsing concern, not a visibility one.
+  q = query.postId
+    ? q.where("posts.id", "=", query.postId)
+    : q.where("posts.state", "=", surface);
 
   if (query.communitySlug) {
     q = q.where("communities.slug", "=", query.communitySlug);
@@ -280,6 +287,16 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
       : null;
 
   return { items, nextCursor };
+}
+
+/** One post by id, regardless of promotion state. */
+export async function getPost(
+  db: Db,
+  postId: number,
+  viewerId?: number | null,
+): Promise<FeedItem | null> {
+  const { items } = await getFeed(db, { postId, viewerId, limit: 1 });
+  return items[0] ?? null;
 }
 
 /**

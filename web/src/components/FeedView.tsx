@@ -14,11 +14,13 @@ export async function FeedView({
   sort = "hot",
   surface = "promoted",
   viewerId = null,
+  signedIn = false,
 }: {
   communitySlug?: string;
   sort?: FeedSort;
   surface?: FeedSurface;
   viewerId?: number | null;
+  signedIn?: boolean;
 }) {
   const db = await getDb();
   const { items } = await getFeed(db, {
@@ -76,7 +78,7 @@ export async function FeedView({
       ) : (
         <div className="feed">
           {items.map((item) => (
-            <PostCard key={item.postId} item={item} />
+            <PostCard key={item.postId} item={item} signedIn={signedIn} />
           ))}
         </div>
       )}

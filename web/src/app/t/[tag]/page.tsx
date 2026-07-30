@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { PostCard } from "@/components/PostCard";
+import { SiteHeader } from "@/components/SiteHeader";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getDb } from "@/lib/db/client";
 import { getFeed, type FeedSort } from "@/lib/feed/feed";
@@ -78,12 +79,7 @@ export default async function TagPage({
 
   return (
     <main className="shell">
-      <header className="site-header">
-        <a href="/" className="wordmark">
-          Vumble
-        </a>
-        <span className="who">{user ? user.handle : "signed out"}</span>
-      </header>
+      <SiteHeader user={user} />
 
       <div className="community-header">
         <h1>
@@ -108,7 +104,7 @@ export default async function TagPage({
       ) : (
         <div className="feed">
           {items.map((item) => (
-            <PostCard key={item.postId} item={item} />
+            <PostCard key={item.postId} item={item} signedIn={!!user} />
           ))}
         </div>
       )}

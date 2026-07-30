@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { FeedView } from "@/components/FeedView";
+import { JoinButton } from "@/components/JoinButton";
+import { SiteHeader } from "@/components/SiteHeader";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { getMembership, memberCounts } from "@/lib/community/membership";
 import { getDb } from "@/lib/db/client";
 import type { FeedSort, FeedSurface } from "@/lib/feed/feed";
 
@@ -51,19 +54,24 @@ export default async function CommunityPage({
     sp.surface === "proposed" ? "proposed" : "promoted";
 
   const user = await getCurrentUser();
+  const [membership, counts] = await Promise.all([
+    getMembership(db, user?.id, community.slug),
+    memberCounts(db),
+  ]);
 
   return (
     <main className="shell">
-      <header className="site-header">
-        <a href="/" className="wordmark">
-          Vumble
-        </a>
-        <span className="who">{user ? user.handle : "signed out"}</span>
-      </header>
+      <SiteHeader user={user} />
 
       <div className="community-header">
         <h1>/v/{community.slug}</h1>
         {community.description && <p>{community.description}</p>}
+        <JoinButton
+          slug={community.slug}
+          joined={!!membership}
+          signedIn={!!user}
+          memberCount={counts.get(community.slug) ?? 0}
+        />
       </div>
 
       <FeedView
@@ -71,6 +79,7 @@ export default async function CommunityPage({
         sort={sort}
         surface={surface}
         viewerId={user?.id ?? null}
+        signedIn={!!user}
       />
     </main>
   );
