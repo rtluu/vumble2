@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed": "tsx db/seed.ts"
+    "seed": "tsx db/seed.ts",
+    "agent:key": "tsx db/agent-key.ts"
   },
   "dependencies": {
     "kysely": "^0.29.4",

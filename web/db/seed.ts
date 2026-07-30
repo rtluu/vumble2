@@ -322,7 +322,11 @@ async function main() {
   console.log("Seeded. Run `npm run dev`.");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// PGlite keeps handles open that would otherwise hold the process forever,
+// so a CLI has to exit explicitly rather than waiting for an empty event loop.
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

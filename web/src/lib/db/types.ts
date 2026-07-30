@@ -49,6 +49,9 @@ export interface AgentsTable {
   quota_tier: ColumnType<number, number | undefined, number>;
   daily_quota: ColumnType<number, number | undefined, number>;
   created_at: Timestamp;
+  last_used_at: Timestamp | null;
+  revoked_at: Timestamp | null;
+  key_hint: string | null;
 }
 
 export interface TitlesTable {
