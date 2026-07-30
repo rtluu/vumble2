@@ -46,6 +46,8 @@ export interface FeedItem {
     posterUrl: string | null;
     runtimeSeconds: number | null;
     year: number | null;
+    /** Facet tags, alphabetical. The retrieval layer (plan §2c). */
+    tags: string[];
   };
   /** Null for catalog Titles with no embeddable source yet (plan §3/P2). */
   source: FeedSource | null;
@@ -55,6 +57,8 @@ export interface FeedItem {
 
 export interface FeedQuery {
   communitySlug?: string;
+  /** Facet tag. Cuts across communities — the retrieval axis (plan §2c). */
+  tag?: string;
   sort?: FeedSort;
   surface?: FeedSurface;
   limit?: number;
@@ -163,6 +167,11 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
       "s.url as source_url",
       "s.embeddable",
       "s.start_seconds",
+      sql<string[] | null>`(
+        select array_agg(tt.tag order by tt.tag)
+        from title_tags tt
+        where tt.title_id = titles.id
+      )`.as("tags"),
       eb
         .selectFrom("comments")
         .select(sql<number>`count(*)::int`.as("c"))
@@ -182,6 +191,18 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
 
   if (query.communitySlug) {
     q = q.where("communities.slug", "=", query.communitySlug);
+  }
+
+  if (query.tag) {
+    q = q.where((eb) =>
+      eb.exists(
+        eb
+          .selectFrom("title_tags")
+          .select("title_tags.tag")
+          .whereRef("title_tags.title_id", "=", "titles.id")
+          .where("title_tags.tag", "=", query.tag!),
+      ),
+    );
   }
 
   if (cursor) {
@@ -230,6 +251,7 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
       posterUrl: r.poster_url,
       runtimeSeconds: r.runtime_s,
       year: r.year,
+      tags: r.tags ?? [],
     },
     source: r.platform
       ? {

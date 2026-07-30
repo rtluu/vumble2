@@ -44,6 +44,20 @@ function Meta({ item }: { item: FeedItem }) {
   );
 }
 
+/** Facet tags — the retrieval layer, distinct from the community (plan §2c). */
+function Tags({ tags }: { tags: string[] }) {
+  if (tags.length === 0) return null;
+  return (
+    <div className="tags">
+      {tags.map((t) => (
+        <a key={t} href={`/t/${t}`} className="tag">
+          {t}
+        </a>
+      ))}
+    </div>
+  );
+}
+
 function Footer({ item }: { item: FeedItem }) {
   const time = runtime(item.title.runtimeSeconds);
   return (
@@ -82,6 +96,7 @@ function WatchCard({ item }: { item: FeedItem }) {
           <div className="frame-fallback">Preview unavailable</div>
         )}
       </div>
+      <Tags tags={item.title.tags} />
       <Footer item={item} />
     </article>
   );
@@ -116,6 +131,7 @@ function QueueCard({ item }: { item: FeedItem }) {
             {item.title.year && <span className="year"> ({item.title.year})</span>}
           </p>
           {item.body && <p className="body">{item.body}</p>}
+          <Tags tags={item.title.tags} />
           {item.source && (
             <a
               className="watch-link"

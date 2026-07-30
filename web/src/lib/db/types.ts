@@ -137,6 +137,22 @@ export interface CreatorsTable {
   created_at: Timestamp;
 }
 
+/**
+ * Orthogonal tag facets. Composing these replaces enumerating micro-genres:
+ * Netflix's "Quirky Dark Comedies with a Strong Female Lead" is just
+ * mood:quirky + mood:bleak + genre:comedy + theme:*, no cross-product to
+ * maintain. Tags are retrieval; communities are conversation.
+ */
+export type Facet = "genre" | "format" | "origin" | "mood" | "theme";
+
+export interface TagsTable {
+  slug: string;
+  facet: Facet;
+  label: string;
+  description: ColumnType<string, string | undefined, string>;
+  created_at: Timestamp;
+}
+
 export interface TitleTagsTable {
   title_id: number;
   tag: string;
@@ -175,6 +191,7 @@ export interface Database {
   votes: VotesTable;
   comments: CommentsTable;
   creators: CreatorsTable;
+  tags: TagsTable;
   title_tags: TitleTagsTable;
   watchlist: WatchlistTable;
   curation_scores: CurationScoresTable;

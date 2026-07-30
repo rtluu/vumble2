@@ -202,6 +202,91 @@ describe("pagination", () => {
   });
 });
 
+describe("tag filtering", () => {
+  async function tagged(postId: number, titleTags: string[]) {
+    const post = await db
+      .selectFrom("posts")
+      .select("title_id")
+      .where("id", "=", postId)
+      .executeTakeFirstOrThrow();
+    await db
+      .insertInto("title_tags")
+      .values(titleTags.map((t) => ({ title_id: post.title_id, tag: t })))
+      .execute();
+  }
+
+  it("filters across communities by facet tag", async () => {
+    const a = await propose(VIDEOS[0]!, "Scary one");
+    const b = await propose(VIDEOS[1]!, "Not scary");
+    await promote(a);
+    await promote(b);
+    await tagged(a, ["horror", "feature"]);
+    await tagged(b, ["comedy"]);
+
+    const horror = await getFeed(db, { tag: "horror" });
+    expect(horror.items.map((i) => i.headline)).toEqual(["Scary one"]);
+
+    const comedy = await getFeed(db, { tag: "comedy" });
+    expect(comedy.items.map((i) => i.headline)).toEqual(["Not scary"]);
+  });
+
+  it("returns tags on the item, alphabetically", async () => {
+    const id = await propose(VIDEOS[0]!, "Tagged");
+    await promote(id);
+    await tagged(id, ["unsettling", "horror", "feature"]);
+
+    const feed = await getFeed(db, {});
+    expect(feed.items[0]!.title.tags).toEqual([
+      "feature",
+      "horror",
+      "unsettling",
+    ]);
+  });
+
+  it("gives an empty array, not null, when untagged", async () => {
+    const id = await propose(VIDEOS[0]!, "Bare");
+    await promote(id);
+
+    const feed = await getFeed(db, {});
+    expect(feed.items[0]!.title.tags).toEqual([]);
+  });
+
+  it("rejects tags outside the controlled vocabulary", async () => {
+    const id = await propose(VIDEOS[0]!, "Bad tag");
+    await expect(tagged(id, ["sci-fi"])).rejects.toThrow(
+      /title_tags_tag_fkey|violates foreign key/,
+    );
+  });
+
+  it("combines a tag with a community filter", async () => {
+    const a = await propose(VIDEOS[0]!, "Horror in documentaries");
+    await promote(a);
+    await tagged(a, ["horror"]);
+
+    const res = await submitUrl(db, {
+      url: VIDEOS[1]!,
+      communitySlug: "videoessays",
+      authorId: alice,
+      headline: "Horror in videoessays",
+    });
+    if (res.ok) {
+      await promote(res.postId);
+      await tagged(res.postId, ["horror"]);
+    }
+
+    const all = await getFeed(db, { tag: "horror" });
+    expect(all.items).toHaveLength(2);
+
+    const scoped = await getFeed(db, {
+      tag: "horror",
+      communitySlug: "documentaries",
+    });
+    expect(scoped.items.map((i) => i.headline)).toEqual([
+      "Horror in documentaries",
+    ]);
+  });
+});
+
 describe("item shape", () => {
   it("carries the resolved source through to the card", async () => {
     const id = await propose(

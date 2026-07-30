@@ -56,6 +56,44 @@ But short clips and long-form titles are different intents:
 
 Same catalog, same ranking, same communities. Item type drives card rendering; communities lean one way naturally. **Do not build two products.**
 
+### 2c. Communities are conversation; tags are retrieval
+
+The obvious model to copy is Netflix, and it is half right. Netflix's taxonomy — genre rows, mood rows, and its famous enumerated micro-genres ("Quirky Dark Comedies with a Strong Female Lead") — is a **retrieval** system tuned for one person browsing alone. It is very good at that and a poor guide to community design. `Drama` is a useful Netflix row and a dead room: nobody self-identifies as *a drama person*.
+
+So the two layers are split:
+
+- **Communities** (`/v/`) are where conversation and identity live.
+- **Tags** (`title_tags`, against a controlled vocabulary in `tags`) are the Netflix layer.
+
+Tags are **faceted and orthogonal** — `genre`, `format`, `origin`, `mood`, `theme` — so micro-genres *compose* instead of being enumerated. "Quirky Dark Comedies with a Strong Female Lead" is `mood:quirky` + `mood:bleak` + `genre:comedy` + a theme tag. Five axes replace a hand-maintained cross-product, and `/t/folk-horror` cuts across every community at once.
+
+The vocabulary is controlled (`title_tags` has a foreign key into `tags`) because open folksonomies drift: `scifi`, `sci-fi`, and `science-fiction` end up splitting one shelf three ways.
+
+**What makes a category a community rather than a tag.** Four tests:
+
+1. **Identity** — do people describe *themselves* this way? ("I'm a horror person" — yes. "I'm a drama person" — no.)
+2. **Contested judgment** — do reasonable members disagree? Argument is what a comment thread is *for*.
+3. **Continuous supply** — does new work arrive often enough to metabolize?
+4. **Conversation variety** — do several kinds work: recommendation, canon-ranking, reaction, discovery, analysis? Communities where only one works go quiet.
+
+A category that passes all four is a community. A category that fails any of them is a tag. `horror` passes emphatically; `thriller` fails identity and lands in the vocabulary instead.
+
+### 2d. The beachhead
+
+Five communities, each passing all four tests, and each spanning **both card modes** so neither mode rots for lack of content:
+
+| Community | Axis | Why it earns a room |
+|---|---|---|
+| `/v/horror` | genre | The strongest genre identity in film. Enormous subgenre depth (folk horror, slashers, found footage) means the canon is permanently unsettled. Features to decide on, shorts to watch now. |
+| `/v/anime` | genre + origin | Seasonal releases give conversation a natural cadence — new season, new argument. Fierce existing ranking culture. Series in queue mode, clips in watch mode. |
+| `/v/docs` | format | "Doc person" is a real identity and the category is genuinely underserved by algorithmic feeds. Features on streamers, shorts on YouTube and Vimeo. |
+| `/v/scifi` | genre | The most contested canon after horror, plus a deep bench of independent shorts that no recommender surfaces. |
+| `/v/videoessays` | format | Where Vumble's existing audience already is — continuity matters more than novelty at cold start. Also connective tissue: video essays are *about* the other four, which cross-links the graph. |
+
+**Deliberately cut:** `journalism` (weak self-identity, and it imports a political-moderation cost before there are moderators) and `shortfilm` (real, but low supply and largely absorbed by horror and sci-fi shorts). `truecrime` is the strongest candidate for a sixth — huge identity and supply — but it carries a distinctive moderation burden that is better taken on once trust-and-safety exists.
+
+**When to add a community.** Not on request. Split a tag out into a room when it is carrying meaningful volume *and* generating discussion inside an existing community — that is the observable signal that it has its own identity. Growing this list ahead of demand is how a young site ends up with fifteen empty rooms.
+
 ---
 
 ## 3. The four hard problems
