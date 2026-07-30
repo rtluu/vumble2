@@ -3,8 +3,10 @@ import type { DbPlatform } from "@/lib/db/types";
 import { OEMBED_PROVIDERS } from "./oembed";
 import {
   type EnrichmentProvider,
+  type EnrichmentTarget,
   TransientEnrichmentError,
 } from "./types";
+import { wikidata } from "./wikidata";
 
 /**
  * The enrichment runner.
@@ -17,7 +19,7 @@ import {
 /** Give up after this many consecutive failures; the URL is probably dead. */
 const MAX_FAILURES = 5;
 
-const PROVIDERS: readonly EnrichmentProvider[] = [...OEMBED_PROVIDERS];
+const PROVIDERS: readonly EnrichmentProvider[] = [...OEMBED_PROVIDERS, wikidata];
 
 const BY_PLATFORM = new Map<DbPlatform, EnrichmentProvider>();
 for (const provider of PROVIDERS) {
@@ -35,7 +37,6 @@ export function providerFor(
 export type EnrichOutcome =
   | { status: "enriched"; provider: string; fields: string[] }
   | { status: "no_provider" }
-  | { status: "no_source" }
   | { status: "miss" }
   | { status: "retry_later"; message: string };
 
@@ -44,6 +45,12 @@ export async function enrichTitle(
   titleId: number,
   providers: readonly EnrichmentProvider[] = PROVIDERS,
 ): Promise<EnrichOutcome> {
+  const title = await db
+    .selectFrom("titles")
+    .select(["canonical_name", "year", "kind", "enriched_at"])
+    .where("id", "=", titleId)
+    .executeTakeFirstOrThrow();
+
   const source = await db
     .selectFrom("sources")
     .select(["platform", "external_id", "url"])
@@ -54,20 +61,33 @@ export async function enrichTitle(
     .orderBy("id", "asc")
     .executeTakeFirst();
 
-  // Catalog Titles (films, series) have no source until where-to-watch is
-  // resolved. Nothing to enrich from yet — not an error.
-  if (!source) return { status: "no_source" };
+  // A Title with a source is asked of the platform; one without (a film or
+  // series entered into the catalog directly) is looked up by name and year
+  // against Wikidata.
+  const target: EnrichmentTarget = source
+    ? {
+        kind: "source",
+        platform: source.platform,
+        externalId: source.external_id,
+        url: source.url,
+      }
+    : {
+        kind: "catalog",
+        name: title.canonical_name,
+        year: title.year,
+        titleKind: title.kind,
+      };
 
-  const provider = providers.find((p) => p.platforms.includes(source.platform));
+  const provider = providers.find((p) =>
+    target.kind === "source"
+      ? p.accepts === "source" && p.platforms.includes(target.platform)
+      : p.accepts === "catalog",
+  );
   if (!provider) return { status: "no_provider" };
 
   let result;
   try {
-    result = await provider.fetch({
-      platform: source.platform,
-      externalId: source.external_id,
-      url: source.url,
-    });
+    result = await provider.fetch(target);
   } catch (err) {
     if (err instanceof TransientEnrichmentError) {
       await db
@@ -123,6 +143,14 @@ export async function enrichTitle(
     changes.description = result.description;
     fields.push("description");
   }
+  if (result.externalIds?.wikidata) {
+    changes.wikidata_id = result.externalIds.wikidata;
+    fields.push("wikidata_id");
+  }
+  if (result.externalIds?.imdb) {
+    changes.imdb_id = result.externalIds.imdb;
+    fields.push("imdb_id");
+  }
 
   await db.transaction().execute(async (trx) => {
     if (result.creatorName) {
@@ -151,6 +179,34 @@ export async function enrichTitle(
       .set(changes)
       .where("id", "=", titleId)
       .execute();
+
+    if (result.tags?.length) {
+      // Provider genres are additive: they never remove a tag a human
+      // applied, and the FK to the vocabulary means an unmapped genre is
+      // rejected rather than silently inventing a tag.
+      const known = await trx
+        .selectFrom("tags")
+        .select("slug")
+        .where("slug", "in", result.tags)
+        .execute();
+
+      if (known.length > 0) {
+        await trx
+          .insertInto("title_tags")
+          .values(
+            known.map((t) => ({
+              title_id: titleId,
+              tag: t.slug,
+              // Below a human's default 1.0, so hand-applied tags outrank
+              // inferred ones wherever weight is used to rank.
+              weight: 0.6,
+            })),
+          )
+          .onConflict((oc) => oc.columns(["title_id", "tag"]).doNothing())
+          .execute();
+        fields.push(`tags(${known.length})`);
+      }
+    }
   });
 
   return { status: "enriched", provider: provider.name, fields };

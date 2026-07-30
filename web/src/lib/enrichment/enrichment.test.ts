@@ -24,6 +24,7 @@ function fakeProvider(
   return {
     name: "fake",
     licence: "open",
+    accepts: "source",
     platforms: ["youtube"],
     cacheTtlDays: null,
     fetch: impl,
@@ -223,14 +224,126 @@ describe("enrichTitle", () => {
     expect(row.enrichment_failures).toBe(1);
   });
 
-  it("reports no_source for catalog Titles awaiting where-to-watch", async () => {
+  it("routes a sourceless Title to a catalog provider, by name and year", async () => {
     const t = await db
       .insertInto("titles")
       .values({ kind: "film", canonical_name: "Some Film", year: 1999 })
       .returning("id")
       .executeTakeFirstOrThrow();
 
-    expect((await enrichTitle(db, t.id)).status).toBe("no_source");
+    let seen: unknown;
+    const outcome = await enrichTitle(db, t.id, [
+      fakeProvider(
+        async (target) => {
+          seen = target;
+          return { canonicalName: "Some Film", runtimeSeconds: 5400 };
+        },
+        { name: "fake-catalog", accepts: "catalog", platforms: [] },
+      ),
+    ]);
+
+    expect(outcome.status).toBe("enriched");
+    expect(seen).toEqual({
+      kind: "catalog",
+      name: "Some Film",
+      year: 1999,
+      titleKind: "film",
+    });
+  });
+
+  it("reports no_provider when nothing serves catalog Titles", async () => {
+    const t = await db
+      .insertInto("titles")
+      .values({ kind: "film", canonical_name: "Some Film", year: 1999 })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    // Only a source provider available; a sourceless Title cannot use it.
+    const outcome = await enrichTitle(db, t.id, [
+      fakeProvider(async () => ({ canonicalName: "x" })),
+    ]);
+    expect(outcome.status).toBe("no_provider");
+  });
+
+  it("applies inferred tags at a lower weight than hand-applied ones", async () => {
+    const { titleId } = await submit(1);
+
+    await enrichTitle(db, titleId, [
+      fakeProvider(async () => ({
+        canonicalName: "Tagged",
+        tags: ["horror", "slow-burn"],
+      })),
+    ]);
+
+    const tags = await db
+      .selectFrom("title_tags")
+      .select(["tag", "weight"])
+      .where("title_id", "=", titleId)
+      .orderBy("tag")
+      .execute();
+
+    expect(tags.map((t) => t.tag)).toEqual(["horror", "slow-burn"]);
+    for (const t of tags) expect(t.weight).toBeLessThan(1);
+  });
+
+  it("drops inferred tags outside the controlled vocabulary", async () => {
+    const { titleId } = await submit(1);
+
+    const outcome = await enrichTitle(db, titleId, [
+      fakeProvider(async () => ({
+        canonicalName: "Tagged",
+        tags: ["horror", "not-a-real-tag"],
+      })),
+    ]);
+
+    // The unknown slug is filtered before insert rather than blowing up the
+    // whole enrichment on a foreign-key violation.
+    expect(outcome.status).toBe("enriched");
+    const tags = await db
+      .selectFrom("title_tags")
+      .select("tag")
+      .where("title_id", "=", titleId)
+      .execute();
+    expect(tags.map((t) => t.tag)).toEqual(["horror"]);
+  });
+
+  it("does not overwrite a tag a human already applied", async () => {
+    const { titleId } = await submit(1);
+    await db
+      .insertInto("title_tags")
+      .values({ title_id: titleId, tag: "horror", weight: 1.0 })
+      .execute();
+
+    await enrichTitle(db, titleId, [
+      fakeProvider(async () => ({ canonicalName: "T", tags: ["horror"] })),
+    ]);
+
+    const row = await db
+      .selectFrom("title_tags")
+      .select("weight")
+      .where("title_id", "=", titleId)
+      .where("tag", "=", "horror")
+      .executeTakeFirstOrThrow();
+    expect(row.weight).toBe(1);
+  });
+
+  it("stores open external identifiers", async () => {
+    const { titleId } = await submit(1);
+
+    await enrichTitle(db, titleId, [
+      fakeProvider(async () => ({
+        canonicalName: "Identified",
+        externalIds: { wikidata: "Q47524071", imdb: "tt7784604" },
+      })),
+    ]);
+
+    const row = await db
+      .selectFrom("titles")
+      .select(["wikidata_id", "imdb_id"])
+      .where("id", "=", titleId)
+      .executeTakeFirstOrThrow();
+    expect(row.wikidata_id).toBe("Q47524071");
+    expect(row.imdb_id).toBe("tt7784604");
   });
 
   it("reports no_provider for platforms nothing covers", async () => {

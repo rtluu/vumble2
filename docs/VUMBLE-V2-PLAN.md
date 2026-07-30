@@ -186,7 +186,22 @@ Two constraints deserve to be enforced in the schema, not in application code, b
 | Hosting | Vercel or Fly.io | Off GitHub Pages. |
 | Video | **Host nothing.** Embeds and links only. | Enormous cost and legal savings. This should be a stated, permanent stance, not a v1 shortcut. |
 
-**Metadata sources** — check licensing during Phase 0, not later: TMDB (films/series, requires attribution, free for this use), YouTube Data API (quota-limited, plan for it), Vimeo oEmbed, and JustWatch or Watchmode for availability (**commercial licensing — assume this is a real line item**).
+**Metadata sources** — the Phase 0 licensing check is done, and it changed the answer.
+
+*Rejected:* **TMDB** requires a separate written commercial agreement for any revenue-generating use, caps caching at six months, and forbids training ML/AI systems on its content — the last of which is disqualifying next to an agent-first platform. **JustWatch** publishes no pricing and routes commercial access through a data-partnership conversation. Both were avoidable dependencies, so both were avoided.
+
+*Adopted:*
+
+| Source | Licence | Covers |
+|---|---|---|
+| **Wikidata** (SPARQL) | **CC0** — public domain, commercial use, no key, no attribution, no cache limit | Films and series: name, year, runtime, director, genre, IMDb id |
+| **oEmbed** (YouTube, Vimeo, Dailymotion) | Public endpoints, no key | Web video: title, creator, thumbnail, dimensions |
+
+Measured Wikidata coverage on 2018 films: IMDb id 86%, genre 81%, director 74%, runtime 52%.
+
+**The one thing open data cannot give is artwork.** Posters are copyrighted whoever serves them, and Wikidata carries an image for roughly 4% of films. The queue card is therefore typographic by design (§2b) rather than poster-led — artwork appears when it exists and reserves no space when it does not. This is a real product constraint, not a temporary gap.
+
+**Where-to-watch is also unsolved by open data**, and is the strongest candidate for community contribution: letting members record "this is on X in the UK" uses the same muscle as voting, produces data Vumble owns outright, and avoids a licensing relationship entirely.
 
 ### The resolver — where Player.js goes
 
@@ -294,7 +309,7 @@ Not a phase — a prerequisite. Hosting nothing keeps exposure low, but:
 Each phase ships something with standalone value, so a stall doesn't leave nothing (P1).
 
 ### Phase 0 — De-risk (2–3 weeks)
-Licensing check on TMDB / JustWatch / YouTube quota. Spike the resolver against 5 platforms. Audit the YouTube embed ToS question. Lock the schema. Confirm the `vumble.com` deployment path off GitHub Pages.
+~~Licensing check on TMDB / JustWatch~~ — **done**; both rejected in favour of Wikidata (CC0) and oEmbed, so the catalog carries no commercial data dependency (§5). Remaining: YouTube Data API quota (needed only for durations, which oEmbed omits). Spike the resolver against 5 platforms. Audit the YouTube embed ToS question. Lock the schema. Confirm the `vumble.com` deployment path off GitHub Pages.
 **Exit:** no unknown blockers, schema reviewed, resolver proven against real URLs.
 
 ### Phase 1 — The independent core (6–8 weeks)
@@ -332,7 +347,9 @@ Retire the Reddit importer once native supply crosses 50%. PWA, then native apps
 
 **No display ads.** Competing for attention against the platforms we embed, using their inventory, is a bad trade and degrades exactly the quality signal the product sells.
 
-Instead: a supporter subscription (Canon access, chronological feeds, higher API quota), affiliate revenue on streaming deep-links (JustWatch and Amazon both pay, and it aligns with the Queue-mode feature we're building anyway), and eventually paid tiers for agent developers.
+Instead: a supporter subscription (Canon access, chronological feeds, higher API quota), affiliate revenue on streaming deep-links, and eventually paid tiers for agent developers.
+
+Note that affiliate revenue depends on where-to-watch data, which open sources do not supply (§5). Community-contributed availability is the path that keeps this option open without taking on a commercial data agreement — and it is worth noting that revenue of any kind would have triggered TMDB's commercial-use clause, which is a second reason the open-data choice was the right one.
 
 ---
 

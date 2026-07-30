@@ -62,11 +62,14 @@ function Tags({ tags }: { tags: string[] }) {
 function Footer({
   item,
   signedIn,
+  /** Queue cards carry creator and runtime in their facts line already. */
+  omitFacts = false,
 }: {
   item: FeedItem;
   signedIn: boolean;
+  omitFacts?: boolean;
 }) {
-  const time = runtime(item.title.runtimeSeconds);
+  const time = omitFacts ? null : runtime(item.title.runtimeSeconds);
   return (
     <div className="post-footer">
       <PostVote
@@ -78,7 +81,7 @@ function Footer({
       <a href={`/p/${item.postId}`} className="comment-link">
         {item.commentCount} {item.commentCount === 1 ? "comment" : "comments"}
       </a>
-      {item.title.creator && (
+      {!omitFacts && item.title.creator && (
         <span className="creator" title="Creator">
           {item.title.creator}
         </span>
@@ -150,11 +153,36 @@ function QueueCard({
   signedIn: boolean;
   expanded?: boolean;
 }) {
+  const kindLabel: Record<string, string> = {
+    film: "Film",
+    series: "Series",
+    episode: "Episode",
+    live: "Live",
+    clip: "Clip",
+  };
+
+  // Year, runtime, and creator come from Wikidata and are present far more
+  // often than artwork is (director 74%, runtime 52%, image 4%), so the card
+  // leads with them. See the note on the poster below.
+  const facts = [
+    kindLabel[item.title.kind],
+    item.title.year ? String(item.title.year) : null,
+    runtime(item.title.runtimeSeconds),
+    item.title.creator,
+  ].filter(Boolean);
+
   return (
     <article className="post-card queue">
       <div className="queue-body">
-        {item.title.posterUrl ? (
-          // Remote poster art; we host no media.
+        {/*
+          Artwork is shown when it happens to exist and takes no space when it
+          does not. Posters are copyrighted whoever serves them, so no open
+          dataset supplies them — Wikidata carries an image for about 4% of
+          films. Reserving a placeholder column would mean a hole on almost
+          every card, so the layout is typographic by default.
+        */}
+        {item.title.posterUrl && (
+          // Remote art; we host no media.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             className="poster"
@@ -162,8 +190,6 @@ function QueueCard({
             alt=""
             loading="lazy"
           />
-        ) : (
-          <div className="poster poster-empty" aria-hidden="true" />
         )}
         <div className="queue-text">
           <Meta item={item} />
@@ -174,10 +200,17 @@ function QueueCard({
               <a href={`/p/${item.postId}`}>{item.headline}</a>
             )}
           </h2>
-          <p className="canonical">
-            {item.title.canonicalName}
-            {item.title.year && <span className="year"> ({item.title.year})</span>}
-          </p>
+          <p className="canonical">{item.title.canonicalName}</p>
+          {facts.length > 0 && (
+            <p className="facts">
+              {facts.map((f, i) => (
+                <span key={f as string}>
+                  {i > 0 && <span className="dot">·</span>}
+                  {f}
+                </span>
+              ))}
+            </p>
+          )}
           {item.body && <p className="body">{item.body}</p>}
           <Tags tags={item.title.tags} />
           {item.source && (
@@ -190,7 +223,7 @@ function QueueCard({
               Watch on {item.source.platform} →
             </a>
           )}
-          <Footer item={item} signedIn={signedIn} />
+          <Footer item={item} signedIn={signedIn} omitFacts />
         </div>
       </div>
     </article>

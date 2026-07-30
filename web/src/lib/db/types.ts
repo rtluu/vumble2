@@ -63,7 +63,10 @@ export interface TitlesTable {
   description: ColumnType<string, string | undefined, string>;
   poster_url: string | null;
   creator_id: number | null;
+  /** Retained but unused: TMDB needs a commercial agreement. See migration 0007. */
   tmdb_id: number | null;
+  wikidata_id: string | null;
+  imdb_id: string | null;
   parent_id: number | null;
   season_no: number | null;
   episode_no: number | null;

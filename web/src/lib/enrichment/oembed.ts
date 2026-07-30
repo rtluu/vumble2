@@ -108,10 +108,12 @@ function makeProvider(
   return {
     name,
     licence: "open",
+    accepts: "source",
     platforms: [platform],
     cacheTtlDays: null,
-    async fetch(source) {
-      const data = await fetchOEmbed(endpoint(source.url));
+    async fetch(target) {
+      if (target.kind !== "source") return null;
+      const data = await fetchOEmbed(endpoint(target.url));
       return data ? toResult(data) : null;
     },
   };
