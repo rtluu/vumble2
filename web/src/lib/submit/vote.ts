@@ -82,7 +82,14 @@ export async function castVote(db: Db, input: VoteInput): Promise<VoteResult> {
           value: input.value,
         })
         .onConflict((oc) =>
-          oc.columns(["user_id", "post_id"]).doUpdateSet({ value: input.value }),
+          oc.columns(["user_id", "post_id"]).doUpdateSet({
+            value: input.value,
+            // Changing your vote is a fresh judgement, so the timestamp has
+            // to move with it. Curation score (plan §6) credits upvoting
+            // *early*; leaving the original insert time here would both
+            // corrupt that signal and make vote history lie under audit.
+            created_at: new Date(),
+          }),
         )
         .execute();
 

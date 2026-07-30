@@ -68,6 +68,12 @@ export interface TitlesTable {
   season_no: number | null;
   episode_no: number | null;
   created_at: Timestamp;
+  /** Null means canonical_name is still the submitter's headline standing in. */
+  enriched_at: Timestamp | null;
+  enrichment_provider: string | null;
+  /** Non-null only for licensed sources with a mandated cache limit. */
+  enrichment_expires_at: Timestamp | null;
+  enrichment_failures: ColumnType<number, number | undefined, number>;
 }
 
 export interface SourcesTable {

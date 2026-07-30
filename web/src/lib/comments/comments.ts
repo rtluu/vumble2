@@ -253,9 +253,12 @@ export async function voteComment(
           value: input.value,
         })
         .onConflict((oc) =>
-          oc
-            .columns(["user_id", "comment_id"])
-            .doUpdateSet({ value: input.value }),
+          oc.columns(["user_id", "comment_id"]).doUpdateSet({
+            value: input.value,
+            // Same reasoning as post votes: a changed vote is a new
+            // judgement and must carry the time it was actually made.
+            created_at: new Date(),
+          }),
         )
         .execute();
 

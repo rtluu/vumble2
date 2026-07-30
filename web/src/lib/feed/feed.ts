@@ -48,6 +48,8 @@ export interface FeedItem {
     year: number | null;
     /** Facet tags, alphabetical. The retrieval layer (plan §2c). */
     tags: string[];
+    /** Resolved by enrichment; null until then. */
+    creator: string | null;
   };
   /** Null for catalog Titles with no embeddable source yet (plan §3/P2). */
   source: FeedSource | null;
@@ -123,6 +125,7 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
     .innerJoin("titles", "titles.id", "posts.title_id")
     .innerJoin("communities", "communities.id", "posts.community_id")
     .innerJoin("users", "users.id", "posts.author_id")
+    .leftJoin("creators", "creators.id", "titles.creator_id")
     .leftJoin(
       // One source per Title for rendering: prefer an embeddable one, then
       // the earliest added, so the choice is stable across requests.
@@ -164,6 +167,7 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
       "titles.poster_url",
       "titles.runtime_s",
       "titles.year",
+      "creators.name as creator_name",
       "s.platform",
       "s.external_id",
       "s.url as source_url",
@@ -259,6 +263,7 @@ export async function getFeed(db: Db, query: FeedQuery = {}): Promise<FeedPage> 
       runtimeSeconds: r.runtime_s,
       year: r.year,
       tags: r.tags ?? [],
+      creator: r.creator_name,
     },
     source: r.platform
       ? {

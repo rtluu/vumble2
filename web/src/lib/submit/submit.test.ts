@@ -346,6 +346,43 @@ describe("castVote and the promotion gate", () => {
     expect(votes).toHaveLength(1);
   });
 
+  it("moves the timestamp when a vote changes direction", async () => {
+    const postId = await proposePost();
+    await castVote(db, { userId: bob, postId, value: 1 });
+
+    const first = await db
+      .selectFrom("votes")
+      .select("created_at")
+      .where("user_id", "=", bob)
+      .where("post_id", "=", postId)
+      .executeTakeFirstOrThrow();
+
+    // Backdate, then change direction. A stale timestamp would corrupt the
+    // "upvoted early" signal curation score is built on (plan §6).
+    const longAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    await db
+      .updateTable("votes")
+      .set({ created_at: longAgo })
+      .where("user_id", "=", bob)
+      .where("post_id", "=", postId)
+      .execute();
+
+    await castVote(db, { userId: bob, postId, value: -1 });
+
+    const after = await db
+      .selectFrom("votes")
+      .select(["created_at", "value"])
+      .where("user_id", "=", bob)
+      .where("post_id", "=", postId)
+      .executeTakeFirstOrThrow();
+
+    expect(after.value).toBe(-1);
+    expect(new Date(after.created_at as unknown as string).getTime()).toBeGreaterThan(
+      longAgo.getTime() + 1000,
+    );
+    expect(first).toBeDefined();
+  });
+
   it("keeps a promoted post promoted when a vote is retracted", async () => {
     const postId = await proposePost();
     await castVote(db, { userId: bob, postId, value: 1 });

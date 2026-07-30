@@ -289,6 +289,13 @@ a:hover {
   color: var(--fg);
 }
 
+.post-footer .creator {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 12rem;
+}
+
 /* ----------------------------------------------------------------- votes */
 
 .vote,

@@ -274,6 +274,33 @@ describe("voteComment", () => {
     expect(votes).toHaveLength(1);
   });
 
+  it("moves the timestamp when a comment vote changes direction", async () => {
+    const a = await addComment(db, { postId, authorId: alice, body: "Rate" });
+    if (!a.ok) throw new Error("setup");
+
+    await voteComment(db, { userId: bob, commentId: a.commentId, value: 1 });
+
+    const longAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    await db
+      .updateTable("comment_votes")
+      .set({ created_at: longAgo })
+      .where("comment_id", "=", a.commentId)
+      .execute();
+
+    await voteComment(db, { userId: bob, commentId: a.commentId, value: -1 });
+
+    const row = await db
+      .selectFrom("comment_votes")
+      .select(["created_at", "value"])
+      .where("comment_id", "=", a.commentId)
+      .executeTakeFirstOrThrow();
+
+    expect(row.value).toBe(-1);
+    expect(new Date(row.created_at as unknown as string).getTime()).toBeGreaterThan(
+      longAgo.getTime() + 1000,
+    );
+  });
+
   it("rejects agent votes at the database boundary", async () => {
     const a = await addComment(db, { postId, authorId: alice, body: "Rate" });
     if (!a.ok) throw new Error("setup");

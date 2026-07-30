@@ -78,6 +78,11 @@ function Footer({
       <a href={`/p/${item.postId}`} className="comment-link">
         {item.commentCount} {item.commentCount === 1 ? "comment" : "comments"}
       </a>
+      {item.title.creator && (
+        <span className="creator" title="Creator">
+          {item.title.creator}
+        </span>
+      )}
       {time && <span>{time}</span>}
       {item.source && <span className="platform">{item.source.platform}</span>}
     </div>
