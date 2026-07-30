@@ -35,7 +35,7 @@ export interface UsersTable {
   handle: string;
   email: string | null;
   kind: ColumnType<UserKind, UserKind | undefined, UserKind>;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
   suspended_at: Timestamp | null;
 }
 
@@ -48,7 +48,7 @@ export interface AgentsTable {
   api_key_hash: string;
   quota_tier: ColumnType<number, number | undefined, number>;
   daily_quota: ColumnType<number, number | undefined, number>;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
 }
 
 export interface TitlesTable {
@@ -64,7 +64,7 @@ export interface TitlesTable {
   parent_id: number | null;
   season_no: number | null;
   episode_no: number | null;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
 }
 
 export interface SourcesTable {
@@ -78,7 +78,7 @@ export interface SourcesTable {
   is_free: ColumnType<boolean, boolean | undefined, boolean>;
   start_seconds: number | null;
   last_verified_at: Timestamp | null;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
 }
 
 export interface CommunitiesTable {
@@ -88,7 +88,7 @@ export interface CommunitiesTable {
   description: ColumnType<string, string | undefined, string>;
   default_mode: ColumnType<FeedMode, FeedMode | undefined, FeedMode>;
   promote_threshold: ColumnType<number, number | undefined, number>;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
 }
 
 export interface PostsTable {
@@ -102,14 +102,14 @@ export interface PostsTable {
   score: ColumnType<number, number | undefined, number>;
   hot_rank: ColumnType<number, number | undefined, number>;
   promoted_at: Timestamp | null;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
 }
 
 export interface VotesTable {
   user_id: number;
   post_id: number;
   value: number;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
 }
 
 export interface CommentsTable {
@@ -122,7 +122,7 @@ export interface CommentsTable {
   score: ColumnType<number, number | undefined, number>;
   is_spoiler: ColumnType<boolean, boolean | undefined, boolean>;
   removed_at: Timestamp | null;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
 }
 
 export interface CreatorsTable {
@@ -134,7 +134,7 @@ export interface CreatorsTable {
     Record<string, string>
   >;
   verified: ColumnType<boolean, boolean | undefined, boolean>;
-  created_at: Generated<Timestamp>;
+  created_at: Timestamp;
 }
 
 export interface TitleTagsTable {
@@ -146,15 +146,23 @@ export interface TitleTagsTable {
 export interface WatchlistTable {
   user_id: number;
   title_id: number;
-  added_at: Generated<Timestamp>;
+  added_at: Timestamp;
   watched_at: Timestamp | null;
+}
+
+export interface SessionsTable {
+  token_hash: string;
+  user_id: number;
+  created_at: Timestamp;
+  last_seen_at: Timestamp;
+  expires_at: ColumnType<Date, Date | string, Date | string>;
 }
 
 export interface CurationScoresTable {
   user_id: number;
   community_id: number;
   score: ColumnType<number, number | undefined, number>;
-  updated_at: Generated<Timestamp>;
+  updated_at: Timestamp;
 }
 
 export interface Database {
@@ -170,6 +178,7 @@ export interface Database {
   title_tags: TitleTagsTable;
   watchlist: WatchlistTable;
   curation_scores: CurationScoresTable;
+  sessions: SessionsTable;
 }
 
 export type Post = Selectable<PostsTable>;

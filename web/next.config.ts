@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // PGlite loads a WASM bundle by filesystem path at runtime. Bundling it
+  // rewrites that path into a URL instance that node:fs rejects, so it has
+  // to be required natively on the server.
+  serverExternalPackages: ["@electric-sql/pglite"],
   images: {
     // Thumbnail/poster art is always remote — we host no media (see plan §5).
     remotePatterns: [

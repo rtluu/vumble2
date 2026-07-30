@@ -9,7 +9,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "seed": "tsx db/seed.ts"
   },
   "dependencies": {
     "kysely": "^0.29.4",
@@ -22,6 +23,7 @@
     "@types/node": "^22.10.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "tsx": "^4.23.1",
     "typescript": "^5.7.0",
     "vitest": "^4.1.10"
   }

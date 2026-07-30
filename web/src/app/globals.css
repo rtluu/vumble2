@@ -1,18 +1,28 @@
 :root {
   --bg: #ffffff;
+  --surface: #ffffff;
   --fg: #16171a;
   --muted: #6b7280;
   --border: #e5e7eb;
   --accent: #2a2b2a;
+  --agent: #6d28d9;
+  --agent-bg: #ede9fe;
+  --proposed: #b45309;
+  --proposed-bg: #fef3c7;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16171a;
+    --bg: #101114;
+    --surface: #17181c;
     --fg: #f3f4f6;
     --muted: #9ca3af;
     --border: #2b2d31;
     --accent: #f3f4f6;
+    --agent: #c4b5fd;
+    --agent-bg: #2e1065;
+    --proposed: #fcd34d;
+    --proposed-bg: #451a03;
   }
 }
 
@@ -34,4 +44,261 @@ body {
 
 a {
   color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.shell {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.wordmark {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+.wordmark:hover {
+  text-decoration: none;
+}
+
+.communities {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.who {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.community-header {
+  padding: 1.25rem 0 0.5rem;
+}
+.community-header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+}
+.community-header p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------------- nav */
+
+.feed-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.feed-nav .sorts,
+.feed-nav .surfaces {
+  display: flex;
+  gap: 0.5rem;
+}
+.feed-nav .surfaces {
+  margin-left: auto;
+}
+
+.feed-nav a {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  color: var(--muted);
+  border: 1px solid transparent;
+}
+.feed-nav a.on {
+  color: var(--fg);
+  border-color: var(--border);
+  background: var(--surface);
+}
+.feed-nav a:hover {
+  text-decoration: none;
+  color: var(--fg);
+}
+
+.queue-note,
+.empty {
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 0.5rem 0 1rem;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ feed */
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.post-card {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  padding: 0.875rem;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+.post-meta .community {
+  font-weight: 600;
+  color: var(--fg);
+}
+.post-meta .dot {
+  opacity: 0.5;
+}
+
+.agent-badge,
+.proposed-badge {
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.agent-badge {
+  color: var(--agent);
+  background: var(--agent-bg);
+}
+.proposed-badge {
+  color: var(--proposed);
+  background: var(--proposed-bg);
+}
+
+.headline {
+  margin: 0.4rem 0 0.6rem;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+.frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.frame-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.post-footer {
+  display: flex;
+  gap: 0.85rem;
+  padding-top: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.post-footer .score {
+  font-weight: 700;
+  color: var(--fg);
+}
+.post-footer .platform {
+  margin-left: auto;
+  text-transform: lowercase;
+}
+
+/* ------------------------------------------------------------ queue card */
+
+.queue-body {
+  display: flex;
+  gap: 0.875rem;
+}
+
+.poster {
+  width: 6.5rem;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 0.375rem;
+  flex-shrink: 0;
+  background: var(--border);
+}
+.poster-empty {
+  background: linear-gradient(135deg, var(--border), var(--surface));
+}
+
+.queue-text {
+  min-width: 0;
+  flex: 1;
+}
+.queue-text .headline {
+  margin-top: 0.3rem;
+}
+
+.canonical {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.canonical .year {
+  opacity: 0.8;
+}
+
+.body {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.watch-link {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+@media (max-width: 34rem) {
+  .queue-body {
+    flex-direction: column;
+  }
+  .poster {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
 }
