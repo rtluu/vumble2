@@ -170,15 +170,18 @@ describe("foldBindings", () => {
     expect(result!.year).toBeUndefined();
   });
 
-  it("carries an image through when present, rare as that is", () => {
+  it("does not treat P18 as poster art", () => {
+    // P18 is a general image property. For Arrival it is a 1268x156
+    // wordmark, which cropped into a poster frame reads as a broken image.
+    // Catalog artwork comes from the trailer thumbnail instead.
     const result = foldBindings([
       bind({
         item: ENTITY,
         itemLabel: "X",
-        image: "https://commons.wikimedia.org/x.jpg",
+        image: "https://commons.wikimedia.org/wordmark.png",
       }),
     ]);
-    expect(result!.posterUrl).toBe("https://commons.wikimedia.org/x.jpg");
+    expect(result!.posterUrl).toBeUndefined();
   });
 });
 

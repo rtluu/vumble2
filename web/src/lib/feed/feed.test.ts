@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { createTestDb, type Db } from "@/lib/db/client";
 import { submitUrl } from "@/lib/submit/submit";
 import { castVote } from "@/lib/submit/vote";
-import { cardMode, getFeed } from "./feed";
+import { cardMode, getFeed, getPost, thumbnailFor } from "./feed";
 
 let db: Db;
 let alice: number;
@@ -284,6 +284,138 @@ describe("tag filtering", () => {
     expect(scoped.items.map((i) => i.headline)).toEqual([
       "Horror in documentaries",
     ]);
+  });
+});
+
+describe("thumbnailFor", () => {
+  it("derives a still from the work's own YouTube id", async () => {
+    const id = await propose(VIDEOS[0]!, "Has a source");
+    await promote(id);
+
+    const feed = await getFeed(db, {});
+    expect(thumbnailFor(feed.items[0]!)).toBe(
+      "https://i.ytimg.com/vi/aaaaaaaaaaa/hqdefault.jpg",
+    );
+  });
+
+  it("falls back to the trailer for a catalog Title with no source", async () => {
+    const community = await db
+      .selectFrom("communities")
+      .select("id")
+      .where("slug", "=", "documentaries")
+      .executeTakeFirstOrThrow();
+
+    const title = await db
+      .insertInto("titles")
+      .values({ kind: "film", canonical_name: "A Film", year: 2001 })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    await db
+      .insertInto("sources")
+      .values({
+        title_id: title.id,
+        role: "trailer",
+        platform: "youtube",
+        external_id: "trailerid01",
+        url: "https://www.youtube.com/watch?v=trailerid01",
+        embeddable: true,
+        provenance: "piped-search",
+      })
+      .execute();
+
+    const post = await db
+      .insertInto("posts")
+      .values({
+        title_id: title.id,
+        community_id: community.id,
+        author_id: alice,
+        headline: "Catalog entry",
+        state: "promoted",
+        promoted_at: new Date(),
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    const item = await getPost(db, post.id);
+    expect(item!.source).toBeNull();
+    expect(thumbnailFor(item!)).toBe(
+      "https://i.ytimg.com/vi/trailerid01/hqdefault.jpg",
+    );
+  });
+
+  it("prefers the trailer over a stored image on a catalog Title", async () => {
+    // Guards a real regression: rows enriched before P18 was understood to
+    // be a wordmark still carry one in poster_url, and it is 1268x156 —
+    // cropped to a thumbnail it reads as a blank grey box.
+    const community = await db
+      .selectFrom("communities")
+      .select("id")
+      .where("slug", "=", "documentaries")
+      .executeTakeFirstOrThrow();
+
+    const title = await db
+      .insertInto("titles")
+      .values({
+        kind: "film",
+        canonical_name: "Stale Art",
+        poster_url: "https://commons.wikimedia.org/wordmark.png",
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    await db
+      .insertInto("sources")
+      .values({
+        title_id: title.id,
+        role: "trailer",
+        platform: "youtube",
+        external_id: "trailerid02",
+        url: "https://www.youtube.com/watch?v=trailerid02",
+        embeddable: true,
+      })
+      .execute();
+
+    const post = await db
+      .insertInto("posts")
+      .values({
+        title_id: title.id,
+        community_id: community.id,
+        author_id: alice,
+        headline: "Has both",
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    expect(thumbnailFor((await getPost(db, post.id))!)).toBe(
+      "https://i.ytimg.com/vi/trailerid02/hqdefault.jpg",
+    );
+  });
+
+  it("returns null when there is nothing to show", async () => {
+    const community = await db
+      .selectFrom("communities")
+      .select("id")
+      .where("slug", "=", "documentaries")
+      .executeTakeFirstOrThrow();
+    const title = await db
+      .insertInto("titles")
+      .values({ kind: "film", canonical_name: "Bare" })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+    const post = await db
+      .insertInto("posts")
+      .values({
+        title_id: title.id,
+        community_id: community.id,
+        author_id: alice,
+        headline: "No art at all",
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    // Lays out without a gap rather than rendering a broken image.
+    expect(thumbnailFor((await getPost(db, post.id))!)).toBeNull();
   });
 });
 

@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getDb } from "@/lib/db/client";
 import { getFeed, type FeedSort } from "@/lib/feed/feed";
+import { getView } from "@/lib/prefs/view";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +54,7 @@ export default async function TagPage({
     ? (sp.sort as FeedSort)
     : "hot";
 
-  const user = await getCurrentUser();
+  const [user, view] = await Promise.all([getCurrentUser(), getView()]);
   const { items } = await getFeed(db, {
     tag: meta.slug,
     sort,
@@ -102,9 +103,14 @@ export default async function TagPage({
       {items.length === 0 ? (
         <p className="empty">Nothing tagged {meta.label} yet.</p>
       ) : (
-        <div className="feed">
+        <div className={`feed ${view}`}>
           {items.map((item) => (
-            <PostCard key={item.postId} item={item} signedIn={!!user} />
+            <PostCard
+              key={item.postId}
+              item={item}
+              signedIn={!!user}
+              view={view}
+            />
           ))}
         </div>
       )}

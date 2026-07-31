@@ -1,5 +1,6 @@
 import { PostVote } from "@/components/VoteButtons";
-import { cardMode, type FeedItem } from "@/lib/feed/feed";
+import { cardMode, thumbnailFor, type FeedItem } from "@/lib/feed/feed";
+import type { ViewMode } from "@/lib/prefs/view";
 import { embedUrl } from "@/lib/resolvers/embed";
 
 /** Compact relative age, matching the V1 player's format (2d, 4h, 30m). */
@@ -89,6 +90,63 @@ function Footer({
       {time && <span>{time}</span>}
       {item.source && <span className="platform">{item.source.platform}</span>}
     </div>
+  );
+}
+
+/**
+ * Compact: one row per post, thumbnail right of the text.
+ *
+ * Used for both watch and queue items — the point of compact is a scannable
+ * list, so the distinction between "playable here" and "decide and go
+ * elsewhere" is carried by the metadata rather than by the layout. Playback
+ * happens on the post page; the thumbnail is a still, so a feed of fifty
+ * items loads fifty images rather than fifty players.
+ */
+function CompactCard({
+  item,
+  signedIn,
+}: {
+  item: FeedItem;
+  signedIn: boolean;
+}) {
+  const thumb = thumbnailFor(item);
+  const isQueue = cardMode(item) === "queue";
+  const time = runtime(item.title.runtimeSeconds);
+
+  return (
+    <article className="post-card compact">
+      <div className="compact-body">
+        <div className="compact-text">
+          <Meta item={item} />
+          <h2 className="headline">
+            <a href={`/p/${item.postId}`}>{item.headline}</a>
+          </h2>
+          {isQueue && (
+            <p className="canonical compact-canonical">
+              {item.title.canonicalName}
+              {item.title.year && (
+                <span className="year"> ({item.title.year})</span>
+              )}
+            </p>
+          )}
+          <Tags tags={item.title.tags} />
+          <Footer item={item} signedIn={signedIn} omitFacts={isQueue} />
+        </div>
+
+        {thumb && (
+          <a href={`/p/${item.postId}`} className="compact-thumb">
+            {/* Remote still; we host no media. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={thumb} alt="" loading="lazy" />
+            {time && <span className="compact-duration">{time}</span>}
+            {/* A trailer thumbnail must not read as the work itself. */}
+            {isQueue && item.trailer && (
+              <span className="compact-badge">Trailer</span>
+            )}
+          </a>
+        )}
+      </div>
+    </article>
   );
 }
 
@@ -244,12 +302,21 @@ export function PostCard({
   item,
   signedIn = false,
   expanded = false,
+  view = "expanded",
 }: {
   item: FeedItem;
   signedIn?: boolean;
   /** True on the post's own page: no self-link, body always shown. */
   expanded?: boolean;
+  view?: ViewMode;
 }) {
+  // The post's own page always shows the player, whatever the feed density —
+  // you followed a link to this specific thing, so hiding it behind another
+  // click would be perverse.
+  if (view === "compact" && !expanded) {
+    return <CompactCard item={item} signedIn={signedIn} />;
+  }
+
   return cardMode(item) === "watch" ? (
     <WatchCard item={item} signedIn={signedIn} expanded={expanded} />
   ) : (

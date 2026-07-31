@@ -1,12 +1,52 @@
+import { setViewAction } from "@/app/actions/prefs";
 import { PostCard } from "@/components/PostCard";
 import type { FeedSort, FeedSurface } from "@/lib/feed/feed";
 import { getFeed } from "@/lib/feed/feed";
 import { getDb } from "@/lib/db/client";
+import { getView, type ViewMode } from "@/lib/prefs/view";
 
 const SORTS: FeedSort[] = ["hot", "new", "top"];
 
 function basePath(slug?: string) {
   return slug ? `/v/${slug}` : "/";
+}
+
+const VIEWS: { mode: ViewMode; label: string; hint: string }[] = [
+  { mode: "compact", label: "Compact", hint: "Thumbnails beside the text" },
+  { mode: "expanded", label: "Expanded", hint: "Play inline" },
+];
+
+/**
+ * Density control.
+ *
+ * Segmented rather than a single toggle, to match the sort and surface
+ * controls beside it — a lone button labelled with a mode is ambiguous about
+ * whether that is the current state or the thing clicking does.
+ *
+ * Forms rather than links because the preference lives in a cookie and
+ * applies site-wide, not only to the page it was clicked from.
+ */
+function ViewToggle({ current }: { current: ViewMode }) {
+  return (
+    <span className="view-toggle">
+      {VIEWS.map(({ mode, label, hint }) => (
+        <form action={setViewAction} key={mode} className="inline-form">
+          <input type="hidden" name="view" value={mode} />
+          <button
+            type="submit"
+            className={mode === current ? "on" : ""}
+            aria-pressed={mode === current}
+            // Explicit, so the mode name is part of the accessible name
+            // rather than being replaced by the hover hint.
+            aria-label={`${label} view — ${hint.toLowerCase()}`}
+            title={hint}
+          >
+            {label}
+          </button>
+        </form>
+      ))}
+    </span>
+  );
 }
 
 export async function FeedView({
@@ -22,7 +62,7 @@ export async function FeedView({
   viewerId?: number | null;
   signedIn?: boolean;
 }) {
-  const db = await getDb();
+  const [db, view] = await Promise.all([getDb(), getView()]);
   const { items } = await getFeed(db, {
     communitySlug,
     sort,
@@ -59,6 +99,7 @@ export async function FeedView({
           >
             Proposed
           </a>
+          <ViewToggle current={view} />
         </div>
       </nav>
 
@@ -76,9 +117,14 @@ export async function FeedView({
             : "Nothing promoted yet — check the proposal queue."}
         </p>
       ) : (
-        <div className="feed">
+        <div className={`feed ${view}`}>
           {items.map((item) => (
-            <PostCard key={item.postId} item={item} signedIn={signedIn} />
+            <PostCard
+              key={item.postId}
+              item={item}
+              signedIn={signedIn}
+              view={view}
+            />
           ))}
         </div>
       )}

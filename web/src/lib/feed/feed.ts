@@ -335,6 +335,36 @@ export async function getPost(
 }
 
 /**
+ * A still frame for compact rendering.
+ *
+ * Prefers the work's own frame, falling back to the trailer's — a catalog
+ * film has no thumbnail of its own, but its trailer does. Returns null when
+ * there is genuinely nothing, so the caller can lay out without a gap.
+ *
+ * YouTube ids map to a predictable thumbnail URL, so this needs no extra
+ * lookup and no stored value that could go stale.
+ */
+export function thumbnailFor(item: FeedItem): string | null {
+  if (item.source?.platform === "youtube") {
+    return `https://i.ytimg.com/vi/${item.source.externalId}/hqdefault.jpg`;
+  }
+
+  // A trailer still outranks any stored image. Only a catalog provider can
+  // put an image on a sourceless Title, and those are not video stills —
+  // Wikidata's P18 is a wordmark as often as artwork. Preferring the trailer
+  // means stale rows from before that was understood still render correctly.
+  if (item.trailer) {
+    return `https://i.ytimg.com/vi/${item.trailer.videoId}/hqdefault.jpg`;
+  }
+
+  // Set by oEmbed enrichment, which does return a real still — this is the
+  // path for embeddable platforms whose ids do not map to a thumbnail URL.
+  if (item.title.posterUrl) return item.title.posterUrl;
+
+  return null;
+}
+
+/**
  * How a feed item should render (plan §2b). Watch mode is the embeddable,
  * consume-now card; queue mode is poster art and where-to-watch for things
  * you decide about now and watch later.

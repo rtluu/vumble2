@@ -245,9 +245,10 @@ export function foldBindings(
     result.externalIds = { ...result.externalIds, imdb };
   }
 
-  // Present for only ~4% of films, so treated as a bonus rather than relied on.
-  const image = rows.find((r) => r.image?.value)?.image?.value;
-  if (image) result.posterUrl = image;
+  // P18 is deliberately not mapped to posterUrl. It is a general "image"
+  // property, not poster art: for Arrival it is a 1268x156 wordmark. Storing
+  // it as a poster produced a cropped sliver that read as a broken image.
+  // Catalog artwork comes from the trailer's thumbnail instead.
 
   // P1651. Curated per work, so trusted without verification — unlike a
   // search result. Also ~4% coverage, hence the search fallback.
