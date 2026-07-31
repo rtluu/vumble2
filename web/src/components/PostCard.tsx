@@ -175,22 +175,12 @@ function QueueCard({
     <article className="post-card queue">
       <div className="queue-body">
         {/*
-          Artwork when it exists, and no reserved slot when it does not.
-          Posters are copyrighted whoever serves them, so open datasets carry
-          few — Wikidata has an image for about 4% of films. The trailer below
-          does the work a poster would have: it is embeddable by design, and
-          more useful, since you can watch it and decide.
+          No poster column. Wikidata's image field is not poster art — for
+          Arrival it is a 1268x156 wordmark — so forcing it into a 2:3 frame
+          crops a banner into a sliver that reads as a broken image. The
+          trailer below is the visual, and unlike a poster it carries no
+          licensing question and tells you far more.
         */}
-        {item.title.posterUrl && (
-          // Remote art; we host no media.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            className="poster"
-            src={item.title.posterUrl}
-            alt=""
-            loading="lazy"
-          />
-        )}
         <div className="queue-text">
           <Meta item={item} />
           <h2 className="headline">

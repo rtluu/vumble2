@@ -582,21 +582,6 @@ a:hover {
   gap: 0.875rem;
 }
 
-/*
-  Artwork is optional, not a reserved slot. Posters are copyrighted whoever
-  serves them, so no open dataset supplies them (Wikidata: ~4% of films).
-  The queue card is typographic by default and only makes room when there
-  is genuinely something to show.
-*/
-.poster {
-  width: 5.5rem;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
-  border-radius: 0.375rem;
-  flex-shrink: 0;
-  background: var(--border);
-}
-
 .trailer {
   position: relative;
   width: 100%;
@@ -673,9 +658,5 @@ a:hover {
 @media (max-width: 34rem) {
   .queue-body {
     flex-direction: column;
-  }
-  .poster {
-    width: 100%;
-    aspect-ratio: 16 / 9;
   }
 }
